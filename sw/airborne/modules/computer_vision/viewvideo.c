@@ -39,6 +39,7 @@
 #include <sys/time.h>
 #include <math.h>
 #include "mcu_periph/udp.h"
+#include <errno.h>
 
 // Video
 #include "lib/v4l/v4l2.h"
@@ -155,7 +156,7 @@ static void *viewvideo_thread(void *data __attribute__((unused)))
 
 #if VIEWVIDEO_USE_NETCAT
   char nc_cmd[64];
-  sprintf(nc_cmd, "nc %s %d 2>/dev/null", STRINGIFY(VIEWVIDEO_HOST), VIEWVIDEO_PORT_OUT);
+  sprintf(nc_cmd, "nc 192.168.1.3 5000 2>/dev/null");
 #endif
 
   // Start streaming
@@ -227,12 +228,12 @@ static void *viewvideo_thread(void *data __attribute__((unused)))
     }
     else if(pid ==0) {
       // We are the child and want to send the image
-      FILE *netcat = popen(nc_cmd, "w");
+      FILE *netcat = popen("nc 192.168.1.3 5000 2>/dev/null", "w");
       if (netcat != NULL) {
         fwrite(jpegbuf, sizeof(uint8_t), size, netcat);
         pclose(netcat); // Ignore output, because it is too much when not connected
       } else {
-        printf("[viewvideo] Failed to open netcat process.\n");
+        printf("[viewvideo] Failed to open netcat process. %d: %s\n", errno, strerror(errno));
       }
 
       // Exit the program since we don't want to continue after transmitting
@@ -307,7 +308,7 @@ void viewvideo_init(void)
 
 #if VIEWVIDEO_USE_NETCAT
   // Create an Netcat receiver file for the streaming
-  sprintf(save_name, "%s/netcat-recv.sh", STRINGIFY(VIEWVIDEO_SHOT_PATH));
+  sprintf(save_name, "/data/video/images/netcat-recv.sh");
   FILE *fp = fopen(save_name, "w");
   if (fp != NULL) {
     fprintf(fp, "i=0\n");
@@ -318,11 +319,13 @@ void viewvideo_init(void)
     fprintf(fp, "\ti=$((i+1))\n");
     fprintf(fp, "done\n");
     fclose(fp);
-  }
+  } else {
+  printf("failed %d: %s\n", errno, strerror(errno));
+}
 #else
   // Create an SDP file for the streaming
   sprintf(save_name, "%s/stream.sdp", STRINGIFY(VIEWVIDEO_SHOT_PATH));
-  FILE *fp = fopen(save_name, "w");
+  FILE *fp = fopen(save_name, "w+");
   if (fp != NULL) {
     fprintf(fp, "v=0\n");
     fprintf(fp, "m=video %d RTP/AVP 26\n", (int)(VIEWVIDEO_PORT_OUT));

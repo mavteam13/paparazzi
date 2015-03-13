@@ -64,7 +64,7 @@
     <!-- Random flags -->
     <define name="__USE_GNU"/>
     <flag name="LDFLAGS" value="lrt"/>
-    <flag name="LDFLAGS" value="static-libgcc"/>
+    <flag name="LDFLAGS" value="static"/>
   </makefile>
   <makefile target="nps">
     <file name="viewvideo_nps.c"/>

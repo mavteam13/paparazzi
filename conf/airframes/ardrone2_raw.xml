@@ -29,7 +29,15 @@
     <load name="gps_ubx_ucenter.xml"/>
     <load name="send_imu_mag_current.xml"/>
     <load name="logger_file.xml"/>
-    <!--load name="video_rtp_stream.xml"/-->
+    <load name="video_rtp_stream.xml"/>
+		<!--define name="VIEWVIDEO_SHOT_PATH" value="/data/video/usb/"/>
+		<define name="VIEWVIDEO_DOWNSIZE_FACTOR" value="1"/>
+		<define name="VIEWVIDEO_QUALITY_FACTOR" value="99"/>
+		<define name="VIEWVIDEO_FPS" value="10"/>
+	 </load-->
+	 <!--load name="video_usb_logger.xml">
+    </load-->
+	 <load name="/../../sw/ext/ardrone2_vision/modules/BottomCamSearch/BottomCamBallSearch.xml"/>
   </modules>
 
   <commands>

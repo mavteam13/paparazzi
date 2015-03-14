@@ -84,32 +84,43 @@
     <exception cond="GpsIsLost()" deroute="land here"/>
       <deroute block="stay_p1"/>
     </block>
-    <block name="wp decision">
-      <!--decide which wp to start at for the loop -->
+    <!--block name="wp decision">
+      <decide which wp to start at for the loop >
       <exception cond="lastwp=1" deroute="route_loop_p2"/>
       <exception cond="lastwp=2" deroute="route_loop_p3"/>
       <exception cond="lastwp=3" deroute="route_loop_p4"/>
       <exception cond="lastwp=4" deroute="route_loop_p5"/>
       <exception cond="lastwp=5" deroute="route_loop_p1"/>
       <deroute block="stereo_foto"/>
-    </block>
-    <block name="stereo_foto">
-    <!--call fun="take_still_foto" (determines if still, takes photo, passes flag to say it is done)-->
-    <call fun="NavSetWaypointHere(WP_foto1)"/>  <!--sets foto1 waypoint at current location-->
-    <!--call fun="offsetwp" (places p_foto1 in current location, places p_foto2 10cm to the right wrt heading)-->
-      <go from="foto1" hmode="route" wp="foto2"/>
-      <stay wp="foto2" until="stage_time>10"/>
-    <!--call fun="take_still_foto" (determines if still, takes photo, passes flag to say it is done)-->
+    </block-->
+    <block name="stereo_foto"> <!--(take a pic @ current, place wp_foto2 ?cm to the right wrt heading)-->
+    <!--call fun="take_still_foto" (determines if still, takes photo)-->
+    <call fun="NavSetWaypointHere(WP_foto1)"/> 
+    <call fun="offset_wp_cm(WP_foto1,WP_foto2,20)"/>
+    <!--call fun="take_still_foto" (determines if still, takes photo)-->
       <stay wp="foto2"/>
     </block>
    <block name="heading_p1">
+      <call fun="NavSetWaypointHere(WP_curr)"/>
       <call fun="nav_set_heading_towards_waypoint(WP_p1)"/>
+      <stay wp="curr"/>
    </block>
    <block name="heading_p2">
+      <call fun="NavSetWaypointHere(WP_curr)"/>
       <call fun="nav_set_heading_towards_waypoint(WP_p2)"/>
-      <deroute block="stay_p1"/>
-    </block>
-    <block name="route_loop_p1">
+      <stay wp="curr"/>
+   </block>
+    <block name="heading_north">
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <call fun="nav_set_heading_deg(0)"/>
+      <stay wp="curr"/>
+   </block>
+    <block name="heading_east">
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <call fun="nav_set_heading_deg(90)"/>
+      <stay wp="curr"/>
+   </block>
+      <block name="route_loop_p1">
       <call fun="nav_set_heading_towards_waypoint(WP_p1)"/>
       <call fun="NavSetWaypointHere(WP_curr)"/>
       <stay wp="curr" until="stage_time>2"/>

@@ -60,6 +60,10 @@
     <block name="Standby" strip_button="Standby" strip_icon="home.png">
       <stay wp="STDBY"/>
     </block>
+    <block name="hover in place">
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr"/>
+    </block>
     <block name="stay_p1">
       <stay wp="p1"/>
     </block>
@@ -81,13 +85,26 @@
       <deroute block="stay_p1"/>
     </block>
    <block name="heading_p1">
+      <call fun="NavSetWaypointHere(WP_curr)"/>
       <call fun="nav_set_heading_towards_waypoint(WP_p1)"/>
+      <stay wp="curr"/>
    </block>
    <block name="heading_p2">
+      <call fun="NavSetWaypointHere(WP_curr)"/>
       <call fun="nav_set_heading_towards_waypoint(WP_p2)"/>
-      <deroute block="stay_p1"/>
-    </block>
-    <block name="route_loop_p1">
+      <stay wp="curr"/>
+   </block>
+    <block name="heading_north">
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <call fun="nav_set_heading_deg(0)"/>
+      <stay wp="curr"/>
+   </block>
+    <block name="heading_east">
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <call fun="nav_set_heading_deg(90)"/>
+      <stay wp="curr"/>
+   </block>
+      <block name="route_loop_p1">
       <call fun="nav_set_heading_towards_waypoint(WP_p1)"/>
       <call fun="NavSetWaypointHere(WP_curr)"/>
       <stay wp="curr" until="stage_time>2"/>

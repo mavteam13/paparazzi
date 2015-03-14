@@ -553,3 +553,21 @@ bool_t nav_set_heading_current(void)
   nav_heading = stateGetNedToBodyEulers_i()->psi;
   return FALSE;
 }
+
+/** jaime code -- set wp2, d cm to the right of wp1 (wrt heading) */
+bool_t offset_wp_cm(uint8_t wp1, uint8_t wp2, uint8_t d){
+
+	int32_t nh = stateGetNedToBodyEulers_i() ->psi;
+	int32_t s_heading, c_heading;
+  PPRZ_ITRIG_SIN(s_heading, nav_heading);
+  PPRZ_ITRIG_COS(c_heading, nav_heading);
+  
+printf("nav_heading= %d \n", nav_heading);
+printf("stateGetNedToBodyEulers_i()->psi = %d \n", nh);
+printf("d= %d \n", d);
+printf("cos(a)= %d \n", c_heading);
+printf("sin(a)= %d \n", s_heading);
+    waypoints[wp2].x = waypoints[wp1].x + 64*d*c_heading/4096/100;
+    waypoints[wp2].y = waypoints[wp1].y + 64*d*-s_heading/4096/100;
+    return FALSE;
+}

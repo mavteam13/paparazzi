@@ -567,7 +567,7 @@ printf("stateGetNedToBodyEulers_i()->psi = %d \n", nh);
 printf("d= %d \n", d);
 printf("cos(a)= %d \n", c_heading);
 printf("sin(a)= %d \n", s_heading);
-    waypoints[wp2].x = waypoints[wp1].x + 64*d*c_heading/4096/100;
-    waypoints[wp2].y = waypoints[wp1].y + 64*d*-s_heading/4096/100;
+    waypoints[wp2].x = waypoints[wp1].x + INT_MULT_RSHIFT(d,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC)/100;
+    waypoints[wp2].y = waypoints[wp1].y + INT_MULT_RSHIFT(d,-s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC)/100;
     return FALSE;
 }

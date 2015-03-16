@@ -73,16 +73,18 @@
     <block name="stay_p3">
       <stay wp="p3"/>
     </block>
-    <block name="go_p2">
-      <call fun="nav_set_heading_deg(90)"/>
-      <go wp="p2"/>
-      <deroute block="stay_p1"/>
-    </block>
     <block name="line_p1_p2">
       <go from="p1" hmode="route" wp="p2"/>
       <stay wp="p2" until="stage_time>10"/>
       <go from="p2" hmode="route" wp="p1"/>
       <deroute block="stay_p1"/>
+    </block>
+    <block name="stereo_foto"> <!--(take a pic @ current, place wp_foto2 ?cm to the right wrt heading)-->
+    <!--call fun="take_still_foto" (determines if still, takes photo)-->
+    <call fun="NavSetWaypointHere(WP_foto1)"/> 
+    <call fun="offset_wp_cm(WP_foto1,WP_foto2,10)"/>
+    <!--call fun="take_still_foto" (determines if still, takes photo)-->
+      <stay wp="foto2"/>
     </block>
    <block name="heading_p1">
       <call fun="NavSetWaypointHere(WP_curr)"/>

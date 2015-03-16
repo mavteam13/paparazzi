@@ -29,8 +29,10 @@
     <load name="gps_ubx_ucenter.xml"/>
     <load name="send_imu_mag_current.xml"/>
     <load name="file_logger.xml"/>
-      <load name="video_rtp_stream.xml">
-    		<define name="VIDEO_DOWNSIZE_FACTOR" value="2" />
+	 <!--load name="../../sw/ext/ardrone2_vision/modules/BottomCamSearch/BottomCamBallSearch.xml"/-->
+    <!--load name="../../sw/ext/ardrone2_vision/modules/FrontCamSearch/FrontCamColorSearch.xml"/-->
+    <load name="vision_team13.xml">
+    		<define name="VIDEO_DOWNSIZE_FACTOR" value="4" />
     		<define name="VIDEO_QUALITY_FACTOR" value="50" />
     		<define name="VIDEO_FPS" value="4." />
 		</load>

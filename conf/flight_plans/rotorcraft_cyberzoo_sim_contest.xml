@@ -13,6 +13,7 @@
     <waypoint name="foto1" x="0.0" y="0.0"/>
     <waypoint name="foto2" x="0.0" y="0.0"/>
     <waypoint name="curr" x="0.0" y="0.0"/>
+    <waypoint name="next" x="0.0" y="0.0"/>
     <waypoint lat="51.990639" lon="4.376807" name="p1"/>
     <waypoint lat="51.990624" lon="4.376767" name="p3"/>
     <waypoint lat="51.990648" lon="4.376745" name="p2"/>
@@ -80,12 +81,20 @@
       <deroute block="stay_p1"/>
     </block>
     <block name="stereo_foto"> <!--(take a pic @ current, place wp_foto2 ?cm to the right wrt heading)-->
-    <!--call fun="take_still_foto" (determines if still, takes photo)-->
-    <call fun="NavSetWaypointHere(WP_foto1)"/> 
-    <call fun="offset_wp_cm(WP_foto1,WP_foto2,10)"/>
-    <!--call fun="take_still_foto" (determines if still, takes photo)-->
+      <!--call fun="take_still_foto" (determines if still, takes photo)-->
+      <call fun="NavSetWaypointHere(WP_foto1)"/> 
+      <call fun="offset_wp_cm(WP_foto1,WP_foto2,10)"/>
+      <!--call fun="take_still_foto" (determines if still, takes photo)-->
       <stay wp="foto2"/>
-    </block>
+   </block>
+   <block name="move_2m">
+      <call fun="NavSetWaypointHere(WP_curr)"/>	
+      <call fun="NavSetWaypointTowardsHeading(WP_curr,45,2,WP_next)"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_next)"/>
+      <stay wp="curr" until="stage_time>2"/>
+      <go from="curr" hmode="route" wp="next" approaching_time="0"/>
+      <stay wp="next"/>
+   </block>
    <block name="heading_p1">
       <call fun="NavSetWaypointHere(WP_curr)"/>
       <call fun="nav_set_heading_towards_waypoint(WP_p1)"/>

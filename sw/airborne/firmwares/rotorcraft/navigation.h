@@ -95,6 +95,7 @@ extern bool_t nav_set_heading_towards(float x, float y);
 extern bool_t nav_set_heading_towards_waypoint(uint8_t wp);
 extern bool_t nav_set_heading_current(void);
 extern bool_t offset_wp_cm(uint8_t wp1, uint8_t wp2, uint8_t d);
+extern bool_t NavSetWaypointTowardsHeading(uint8_t WP_curr, int16_t offset_heading, uint8_t dist, uint8_t WP_next);
 
 /** default approaching_time for a wp */
 #ifndef CARROT

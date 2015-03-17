@@ -1,0 +1,28 @@
+<!DOCTYPE module SYSTEM "module.dtd">
+
+<module name="detect_avoid_mav13">
+  <doc>
+    <description>Detect a specific colour and avoid it or track it</description>
+  </doc>
+  <header>
+    <file name="detect_avoid_mav13.h"/>
+  </header>
+  <init fun="detect_avoid_init()"/>
+  <periodic fun="detect_avoid_run()" freq="10" start="detect_avoid_start()" stop="detect_avoid_stop()" autorun="TRUE"/>
+  <!--datalink message="detect_avoid_message" fun="detect_avoid_callback"/-->
+  <makefile>
+    <file name="detect_avoid_mav13.c"/>
+    <file name="jpeg.c" dir="modules/computer_vision/cv/encoding"/>
+    <file name="rtp.c" dir="modules/computer_vision/cv/encoding"/>
+    <file name="socket.c" dir="modules/computer_vision/lib/udp"/>
+    <file name="video.c" dir="modules/computer_vision/lib/v4l"/>
+    <define name="modules/computer_vision/cv" type="include"/>
+    <define name="modules/computer_vision/lib" type="include"/>
+    <define name="pthread" type="raw"/>
+    <define name="__USE_GNU"/>
+    <flag name="LDFLAGS" value="pthread"/>
+    <flag name="LDFLAGS" value="lrt"/>
+    <flag name="LDFLAGS" value="static"/>
+  </makefile>
+</module>
+

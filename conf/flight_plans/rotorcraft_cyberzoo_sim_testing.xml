@@ -13,6 +13,7 @@
     <waypoint name="foto1" x="0.0" y="0.0"/>
     <waypoint name="foto2" x="0.0" y="0.0"/>
     <waypoint name="curr" x="0.0" y="0.0"/>
+    <waypoint name="deg90" x="0.0" y="0.0"/>
     <waypoint lat="51.990639" lon="4.376807" name="p1"/>
     <waypoint lat="51.990624" lon="4.376767" name="p3"/>
     <waypoint lat="51.990648" lon="4.376745" name="p2"/>
@@ -80,9 +81,19 @@
       <deroute block="stay_p1"/>
     </block>
     <block name="detect_cam_obs">
-    <!--if cam detected then land-->
-    <exception cond="GpsIsLost()" deroute="land here"/>
-      <deroute block="stay_p1"/>
+    <!-- stay in place, if cam detected then do maneuver-->
+    <exception cond="GpsIsLost()" deroute="confirmation maneuver"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr"/>
+    </block>
+    <block name="confirmation maneuver">
+    <!-- yaw 90deg ccw, return to previous heading-->
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <call fun="offset_wp_cm(WP_curr,WP_deg90,100)"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_deg90)"/>
+      <stay wp="curr" until="stage_time>5"/>
+      <call fun="nav_set_heading_deg(0)"/>
+      <stay wp="curr"/>
     </block>
     <!--block name="wp decision">
       <decide which wp to start at for the loop >
@@ -96,7 +107,7 @@
     <block name="stereo_foto"> <!--(take a pic @ current, place wp_foto2 ?cm to the right wrt heading)-->
     <!--call fun="take_still_foto" (determines if still, takes photo)-->
     <call fun="NavSetWaypointHere(WP_foto1)"/> 
-    <call fun="offset_wp_cm(WP_foto1,WP_foto2,20)"/>
+    <call fun="offset_wp_cm(WP_foto1,WP_foto2,10)"/>
     <!--call fun="take_still_foto" (determines if still, takes photo)-->
       <stay wp="foto2"/>
     </block>

@@ -40,6 +40,10 @@
       <corner name="FA1"/>
     </sector>
   </sectors>
+  <exceptions>
+      <!--exception cond="electrical.bat_low" deroute="land here"/-->
+      <!--exception cond="10>PowerVoltage()" deroute="land here"/-->
+  </exceptions>
   <blocks>
     <block name="Wait GPS">
       <call fun="NavKillThrottle()"/>
@@ -88,6 +92,20 @@
       <go from="p2" hmode="route" wp="p1"/>
       <deroute block="stay_p1"/>
     </block>
+    <block name="confirmation maneuver">
+    <!-- yaw 90deg cw-->
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <call fun="offset_wp_cm(WP_curr,WP_deg90,100)"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_deg90)"/>
+      <stay wp="curr"/>
+    </block>
+    <block name="stereo_foto"> <!--(take a pic @ current, place wp_foto2 ?cm to the right wrt heading)-->
+    <!--call fun="take_still_foto" (determines if still, takes photo)-->
+    <call fun="NavSetWaypointHere(WP_foto1)"/> 
+    <call fun="offset_wp_cm(WP_foto1,WP_foto2,10)"/>
+    <!--call fun="take_still_foto" (determines if still, takes photo)-->
+      <stay wp="foto2"/>
+    </block>
    <block name="heading_p1">
       <call fun="NavSetWaypointHere(WP_curr)"/>
       <call fun="nav_set_heading_towards_waypoint(WP_p1)"/>
@@ -110,37 +128,42 @@
    </block>
    <block name="route_loop_p1">
       <call fun="nav_set_heading_towards_waypoint(WP_p1)"/>
-      <stay wp="p5" until="stage_time>5"/>
-      <go from="p5" hmode="route" wp="p1"/>
-      <stay wp="p1" until="stage_time>10"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr" until="stage_time>5"/>
+      <go from="curr" hmode="route" wp="p1" approaching_time="0"/>
+      <stay wp="p1" until="stage_time>7"/>
       <deroute block="route_loop_p2"/>
     </block>
     <block name="route_loop_p2">
       <call fun="nav_set_heading_towards_waypoint(WP_p2)"/>
-      <stay wp="p1" until="stage_time>5"/>
-      <go from="p1" hmode="route" wp="p2"/>
-      <stay wp="p2" until="stage_time>10"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr" until="stage_time>5"/>
+      <go from="curr" hmode="route" wp="p2" approaching_time="0"/>
+      <stay wp="p2" until="stage_time>7"/>
       <deroute block="route_loop_p3"/>
     </block>
     <block name="route_loop_p3">
       <call fun="nav_set_heading_towards_waypoint(WP_p3)"/>
-      <stay wp="p2" until="stage_time>5"/>
-      <go from="p2" hmode="route" wp="p3"/>
-      <stay wp="p3" until="stage_time>10"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr" until="stage_time>5"/>
+      <go from="curr" hmode="route" wp="p3" approaching_time="0"/>
+      <stay wp="p3" until="stage_time>7"/>
       <deroute block="route_loop_p4"/>
     </block>
     <block name="route_loop_p4">
       <call fun="nav_set_heading_towards_waypoint(WP_p4)"/>
-      <stay wp="p3" until="stage_time>5"/>
-      <go from="p3" hmode="route" wp="p4"/>
-      <stay wp="p4" until="stage_time>10"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr" until="stage_time>5"/>
+      <go from="curr" hmode="route" wp="p4" approaching_time="0"/>
+      <stay wp="p4" until="stage_time>7"/>
       <deroute block="route_loop_p5"/>
     </block>
     <block name="route_loop_p5">
       <call fun="nav_set_heading_towards_waypoint(WP_p5)"/>
-      <stay wp="p4" until="stage_time>5"/>
-      <go from="p4" hmode="route" wp="p5"/>
-      <stay wp="p5" until="stage_time>10"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr" until="stage_time>5"/>
+      <go from="curr" hmode="route" wp="p5" approaching_time="0"/>
+      <stay wp="p5" until="stage_time>7"/>
       <deroute block="route_loop_p1"/>
     </block>
     <block name="route_loop_wo_heading">

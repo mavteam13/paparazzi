@@ -85,7 +85,7 @@
 void vision_team13_run(void) {}
 
 // take shot flag
-int viewvideo_shot = 0;
+//int viewvideo_shot = 0;
 
 /////////////////////////////////////////////////////////////////////////
 // COMPUTER VISION THREAD

@@ -63,6 +63,8 @@ int color_count;
 int color_detected = 0;
 int color_tresh = 100;
 
+int mav_heading = 0;
+
 /////////////////////////////////////////////////////////////////////////
 // COMPUTER VISION THREAD
 
@@ -135,15 +137,22 @@ void *computervision_thread_main(void* data)
         color_cr_min,color_cr_max,&result
         );
     
-    /*    
-    if ( color_count > color_tresh )
-        { color_detected=1; }
-    else
-        { color_detected=0; }
-        
-    printf("ColorDetected = %d \n", color_detected);
-    */
+    /*
+    int obstacle[5];
+    for (int ii=0; ii<5; ii++) 
+        { 
+        if (result[ii] > color_tresh)
+            { obstacle[ii] = 1; }
+        else
+            { obstacle[ii] = 0; }
+        };
+    */    
+    
+    int newheading=(result[0]*(-36)+result[1]*(-18)+result[3]*(18)+result[4]*(36))/color_count;
+    mav_heading=newheading;
+    
     printf("ColorDetected L --> R = %d %d %d %d %d \n", result[0], result[1], result[2], result[3], result[4]);
+    printf("Heading = %d \n", mav_heading);
     
 
     // JPEG encode the image:

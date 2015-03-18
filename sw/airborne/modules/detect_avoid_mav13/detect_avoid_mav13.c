@@ -151,8 +151,8 @@ void *computervision_thread_main(void* data)
     float newheading=(result[0]*(-36)+result[1]*(-18)+result[3]*(18)+result[4]*(36))/(color_count+1);
     mav_heading=(int) newheading;
     
-    printf("ColorDetected L --> R = %d %d %d %d %d \n", result[0], result[1], result[2], result[3], result[4]);
-    printf("Heading = %d \n", mav_heading);
+    //printf("ColorDetected L --> R = %d %d %d %d %d \n", result[0], result[1], result[2], result[3], result[4]);
+    //printf("Heading = %d \n", mav_heading);
     
 
     // JPEG encode the image:

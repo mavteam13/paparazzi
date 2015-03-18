@@ -28,6 +28,7 @@
 
   <modules main_freq="512">
     <load name="send_imu_mag_current.xml"/>
+    <load name="detect_avoid_mav13.xml"/>
 <!--    <load name="follow.xml">
       <define name="FOLLOW_AC_ID" value="101"/>
       <define name="FOLLOW_WAYPOINT_ID" value="WP_p1"/>

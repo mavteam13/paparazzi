@@ -1,6 +1,6 @@
 <!DOCTYPE flight_plan SYSTEM "flight_plan.dtd">
 
-<flight_plan alt="150" ground_alt="147" lat0="51.990634" lon0="4.376789" max_dist_from_home="150" name="Rotorcraft Basic (Enac)" security_height="2">
+<flight_plan alt="148.5" ground_alt="147" lat0="51.990634" lon0="4.376789" max_dist_from_home="150" name="Rotorcraft Basic (Enac)" security_height="2">
   <header>
 #include "autopilot.h"
   </header>
@@ -13,6 +13,7 @@
     <waypoint name="foto1" x="0.0" y="0.0"/>
     <waypoint name="foto2" x="0.0" y="0.0"/>
     <waypoint name="curr" x="0.0" y="0.0"/>
+    <waypoint name="next" x="0.0" y="0.0"/>
     <waypoint name="deg90" x="0.0" y="0.0"/>
     <waypoint lat="51.9906414" lon="4.3767839" name="p1"/>
     <waypoint lat="51.9906441" lon="4.3767692" name="p2"/>
@@ -105,7 +106,14 @@
     <call fun="offset_wp_cm(WP_foto1,WP_foto2,10)"/>
     <!--call fun="take_still_foto" (determines if still, takes photo)-->
       <stay wp="foto2"/>
-    </block>
+   </block>
+   <block name="move_2m">
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <call fun="NavSetWaypointTowardsHeading(WP_curr,45,1,WP_next)"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_next)"/>
+      <stay wp="curr" until="stage_time>2"/>
+      <go from="curr" hmode="route" wp="next" approaching_time="0"/><stay wp="next"/>
+   </block>
    <block name="heading_p1">
       <call fun="NavSetWaypointHere(WP_curr)"/>
       <call fun="nav_set_heading_towards_waypoint(WP_p1)"/>

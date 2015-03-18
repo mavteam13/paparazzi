@@ -1,8 +1,11 @@
 <!DOCTYPE flight_plan SYSTEM "flight_plan.dtd">
 
-<flight_plan alt="152" ground_alt="147" lat0="51.990634" lon0="4.376789" max_dist_from_home="150" name="Rotorcraft Basic (Enac)" security_height="2">
+<flight_plan alt="149" ground_alt="147" lat0="51.990634" lon0="4.376789" max_dist_from_home="150" name="Rotorcraft Basic (Enac)" security_height="2">
   <header>
 #include "autopilot.h"
+#include "subsystems/ahrs.h"
+#include "subsystems/electrical.h"
+#include "subsystems/datalink/datalink.h"
   </header>
   <waypoints>
     <waypoint name="HOME" x="0.0" y="0.0"/>
@@ -35,6 +38,12 @@
       <corner name="FA1"/>
     </sector>
   </sectors>
+  <exceptions>
+       <!-- Check if battery voltage is low, then try to go to block Land. This is deemed better than to land at that very spot since that can be above something unknown,
+    is less safe and has less chance of AC recovery. It states battery LOW, not battery critical -->
+    <exception cond="electrical.bat_low" deroute="land here"/>
+    <!--exception cond="electrical.bat_critical && !(nav_block == IndexOfBlock('Setting home location')) && !(nav_block == IndexOfBlock('Holding point')) && !(nav_block == IndexOfBlock('Land')) && !(nav_block == IndexOfBlock('Emergency'))" deroute="Emergency"/-->
+  </exceptions>
   <blocks>
     <block name="Wait GPS">
       <call fun="NavKillThrottle()"/>

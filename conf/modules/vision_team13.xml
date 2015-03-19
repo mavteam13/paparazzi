@@ -27,6 +27,7 @@
 
   <periodic fun="vision_team13_run()" freq="1" start="vision_team13_start()" stop="vision_team13_stop()" autorun="TRUE"/>
   <makefile target="ap">
+	<file name="edgefilter.c"/>
     <file name="vision_team13.c"/>
     <file name="jpeg.c" dir="modules/computer_vision/cv/encoding"/>
     <file name="rtp.c" dir="modules/computer_vision/cv/encoding"/>

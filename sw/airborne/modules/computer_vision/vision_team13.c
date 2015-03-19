@@ -96,131 +96,155 @@ volatile uint8_t computer_vision_thread_command = 0;
 void *computervision_thread_main(void *data);
 void *computervision_thread_main(void *data)
 {
-  // Video Input
-  struct vid_struct vid;
-  vid.device = (char *)"/dev/video1";
-  vid.w = 1280;
-  vid.h = 720;
-  vid.n_buffers = 4;
-  if (video_init(&vid) < 0) {
-    printf("Error initialising video\n");
-    computervision_thread_status = -1;
-    return 0;
-  }
-
-  // Video Grabbing
-  struct img_struct *img_new = video_create_image(&vid);
-
-  // Video Resizing
-  uint8_t quality_factor = VIDEO_QUALITY_FACTOR;
-  uint8_t dri_jpeg_header = 0;
-  int microsleep = (int)(1000000. / VIDEO_FPS);
-
-  struct img_struct small;
-  small.w = vid.w / VIDEO_DOWNSIZE_FACTOR;
-  small.h = vid.h / VIDEO_DOWNSIZE_FACTOR;
-  small.buf = (uint8_t *)malloc(small.w * small.h * 2);
-
-  // Video Compression
-  uint8_t *jpegbuf = (uint8_t *)malloc(vid.h * vid.w * 2);
-
-  // Network Transmit
-  struct UdpSocket *vsock;
-  vsock = udp_socket(VIDEO_SOCK_IP, VIDEO_SOCK_OUT, VIDEO_SOCK_IN, FMS_BROADCAST);
-
-  // Create SPD file and make folder if necessary
-  FILE *sdp;
-  if (system("mkdir -p /data/video/sdp") == 0) {
-    sdp = fopen("/data/video/sdp/x86_config-mjpeg.sdp", "w");
-    if (sdp != NULL) {
-      fprintf(sdp, "v=0\n");
-      fprintf(sdp, "m=video %d RTP/AVP 26\n", (int)(VIDEO_SOCK_OUT));
-      fprintf(sdp, "c=IN IP4 0.0.0.0");
-      fclose(sdp);
+    // Video Input
+    struct vid_struct vid;
+    vid.device = (char *)"/dev/video1";
+    vid.w = 1280;
+    vid.h = 720;
+    vid.n_buffers = 4;
+    if (video_init(&vid) < 0) {
+        printf("Error initialising video\n");
+        computervision_thread_status = -1;
+        return 0;
     }
-  }
 
-  // file index (search from 0)
-  int file_index = 0;
+    // Video Grabbing
+    struct img_struct *img_new = video_create_image(&vid);
 
-  // time
-  struct timeval last_time;
-  gettimeofday(&last_time, NULL);
+    // Video Resizing
+    uint8_t quality_factor = VIDEO_QUALITY_FACTOR;
+    uint8_t dri_jpeg_header = 0;
+    int microsleep = (int)(1000000. / VIDEO_FPS);
 
-  while (computer_vision_thread_command > 0) {
-    // compute usleep to have a more stable frame rate
-    struct timeval time;
-    gettimeofday(&time, NULL);
-    int dt = (int)(time.tv_sec - last_time.tv_sec) * 1000000 + (int)(time.tv_usec - last_time.tv_usec);
-    if (dt < microsleep) { usleep(microsleep - dt); }
-    last_time = time;
-
-    // Grab new frame
-    video_grab_image(&vid, img_new);
+    struct img_struct small;
+    small.w = vid.w / VIDEO_DOWNSIZE_FACTOR;
+    small.h = vid.h / VIDEO_DOWNSIZE_FACTOR;
+    small.buf = (uint8_t *)malloc(small.w * small.h * 2);
 
 
+    struct img_struct small_blur;
+    small_blur.w = vid.w / VIDEO_DOWNSIZE_FACTOR;
+    small_blur.h = vid.h / VIDEO_DOWNSIZE_FACTOR;
+    small_blur.buf = (uint8_t *)malloc(small_blur.w *small_blur.h * 2);
 
-    // Resize
-    resize_uyuv(img_new, &small, VIDEO_DOWNSIZE_FACTOR);
+    struct img_struct small_prev;
+    small_prev.w = vid.w / VIDEO_DOWNSIZE_FACTOR;
+    small_prev.h = vid.h / VIDEO_DOWNSIZE_FACTOR;
+    small_prev.buf = (uint8_t *)malloc(small_prev.w *small_prev.h * 2);
 
-    //color pick
-    uint8_t color_lum_min = 105;
-	uint8_t color_lum_max = 205;
-	uint8_t color_cb_min  = 52;
-	uint8_t color_cb_max  = 140;
-	uint8_t color_cr_min  = 180;
-	uint8_t color_cr_max  = 255;
+    struct img_struct small_diff;
+    small_diff.w = vid.w / VIDEO_DOWNSIZE_FACTOR;
+    small_diff.h = vid.h / VIDEO_DOWNSIZE_FACTOR;
+    small_diff.buf = (uint8_t *)malloc(small_diff.w *small_diff.h * 2);
+
+    // Video Compression
+    uint8_t *jpegbuf = (uint8_t *)malloc(vid.h * vid.w * 2);
+
+    // Network Transmit
+    struct UdpSocket *vsock;
+    vsock = udp_socket(VIDEO_SOCK_IP, VIDEO_SOCK_OUT, VIDEO_SOCK_IN, FMS_BROADCAST);
+
+    // Create SPD file and make folder if necessary
+    FILE *sdp;
+    if (system("mkdir -p /data/video/sdp") == 0) {
+        sdp = fopen("/data/video/sdp/x86_config-mjpeg.sdp", "w");
+        if (sdp != NULL) {
+            fprintf(sdp, "v=0\n");
+            fprintf(sdp, "m=video %d RTP/AVP 26\n", (int)(VIDEO_SOCK_OUT));
+            fprintf(sdp, "c=IN IP4 0.0.0.0");
+            fclose(sdp);
+        }
+    }
+
+    // file index (search from 0)
+    int file_index = 0;
+
+    // time
+    struct timeval last_time;
+    gettimeofday(&last_time, NULL);
+
+    while (computer_vision_thread_command > 0) {
+        // compute usleep to have a more stable frame rate
+        struct timeval time;
+        gettimeofday(&time, NULL);
+        int dt = (int)(time.tv_sec - last_time.tv_sec) * 1000000 + (int)(time.tv_usec - last_time.tv_usec);
+        if (dt < microsleep) { usleep(microsleep - dt); }
+        last_time = time;
+
+        // Grab new frame
+        video_grab_image(&vid, img_new);
 
 
-    colorfilt_uyvy(&small,&small,
-        color_lum_min,color_lum_max,
-        color_cb_min,color_cb_max,
-        color_cr_min,color_cr_max
-        );
+        memcpy(small_prev.buf,small_blur.buf,small.h*small.w*2);
 
-    // JPEG encode the image:
-    uint32_t image_format = FOUR_TWO_TWO;  // format (in jpeg.h)
-    uint8_t *end = encode_image(small.buf, jpegbuf, quality_factor, image_format, small.w, small.h, dri_jpeg_header);
-    uint32_t size = end - (jpegbuf);
+        // Resize
+        resize_uyuv(img_new, &small, VIDEO_DOWNSIZE_FACTOR);
 
-    // Send image with RTP
-    printf("Sending an image ...%u\n", size);
-    send_rtp_frame(
-      vsock,            // UDP
-      jpegbuf, size,    // JPEG
-      small.w, small.h, // Img Size
-      0,                // Format 422
-      quality_factor,   // Jpeg-Quality
-      dri_jpeg_header,  // DRI Header
-      1                 // 90kHz time increment
-    );
-    // Extra note: when the time increment is set to 0,
-    // it is automaticaly calculated by the send_rtp_frame function
-    // based on gettimeofday value. This seems to introduce some lag or jitter.
-    // An other way is to compute the time increment and set the correct value.
-    // It seems that a lower value is also working (when the frame is received
-    // the timestamp is always "late" so the frame is displayed immediately).
-    // Here, we set the time increment to the lowest possible value
-    // (1 = 1/90000 s) which is probably stupid but is actually working.
-  }
-  printf("Thread Closed\n");
-  video_close(&vid);
-  computervision_thread_status = -100;
-  return 0;
+        // image filters
+        blur_filter(&small,&small_blur);
+
+        image_difference(&small_blur,&small_prev,&small_diff);
+
+
+
+        //color pick
+        uint8_t color_lum_min = 105;
+        uint8_t color_lum_max = 205;
+        uint8_t color_cb_min  = 52;
+        uint8_t color_cb_max  = 140;
+        uint8_t color_cr_min  = 180;
+        uint8_t color_cr_max  = 255;
+
+
+        colorfilt_uyvy(&small,&small,
+                       color_lum_min,color_lum_max,
+                       color_cb_min,color_cb_max,
+                       color_cr_min,color_cr_max
+                       );
+
+        // JPEG encode the image:
+        uint32_t image_format = FOUR_TWO_TWO;  // format (in jpeg.h)
+        uint8_t *end = encode_image(small.buf, jpegbuf, quality_factor, image_format, small.w, small.h, dri_jpeg_header);
+        uint32_t size = end - (jpegbuf);
+
+        // Send image with RTP
+        printf("Sending an image ...%u\n", size);
+        send_rtp_frame(
+                    vsock,            // UDP
+                    jpegbuf, size,    // JPEG
+                    small.w, small.h, // Img Size
+                    0,                // Format 422
+                    quality_factor,   // Jpeg-Quality
+                    dri_jpeg_header,  // DRI Header
+                    1                 // 90kHz time increment
+                    );
+        // Extra note: when the time increment is set to 0,
+        // it is automaticaly calculated by the send_rtp_frame function
+        // based on gettimeofday value. This seems to introduce some lag or jitter.
+        // An other way is to compute the time increment and set the correct value.
+        // It seems that a lower value is also working (when the frame is received
+        // the timestamp is always "late" so the frame is displayed immediately).
+        // Here, we set the time increment to the lowest possible value
+        // (1 = 1/90000 s) which is probably stupid but is actually working.
+    }
+    printf("Thread Closed\n");
+    video_close(&vid);
+    computervision_thread_status = -100;
+    return 0;
 }
 
 void vision_team13_start(void)
 {
-  computer_vision_thread_command = 1;
-  int rc = pthread_create(&computervision_thread, NULL, computervision_thread_main, NULL);
-  if (rc) {
-    printf("ctl_Init: Return code from pthread_create(mot_thread) is %d\n", rc);
-  }
+    computer_vision_thread_command = 1;
+    int rc = pthread_create(&computervision_thread, NULL, computervision_thread_main, NULL);
+    if (rc) {
+        printf("ctl_Init: Return code from pthread_create(mot_thread) is %d\n", rc);
+    }
 }
 
 void vision_team13_stop(void)
 {
-  computer_vision_thread_command = 0;
+    computer_vision_thread_command = 0;
 }
 
 

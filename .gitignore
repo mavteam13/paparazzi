@@ -174,3 +174,5 @@ tests/results/*
 
 *.dSYM
 
+*.creator.user
+

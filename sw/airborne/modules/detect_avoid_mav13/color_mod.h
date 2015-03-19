@@ -92,8 +92,8 @@ inline int colorfilt_uyvy(struct img_struct* input, struct img_struct* output, u
 }
 
 
-inline int colorfilt_uyvy_mod(struct img_struct* input, struct img_struct* output, uint8_t y_m, uint8_t y_M, uint8_t u_m, uint8_t u_M, uint8_t v_m, uint8_t v_M, int* counter);
-inline int colorfilt_uyvy_mod(struct img_struct* input, struct img_struct* output, uint8_t y_m, uint8_t y_M, uint8_t u_m, uint8_t u_M, uint8_t v_m, uint8_t v_M, int* counter)
+inline int colorfilt_uyvy_mod(struct img_struct* input, struct img_struct* output, uint8_t y_m, uint8_t y_M, uint8_t u_m, uint8_t u_M, uint8_t v_m, uint8_t v_M, int* counter, int N);
+inline int colorfilt_uyvy_mod(struct img_struct* input, struct img_struct* output, uint8_t y_m, uint8_t y_M, uint8_t u_m, uint8_t u_M, uint8_t v_m, uint8_t v_M, int* counter, int N)
 {
   uint8_t *source = input->buf;
   uint8_t *dest = output->buf;
@@ -118,16 +118,14 @@ inline int colorfilt_uyvy_mod(struct img_struct* input, struct img_struct* outpu
         
         cnt_total++;
         
-        if (x<output->w/5)
-        { cnt[0]=cnt[0]+1;}
-        else if (x<output->w*2/5) 
-        { cnt[1]=cnt[1]+1;}
-        else if (x<output->w*3/5) 
-        { cnt[2]=cnt[2]+1;}
-        else if (x<output->w*4/5) 
-        { cnt[3]=cnt[3]+1;}
-        else
-        { cnt[4]=cnt[4]+1;}
+       for ( int j=0; j<N; j++ )
+            {
+            if ( x < output->w*(j+1)/5 )
+                {
+                cnt[j]=cnt[j]+1; 
+                break; 
+                }
+            }
         
         // UYVY
         dest[0] = 64;        // U

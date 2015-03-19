@@ -47,7 +47,8 @@ extern uint8_t color_cr_max;
 extern int color_count;
 extern int color_detected;
 
-extern int mav_heading;
+extern int obstacle_heading;
+extern int safe_heading;
 
 #endif
 

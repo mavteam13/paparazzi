@@ -25,23 +25,23 @@
  
  
  
- // For sending data: uint32 is atomic --> can be read within one clock tic
+// Remark for sending data: uint32 is atomic --> can be read within one clock tic
  
 
 // own header file
 #include "modules/detect_avoid_mav13/detect_avoid_mav13.h"
-
 #include "stdio.h"
-
-// UDP RTP Images
-#include "modules/computer_vision/lib/udp/socket.h"
-
-// Threaded computer vision
-#include <pthread.h>
+#include "string.h"
 
 
 ////////////////////////////////////////////////////////////////////////
+
+// obstacle detection and safe heading estimation based on color filtering
+#include "detect_obstacle.h"
+
 // Color filter settings - YCbCr color space
+#include "color_mod.h"
+
 // orange: Cr 1 & Cb -1
 // light green: Cr -1 & Cb -1
 // magenta: Cr 1 & Cb 1
@@ -61,9 +61,9 @@ uint8_t color_cr_max  = 200; // 255
 int color_count;
 
 int color_detected = 0;
-int color_tresh = 100;
+int color_tresh = 80;
 
-int mav_heading = 0;
+int safe_heading = 0;
 
 /////////////////////////////////////////////////////////////////////////
 // COMPUTER VISION THREAD
@@ -71,13 +71,15 @@ int mav_heading = 0;
 // Video
 #include "modules/computer_vision/lib/v4l/video.h"
 #include "modules/computer_vision/cv/resize.h"
-#include "color_mod.h"
 
 #include "modules/computer_vision/cv/encoding/jpeg.h"
 #include "modules/computer_vision/cv/encoding/rtp.h"
 
-#include <stdio.h>
-#include <string.h>
+// UDP RTP Images
+#include "modules/computer_vision/lib/udp/socket.h"
+
+// Threaded computer vision
+#include <pthread.h>
 
 pthread_t computervision_thread;
 volatile uint8_t computervision_thread_status = 0;
@@ -126,35 +128,30 @@ void *computervision_thread_main(void* data)
     // Resize: device by 4
     resize_uyuv(img_new, &small, DOWNSIZE_FACTOR);
     
-    // Color filtering - YCbCr color space 
     
-    int result[5];
-    for (int ii=0; ii<5; ii++) { result[ii] = 0; };
+    ////////////////////////////////////////////////////////////////////////
+    // Obstacle detection by color filtering
+
+    // filter selected colors and sort the filtered pixels in n segments    
+    
+    // int n_segments=5; // max 10 !!! (or change allocation below and in detect_obstacle.h)
+    int result[5] = { 0 }; 
     
     color_count = colorfilt_uyvy_mod(&small,&small,
         color_lum_min,color_lum_max,
         color_cb_min,color_cb_max,
-        color_cr_min,color_cr_max,&result
-        );
-    
-    /*
-    int obstacle[5];
-    for (int ii=0; ii<5; ii++) 
-        { 
-        if (result[ii] > color_tresh)
-            { obstacle[ii] = 1; }
-        else
-            { obstacle[ii] = 0; }
-        };
-    */    
-    
-    float newheading=(result[0]*(-36)+result[1]*(-18)+result[3]*(18)+result[4]*(36))/(color_count+1);
-    mav_heading=(int) newheading;
-    
-    //printf("ColorDetected L --> R = %d %d %d %d %d \n", result[0], result[1], result[2], result[3], result[4]);
-    //printf("Heading = %d \n", mav_heading);
-    
+        color_cr_min,color_cr_max,
+        &result, 5);
 
+    printf("ColorDetected L --> R = %d %d %d %d %d \n", result[0], result[1], result[2], result[3], result[4]);
+
+    
+    // compute safe heading based on above data    
+    safe_heading=detectobst(color_count, &result, color_tresh, 5);
+
+    //printf("Safe heading = %d \n", safe_heading);
+    //////////////////////////////////////////////////////////////////////
+    
     // JPEG encode the image:
     uint32_t image_format = FOUR_TWO_TWO;  // format (in jpeg.h)
     uint8_t* end = encode_image (small.buf, jpegbuf, quality_factor, image_format, small.w, small.h, dri_jpeg_header);

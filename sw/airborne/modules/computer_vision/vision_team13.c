@@ -183,12 +183,12 @@ void *computervision_thread_main(void *data)
         // image filters
         blur_filter(&small,&small_blur);
 
-        image_difference(&small_blur,&small_prev,&small_diff);
+        image_difference(&small_blur,&small_prev,&small_diff,1);
 
 
 
         //color pick
-        uint8_t color_lum_min = 105;
+        /*uint8_t color_lum_min = 105;
         uint8_t color_lum_max = 205;
         uint8_t color_cb_min  = 52;
         uint8_t color_cb_max  = 140;
@@ -200,15 +200,15 @@ void *computervision_thread_main(void *data)
                        color_lum_min,color_lum_max,
                        color_cb_min,color_cb_max,
                        color_cr_min,color_cr_max
-                       );
+                       );*/
 
         // JPEG encode the image:
         uint32_t image_format = FOUR_TWO_TWO;  // format (in jpeg.h)
-        uint8_t *end = encode_image(small.buf, jpegbuf, quality_factor, image_format, small.w, small.h, dri_jpeg_header);
+        uint8_t *end = encode_image(small_diff.buf, jpegbuf, quality_factor, image_format, small.w, small.h, dri_jpeg_header);
         uint32_t size = end - (jpegbuf);
 
         // Send image with RTP
-        printf("Sending an image ...%u\n", size);
+       // printf("Sending an image ...%u\n", size);
         send_rtp_frame(
                     vsock,            // UDP
                     jpegbuf, size,    // JPEG
@@ -216,7 +216,7 @@ void *computervision_thread_main(void *data)
                     0,                // Format 422
                     quality_factor,   // Jpeg-Quality
                     dri_jpeg_header,  // DRI Header
-                    1                 // 90kHz time increment
+                    0                // 90kHz time increment
                     );
         // Extra note: when the time increment is set to 0,
         // it is automaticaly calculated by the send_rtp_frame function

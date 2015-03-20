@@ -44,10 +44,11 @@ extern uint8_t color_cb_max;
 extern uint8_t color_cr_min;
 extern uint8_t color_cr_max;
 
-extern int color_count;
-extern int color_detected;
+extern int color_tresh;
+// extern int color_count;
+// extern int color_detected;
 
-extern int obstacle_heading;
+// extern int obstacle_heading;
 extern int safe_heading;
 
 #endif

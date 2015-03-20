@@ -1,0 +1,17 @@
+<!DOCTYPE settings SYSTEM "settings.dtd">
+
+<settings>
+  <dl_settings>
+
+    <dl_settings NAME="ColorBasedDetection">
+       <dl_setting var="color_tresh" min="40" step="20" max="1500" module="detect_avoid_mav13/detect_avoid_mav13" shortname="Threshold" />
+       <dl_setting var="color_lum_min" min="0" step="1" max="255" shortname="Lum_Min" />
+       <dl_setting var="color_lum_max" min="0" step="1" max="255" shortname="Lum_Max" />
+       <dl_setting var="color_cb_min" min="0" step="1" max="255" shortname="CB_Min" />
+       <dl_setting var="color_cb_max" min="0" step="1" max="255" shortname="CB_Max" />
+       <dl_setting var="color_cr_min" min="0" step="1" max="255" shortname="CR_Min" />
+       <dl_setting var="color_cr_max" min="0" step="1" max="255" shortname="CR_Max" />
+    </dl_settings>
+
+  </dl_settings>
+</settings>

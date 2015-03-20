@@ -61,7 +61,7 @@ uint8_t color_cr_max  = 200; // 255
 int color_count;
 
 int color_detected = 0;
-int color_tresh = 80;
+int color_tresh = 600;
 
 int safe_heading = 0;
 
@@ -134,7 +134,7 @@ void *computervision_thread_main(void* data)
 
     // filter selected colors and sort the filtered pixels in n segments    
     
-    // int n_segments=5; // max 10 !!! (or change allocation below and in detect_obstacle.h)
+    // int n_segments=5; // only 5 is working now !!! (otherwise changes required below, in color_mod.h and in detect_obstacle.h)
     int result[5] = { 0 }; 
     
     color_count = colorfilt_uyvy_mod(&small,&small,
@@ -150,8 +150,13 @@ void *computervision_thread_main(void* data)
     safe_heading=detectobst(color_count, &result, color_tresh, 5);
 
     //printf("Safe heading = %d \n", safe_heading);
+    
     //////////////////////////////////////////////////////////////////////
     
+    // Video transmission
+    
+    
+    /*
     // JPEG encode the image:
     uint32_t image_format = FOUR_TWO_TWO;  // format (in jpeg.h)
     uint8_t* end = encode_image (small.buf, jpegbuf, quality_factor, image_format, small.w, small.h, dri_jpeg_header);
@@ -159,9 +164,6 @@ void *computervision_thread_main(void* data)
 
     //printf("Sending an image ...%u\n",size);
 
-/*
- *
- */
     send_rtp_frame(
         vsock,            // UDP
         jpegbuf,size,     // JPEG
@@ -171,6 +173,8 @@ void *computervision_thread_main(void* data)
         dri_jpeg_header,                // DRI Header
         0              // 90kHz time increment
      );
+     */
+     
   }
   printf("Thread Closed\n");
   video_close(&vid);

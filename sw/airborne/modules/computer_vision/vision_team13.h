@@ -27,8 +27,13 @@
  *
  * Works on Linux platforms
  */
+#include <image.h>
 
 
+
+extern int Gsize;
+extern double sigma;
+extern  int thres;
 
 // Module functions
 extern void vision_team13_run(void);

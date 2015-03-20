@@ -82,6 +82,10 @@
 #define VIDEO_FPS 4.
 #endif
 
+int Gsize=9;
+double sigma=4.0;
+int thres=70;
+
 void vision_team13_run(void) {}
 
 // take shot flag
@@ -96,6 +100,7 @@ volatile uint8_t computer_vision_thread_command = 0;
 void *computervision_thread_main(void *data);
 void *computervision_thread_main(void *data)
 {
+
     // Video Input
     struct vid_struct vid;
     vid.device = (char *)"/dev/video1";
@@ -164,12 +169,16 @@ void *computervision_thread_main(void *data)
     gettimeofday(&last_time, NULL);
 
     while (computer_vision_thread_command > 0) {
+
+
         // compute usleep to have a more stable frame rate
         struct timeval time;
         gettimeofday(&time, NULL);
         int dt = (int)(time.tv_sec - last_time.tv_sec) * 1000000 + (int)(time.tv_usec - last_time.tv_usec);
         if (dt < microsleep) { usleep(microsleep - dt); }
         last_time = time;
+
+
 
         // Grab new frame
         video_grab_image(&vid, img_new);
@@ -181,10 +190,22 @@ void *computervision_thread_main(void *data)
         resize_uyuv(img_new, &small, VIDEO_DOWNSIZE_FACTOR);
 
         // image filters
-        blur_filter(&small,&small_blur);
 
-        image_difference(&small_blur,&small_prev,&small_diff,1);
+        blur_filter(&small,&small_blur,Gsize,sigma);
 
+
+        image_difference(&small_blur,&small_prev,&small_diff,thres);
+
+        uint8_t pxcnt_size=20;
+        uint32_t pxcnt[20]={0};
+
+        pixelcount(&small_diff,&pxcnt,pxcnt_size);
+
+        printf("pixel count is= ");
+           for(uint8_t i=0;i<pxcnt_size-1;i++)
+                printf("%d ",pxcnt[i]);
+
+           printf("\n");
 
 
         //color pick
@@ -204,7 +225,7 @@ void *computervision_thread_main(void *data)
 
         // JPEG encode the image:
         uint32_t image_format = FOUR_TWO_TWO;  // format (in jpeg.h)
-        uint8_t *end = encode_image(small_diff.buf, jpegbuf, quality_factor, image_format, small.w, small.h, dri_jpeg_header);
+        uint8_t *end = encode_image(small_blur.buf, jpegbuf, quality_factor, image_format, small.w, small.h, dri_jpeg_header);
         uint32_t size = end - (jpegbuf);
 
         // Send image with RTP
@@ -226,6 +247,8 @@ void *computervision_thread_main(void *data)
         // the timestamp is always "late" so the frame is displayed immediately).
         // Here, we set the time increment to the lowest possible value
         // (1 = 1/90000 s) which is probably stupid but is actually working.
+       // printf("Does this run?\n ");
+
     }
     printf("Thread Closed\n");
     video_close(&vid);

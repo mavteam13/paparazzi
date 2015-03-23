@@ -559,7 +559,7 @@ bool_t nav_set_heading_current(void)
 /** jaime code -- set wp2, d cm to the right of wp1 (wrt heading) */
 bool_t offset_wp_cm(uint8_t wp1, uint8_t wp2, uint8_t d){
 
-	int32_t nh = stateGetNedToBodyEulers_i() ->psi;
+	/*int32_t nh = stateGetNedToBodyEulers_i() ->psi; */
 	int32_t s_heading, c_heading;
 	
     PPRZ_ITRIG_SIN(s_heading, nav_heading);
@@ -570,9 +570,10 @@ bool_t offset_wp_cm(uint8_t wp1, uint8_t wp2, uint8_t d){
     return FALSE;
 }
 
-/** kevin code -- set next waypoint based on heading (degree) and distance (meters) wrt current waypoint */
+/** kevin code -- set next waypoint based on heading (degree) and distance (meters) wrt current waypoint 
 bool_t NavSetWaypointTowardsHeading(uint8_t curr, int16_t offset_heading, uint8_t dist, uint8_t next){
   int32_t s_heading, c_heading;
+  
   offset_heading=safe_heading;
   offset_heading = INT32_RAD_OF_DEG(offset_heading << (INT32_ANGLE_FRAC));
   printf("nav_heading= %d \n", nav_heading);
@@ -584,5 +585,5 @@ bool_t NavSetWaypointTowardsHeading(uint8_t curr, int16_t offset_heading, uint8_
 
   printf("heading error= %d \n", safe_heading);
   return FALSE;
-}
+}*/
 

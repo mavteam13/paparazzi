@@ -42,8 +42,9 @@
     </sector>
   </sectors>
   <exceptions>
-      <!--exception cond="electrical.bat_low" deroute="land here"/-->
-      <!--exception cond="10>PowerVoltage()" deroute="land here"/-->
+    <!--exception cond="electrical.bat_low" deroute="land here"/-->
+    <!--exception cond="10>PowerVoltage()" deroute="land here"/-->
+    <exception cond="! InsideMyBigGarden(GetPosX(WP_next), GetPosY(WP_next))" deroute="move_global_wp"/>
   </exceptions>
   <blocks>
     <block name="Wait GPS">
@@ -114,6 +115,20 @@
       <stay wp="curr" until="stage_time>2"/>
       <go from="curr" hmode="route" wp="next" approaching_time="0"/><stay wp="next"/>
    </block>
+   <block name="move_global_wp">
+     <call fun="move_global_wp(WP_global)"/>
+     <!--Calls function that changes the global wp to the next in a list of 4 corner wp's--> 
+     <deroute block="move_next_wp"/>
+   </block>
+   <block name="move_next_wp">
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_global)"/>	
+      <!--vision stuff-->
+      <call fun="NavSetWaypointTowardsHeading(WP_curr,1,WP_next)"/>
+      <stay wp="curr" until="stage_time>2"/>
+      <go from="curr" hmode="route" wp="next" approaching_time="0"/><stay wp="next"/>
+      <deroute block="move_next_wp"/>
+   </block>	
    <block name="heading_p1">
       <call fun="NavSetWaypointHere(WP_curr)"/>
       <call fun="nav_set_heading_towards_waypoint(WP_p1)"/>

@@ -33,6 +33,8 @@
 #include "stdio.h"
 #include "string.h"
 
+//#include "navigation.h"
+
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -156,7 +158,7 @@ void *computervision_thread_main(void* data)
     // Video transmission
     
     
-    /*
+    
     // JPEG encode the image:
     uint32_t image_format = FOUR_TWO_TWO;  // format (in jpeg.h)
     uint8_t* end = encode_image (small.buf, jpegbuf, quality_factor, image_format, small.w, small.h, dri_jpeg_header);
@@ -173,7 +175,7 @@ void *computervision_thread_main(void* data)
         dri_jpeg_header,                // DRI Header
         0              // 90kHz time increment
      );
-     */
+    
      
   }
   printf("Thread Closed\n");
@@ -206,7 +208,25 @@ void detect_avoid_stop(void)
 
 //void detect_avoid_callback(void) {}
 
+/////////////////////////////////////////////////////////////////
+// Navigation
 
+/** kevin code -- set next waypoint based on heading (degree) and distance (meters) wrt current waypoint */
+/*
+bool_t NavSetWaypointTowardsHeading(uint8_t curr, int16_t offset_heading, uint8_t dist, uint8_t next){
+  int32_t s_heading, c_heading;
+  offset_heading=safe_heading;
+  offset_heading = INT32_RAD_OF_DEG(offset_heading << (INT32_ANGLE_FRAC));
+  printf("nav_heading= %d \n", nav_heading);
+  printf("offset_heading= %d \n", offset_heading);
+  PPRZ_ITRIG_SIN(s_heading, nav_heading+offset_heading);
+  PPRZ_ITRIG_COS(c_heading, nav_heading+offset_heading);
+  waypoints[next].x = waypoints[curr].x + INT_MULT_RSHIFT(dist,s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC);
+  waypoints[next].y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC);
 
+  printf("heading error= %d \n", safe_heading);
+  return FALSE;
+}
+*/
 
 

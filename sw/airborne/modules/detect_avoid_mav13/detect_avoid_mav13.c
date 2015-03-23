@@ -208,5 +208,34 @@ void detect_avoid_stop(void)
 
 
 
+////////////////////////////////// Nav functions   ///////////////////////////
+
+#include "generated/airframe.h"
+#include <time.h>
+#include <stdlib.h>
+
+#include "messages.h"
+#include "mcu_periph/uart.h"
+#include "subsystems/datalink/downlink.h"
+#include "generated/flight_plan.h" 
+#include "math/pprz_algebra_int.h"
+
+
+bool_t NavSetWaypointTowardsHeading(uint8_t curr, uint8_t dist, uint8_t next){
+  int32_t s_heading, c_heading;
+  int16_t offset_heading;
+  
+  offset_heading = INT32_RAD_OF_DEG(safe_heading << (INT32_ANGLE_FRAC));
+  printf("nav_heading= %d \n", nav_heading);
+  printf("offset_heading= %d \n", offset_heading);
+  PPRZ_ITRIG_SIN(s_heading, nav_heading+offset_heading);
+  PPRZ_ITRIG_COS(c_heading, nav_heading+offset_heading);
+  waypoints[next].x = waypoints[curr].x + INT_MULT_RSHIFT(dist,s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC);
+  waypoints[next].y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC);
+
+  printf("heading error= %d \n", safe_heading);
+  return FALSE;
+}
+
 
 

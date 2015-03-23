@@ -208,15 +208,24 @@ void detect_avoid_stop(void)
 
 //void detect_avoid_callback(void) {}
 
-/////////////////////////////////////////////////////////////////
-// Navigation
+////////////////////////////////// Nav functions   ///////////////////////////
 
-/** kevin code -- set next waypoint based on heading (degree) and distance (meters) wrt current waypoint */
-/*
-bool_t NavSetWaypointTowardsHeading(uint8_t curr, int16_t offset_heading, uint8_t dist, uint8_t next){
+#include "generated/airframe.h"
+#include <time.h>
+#include <stdlib.h>
+
+#include "messages.h"
+#include "mcu_periph/uart.h"
+#include "subsystems/datalink/downlink.h"
+#include "generated/flight_plan.h" 
+#include "math/pprz_algebra_int.h"
+
+
+bool_t NavSetWaypointTowardsHeading(uint8_t curr, uint8_t dist, uint8_t next){
   int32_t s_heading, c_heading;
-  offset_heading=safe_heading;
-  offset_heading = INT32_RAD_OF_DEG(offset_heading << (INT32_ANGLE_FRAC));
+  int16_t offset_heading;
+  
+  offset_heading = INT32_RAD_OF_DEG(safe_heading << (INT32_ANGLE_FRAC));
   printf("nav_heading= %d \n", nav_heading);
   printf("offset_heading= %d \n", offset_heading);
   PPRZ_ITRIG_SIN(s_heading, nav_heading+offset_heading);
@@ -227,6 +236,5 @@ bool_t NavSetWaypointTowardsHeading(uint8_t curr, int16_t offset_heading, uint8_
   printf("heading error= %d \n", safe_heading);
   return FALSE;
 }
-*/
 
 

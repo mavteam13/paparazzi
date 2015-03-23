@@ -53,5 +53,14 @@ extern int color_tresh;
 // extern int obstacle_heading;
 extern int safe_heading;
 
+
+// nav functions
+
+#include "std.h"
+#include "firmwares/rotorcraft/navigation.h"
+extern bool_t NavSetWaypointTowardsHeading(uint8_t curr, uint8_t dist, uint8_t next);
+
+
+
 #endif
 

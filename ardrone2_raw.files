@@ -714,6 +714,8 @@ sw/airborne/modules/computer_vision/lib/udp/socket.c
 sw/airborne/modules/computer_vision/lib/udp/socket.h
 sw/airborne/modules/computer_vision/lib/v4l/video.c
 sw/airborne/modules/computer_vision/lib/v4l/video.h
+sw/airborne/modules/computer_vision/edgefilter.c
+sw/airborne/modules/computer_vision/edgefilter.h
 sw/airborne/modules/computer_vision/image_nc_send.c
 sw/airborne/modules/computer_vision/image_nc_send.h
 sw/airborne/modules/computer_vision/image_nc_send_nps.c
@@ -742,6 +744,11 @@ sw/airborne/modules/demo_module/demo_module.c
 sw/airborne/modules/demo_module/demo_module.h
 sw/airborne/modules/deploy_sonar_buoy/deploy_sonar_buoy.c
 sw/airborne/modules/deploy_sonar_buoy/deploy_sonar_buoy.h
+sw/airborne/modules/detect_avoid_mav13/not used/detect_color.h
+sw/airborne/modules/detect_avoid_mav13/color_mod.h
+sw/airborne/modules/detect_avoid_mav13/detect_avoid_mav13.c
+sw/airborne/modules/detect_avoid_mav13/detect_avoid_mav13.h
+sw/airborne/modules/detect_avoid_mav13/detect_obstacle.h
 sw/airborne/modules/digital_cam/catia/catia.c
 sw/airborne/modules/digital_cam/catia/chdk_pipe.c
 sw/airborne/modules/digital_cam/catia/chdk_pipe.h

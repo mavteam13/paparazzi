@@ -84,6 +84,8 @@ sw/airborne/modules/core
 sw/airborne/modules/datalink
 sw/airborne/modules/demo_module
 sw/airborne/modules/deploy_sonar_buoy
+sw/airborne/modules/detect_avoid_mav13
+sw/airborne/modules/detect_avoid_mav13/not used
 sw/airborne/modules/digital_cam
 sw/airborne/modules/digital_cam/catia
 sw/airborne/modules/display

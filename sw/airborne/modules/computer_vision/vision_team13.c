@@ -30,6 +30,8 @@
 
 // Own header
 #include "modules/computer_vision/vision_team13.h"
+#include "modules/detect_avoid_mav13/detect_obstacle.h"
+
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -82,8 +84,8 @@
 #define VIDEO_FPS 4.
 #endif
 
-int Gsize=9;
-double sigma=4.0;
+int Gsize=3;
+double sigma=1.0;
 int thres=70;
 
 void vision_team13_run(void) {}
@@ -126,11 +128,21 @@ void *computervision_thread_main(void *data)
     small.h = vid.h / VIDEO_DOWNSIZE_FACTOR;
     small.buf = (uint8_t *)malloc(small.w * small.h * 2);
 
+    struct img_struct small_edge;
+    small_edge.w = vid.w / VIDEO_DOWNSIZE_FACTOR;
+    small_edge.h = vid.h / VIDEO_DOWNSIZE_FACTOR;
+    small_edge.buf = (uint8_t *)malloc(small_edge.w *small_edge.h * 2);
 
     struct img_struct small_blur;
     small_blur.w = vid.w / VIDEO_DOWNSIZE_FACTOR;
     small_blur.h = vid.h / VIDEO_DOWNSIZE_FACTOR;
     small_blur.buf = (uint8_t *)malloc(small_blur.w *small_blur.h * 2);
+
+    struct img_struct small_flow;
+    small_flow.w = vid.w / VIDEO_DOWNSIZE_FACTOR;
+    small_flow.h = vid.h / VIDEO_DOWNSIZE_FACTOR;
+    small_flow.buf = (uint8_t *)malloc(small_flow.w *small_flow.h * 2);
+
 
     struct img_struct small_prev;
     small_prev.w = vid.w / VIDEO_DOWNSIZE_FACTOR;
@@ -183,12 +195,56 @@ void *computervision_thread_main(void *data)
         // Grab new frame
         video_grab_image(&vid, img_new);
 
-
-        memcpy(small_prev.buf,small_blur.buf,small.h*small.w*2);
+        memcpy(small_prev.buf,small_flow.buf,small.h*small.w*2);
 
         // Resize
         resize_uyuv(img_new, &small, VIDEO_DOWNSIZE_FACTOR);
 
+
+        sobel_edge_filter(&small,&small_edge);
+
+        blur_filter(&small_edge,&small_blur,Gsize,sigma);
+
+
+        image_flow(&small_blur,&small_prev,&small_flow,0.93);
+
+        uint8_t pxcnt_size=5;
+        uint32_t pxcnt[5]={0};
+
+        int pxcnt_tot;
+        pxcnt_tot=pixelratio(&small_flow,pxcnt,pxcnt_size);
+
+        uint32_t pxcnt_stat[5]={0};
+
+        int pxcnt_tot_stat;
+        pxcnt_tot_stat=pixelratio(&small_blur,pxcnt_stat,pxcnt_size);
+
+
+        /*printf("%d, %d, %d, %d, %d\n", (100*pxcnt[0])/pxcnt_tot-(100*pxcnt_stat[0])/pxcnt_tot_stat,
+                (100*pxcnt[1])/pxcnt_tot-(100*pxcnt_stat[1])/pxcnt_tot_stat,(100*pxcnt[2])/pxcnt_tot-(100*pxcnt_stat[2])/pxcnt_tot_stat,
+                (100*pxcnt[3])/pxcnt_tot-(100*pxcnt_stat[3])/pxcnt_tot_stat,(100*pxcnt[4])/pxcnt_tot-(100*pxcnt_stat[4])/pxcnt_tot_stat);
+*/
+        /*printf("%d, %d, %d, %d, %d\n", (100*pxcnt[0])/pxcnt_tot,
+                (100*pxcnt[1])/pxcnt_tot,(100*pxcnt[2])/pxcnt_tot,
+                (100*pxcnt[3])/pxcnt_tot,(100*pxcnt[4])/pxcnt_tot);
+*/
+       /* printf("%d, %d, %d, %d, %d\n", (100*(pxcnt[0]-pxcnt_stat[0]))/pxcnt_stat[0],
+                (100*(pxcnt[1]-pxcnt_stat[1]))/pxcnt_stat[1],(100*(pxcnt[2]-pxcnt_stat[2]))/pxcnt_stat[2],
+                (100*(pxcnt[3]-pxcnt_stat[3]))/pxcnt_stat[3],(100*(pxcnt[4]-pxcnt_stat[4]))/pxcnt_stat[4]);*/
+        double perc_flow,perc_stat,perc_compare;
+        for(int i=0;i<5;i++){
+            perc_flow=(double)pxcnt[i]/(double)pxcnt_tot;
+            perc_stat=(double)pxcnt_stat[i]/(double)pxcnt_tot_stat;
+            perc_compare=(double)pxcnt[i]*(1-perc_stat);
+            printf("%f, ",perc_flow);
+
+        }
+        printf("\n");
+       /* printf("%d, %d, %d, %d, %d\n", (100*pxcnt[0])/pxcnt_tot,
+                (100*pxcnt[1])/pxcnt_tot,(100*pxcnt[2])/pxcnt_tot,
+                (100*pxcnt[3])/pxcnt_tot,(100*pxcnt[4])/pxcnt_tot);*/
+
+        /*
         // image filters
 
         blur_filter(&small,&small_blur,Gsize,sigma);
@@ -196,16 +252,15 @@ void *computervision_thread_main(void *data)
 
         image_difference(&small_blur,&small_prev,&small_diff,thres);
 
-        uint8_t pxcnt_size=20;
-        uint32_t pxcnt[20]={0};
+        uint8_t pxcnt_size=5;
+        uint32_t pxcnt[5]={0};
 
-        pixelcount(&small_diff,&pxcnt,pxcnt_size);
+        int pxcnt_tot;
+                pxcnt_tot=pixelcount(&small_diff,&pxcnt,pxcnt_size);
 
-        printf("pixel count is= ");
-           for(uint8_t i=0;i<pxcnt_size-1;i++)
-                printf("%d ",pxcnt[i]);
-
-           printf("\n");
+        int color_tresh=600;
+         detectobst(pxcnt_tot, pxcnt, color_tresh, 5);
+        */
 
 
         //color pick
@@ -225,11 +280,11 @@ void *computervision_thread_main(void *data)
 
         // JPEG encode the image:
         uint32_t image_format = FOUR_TWO_TWO;  // format (in jpeg.h)
-        uint8_t *end = encode_image(small_blur.buf, jpegbuf, quality_factor, image_format, small.w, small.h, dri_jpeg_header);
+        uint8_t *end = encode_image(small_flow.buf, jpegbuf, quality_factor, image_format, small.w, small.h, dri_jpeg_header);
         uint32_t size = end - (jpegbuf);
 
         // Send image with RTP
-       // printf("Sending an image ...%u\n", size);
+        // printf("Sending an image ...%u\n", size);
         send_rtp_frame(
                     vsock,            // UDP
                     jpegbuf, size,    // JPEG
@@ -247,7 +302,7 @@ void *computervision_thread_main(void *data)
         // the timestamp is always "late" so the frame is displayed immediately).
         // Here, we set the time increment to the lowest possible value
         // (1 = 1/90000 s) which is probably stupid but is actually working.
-       // printf("Does this run?\n ");
+        // printf("Does this run?\n ");
 
     }
     printf("Thread Closed\n");

@@ -102,6 +102,7 @@ sw/airborne/modules/ins
 sw/airborne/modules/led_safety_status
 sw/airborne/modules/light
 sw/airborne/modules/loggers
+sw/airborne/modules/mavteam13
 sw/airborne/modules/max3100
 sw/airborne/modules/max7456
 sw/airborne/modules/meteo
@@ -508,5 +509,4 @@ sw/logalizer
 sw/simulator
 sw/simulator/nps
 tests/math
-var/aircrafts/ardrone2_raw/ap/generated
 var/include

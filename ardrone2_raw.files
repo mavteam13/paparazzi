@@ -831,6 +831,8 @@ sw/airborne/modules/loggers/high_speed_logger_direct_memory.c
 sw/airborne/modules/loggers/high_speed_logger_direct_memory.h
 sw/airborne/modules/loggers/high_speed_logger_spi_link.c
 sw/airborne/modules/loggers/high_speed_logger_spi_link.h
+sw/airborne/modules/mavteam13/nav_team13.c
+sw/airborne/modules/mavteam13/nav_team13.h
 sw/airborne/modules/max3100/max3100_hw.c
 sw/airborne/modules/max3100/max3100_hw.h
 sw/airborne/modules/max7456/max7456.c
@@ -3889,12 +3891,6 @@ tests/math/tap.h
 tests/math/test_pprz_geodetic.c
 tests/math/test_pprz_math.c
 tests/math/test_state_interface.c
-var/aircrafts/ardrone2_raw/ap/generated/airframe.h
-var/aircrafts/ardrone2_raw/ap/generated/flight_plan.h
-var/aircrafts/ardrone2_raw/ap/generated/modules.h
-var/aircrafts/ardrone2_raw/ap/generated/periodic_telemetry.h
-var/aircrafts/ardrone2_raw/ap/generated/radio.h
-var/aircrafts/ardrone2_raw/ap/generated/settings.h
 var/include/abi_messages.h
 var/include/dl_protocol.h
 var/include/messages.h

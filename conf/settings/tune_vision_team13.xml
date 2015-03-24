@@ -7,6 +7,7 @@
        <dl_setting var="Gsize" min="3" step="2" max="15" module="computer_vision/vision_team13" shortname="gsize" />
        <dl_setting var="sigma" min="1.0" step="1.0" max="8" shortname="sigma" />
        <dl_setting var="thres"  min="0" step="1" max="255" shortname="threshold" />
+       <dl_setting var="stereo_nav_status"  min="0" step="1" max="3" shortname="stereo_nav_status" />
     </dl_settings>
 
   </dl_settings>

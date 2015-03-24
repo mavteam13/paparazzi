@@ -208,7 +208,7 @@ void detect_avoid_stop(void)
 
 //void detect_avoid_callback(void) {}
 
-////////////////////////////////// Nav functions   ///////////////////////////
+/*///////////////////////////////// Nav functions   ///////////////////////////
 
 #include "generated/airframe.h"
 #include <time.h>
@@ -236,5 +236,6 @@ bool_t NavSetWaypointTowardsHeading(uint8_t curr, uint8_t dist, uint8_t next){
   printf("heading error= %d \n", safe_heading);
   return FALSE;
 }
+*/
 
 

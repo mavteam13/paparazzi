@@ -29,7 +29,7 @@
     <load name="gps_ubx_ucenter.xml"/>
     <load name="send_imu_mag_current.xml"/>
     <load name="file_logger.xml"/>
-    <load name="detect_avoid_mav13.xml"/>
+    <load name="nav_team13.xml"/>
     <!--  load name="../../sw/ext/ardrone2_vision/modules/Mjpeg/ViewVideo.xml"/-->
   </modules>
 

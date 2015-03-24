@@ -28,6 +28,7 @@
 
   <modules main_freq="512">
     <load name="detect_avoid_mav13.xml"/>
+    <load name="nav_team13.xml"/>
     <load name="send_imu_mag_current.xml"/>
     <load name="follow.xml">
       <define name="FOLLOW_AC_ID" value="101"/>
@@ -205,7 +206,7 @@
     <define name="REF_OMEGA" value="RadOfDeg(67.)"/>
     <define name="REF_ZETA" value="0.85"/>
     <define name="REF_MAX_ACCEL" value="5.66"/>
-    <define name="REF_MAX_SPEED" value="5"/>
+    <define name="REF_MAX_SPEED" value="3"/>
 
     <!-- gains -->
     <define name="PGAIN" value="250"/>

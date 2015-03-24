@@ -183,7 +183,7 @@ int pixelcount(struct img_struct* input, uint32_t* pxcnt, uint8_t pxcnt_size)
             if (x%(input->w/(pxcnt_size))==0){
                 idx_count++;
             }
-            printf("%d",idx_count);
+           // printf("%d",idx_count);
 
             if(value>200){
                 pxcnt[idx_count-1]=pxcnt[idx_count-1]+1;

@@ -86,8 +86,9 @@
 
 int Gsize=3;
 double sigma=1.0;
-int thres=70;
-
+int thres=30;
+int stereo_nav_status=0;
+int intern_nav_status=0;
 void vision_team13_run(void) {}
 
 // take shot flag
@@ -114,6 +115,7 @@ void *computervision_thread_main(void *data)
         computervision_thread_status = -1;
         return 0;
     }
+
 
     // Video Grabbing
     struct img_struct *img_new = video_create_image(&vid);
@@ -142,6 +144,18 @@ void *computervision_thread_main(void *data)
     small_flow.w = vid.w / VIDEO_DOWNSIZE_FACTOR;
     small_flow.h = vid.h / VIDEO_DOWNSIZE_FACTOR;
     small_flow.buf = (uint8_t *)malloc(small_flow.w *small_flow.h * 2);
+
+    struct img_struct small_frame1;
+    small_frame1.w = vid.w / VIDEO_DOWNSIZE_FACTOR;
+    small_frame1.h = vid.h / VIDEO_DOWNSIZE_FACTOR;
+    small_frame1.buf = (uint8_t *)malloc(small_frame1.w *small_frame1.h * 2);
+
+
+    struct img_struct small_frame2;
+    small_frame2.w = vid.w / VIDEO_DOWNSIZE_FACTOR;
+    small_frame2.h = vid.h / VIDEO_DOWNSIZE_FACTOR;
+    small_frame2.buf = (uint8_t *)malloc(small_frame2.w *small_frame2.h * 2);
+
 
 
     struct img_struct small_prev;
@@ -195,59 +209,49 @@ void *computervision_thread_main(void *data)
         // Grab new frame
         video_grab_image(&vid, img_new);
 
-        memcpy(small_prev.buf,small_flow.buf,small.h*small.w*2);
+        //  memcpy(small_prev.buf,small_flow.buf,small.h*small.w*2);
 
         // Resize
         resize_uyuv(img_new, &small, VIDEO_DOWNSIZE_FACTOR);
 
 
-        sobel_edge_filter(&small,&small_edge);
+        if(stereo_nav_status==1&&intern_nav_status==0){
+            blur_filter(&small,&small_blur,Gsize,sigma);
 
-        blur_filter(&small_edge,&small_blur,Gsize,sigma);
+            memcpy(small_frame1.buf,small_blur.buf,small.h*small.w*2);
+            intern_nav_status++;
+        }
 
+        if(stereo_nav_status==2&&intern_nav_status==1){
+            blur_filter(&small,&small_blur,Gsize,sigma);
 
-        image_flow(&small_blur,&small_prev,&small_flow,0.93);
+            memcpy(small_frame2.buf,small_blur.buf,small.h*small.w*2);
+            intern_nav_status++;
 
-        uint8_t pxcnt_size=5;
-        uint32_t pxcnt[5]={0};
-
-        int pxcnt_tot;
-        pxcnt_tot=pixelratio(&small_flow,pxcnt,pxcnt_size);
-
-        uint32_t pxcnt_stat[5]={0};
-
-        int pxcnt_tot_stat;
-        pxcnt_tot_stat=pixelratio(&small_blur,pxcnt_stat,pxcnt_size);
-
-
-        /*printf("%d, %d, %d, %d, %d\n", (100*pxcnt[0])/pxcnt_tot-(100*pxcnt_stat[0])/pxcnt_tot_stat,
-                (100*pxcnt[1])/pxcnt_tot-(100*pxcnt_stat[1])/pxcnt_tot_stat,(100*pxcnt[2])/pxcnt_tot-(100*pxcnt_stat[2])/pxcnt_tot_stat,
-                (100*pxcnt[3])/pxcnt_tot-(100*pxcnt_stat[3])/pxcnt_tot_stat,(100*pxcnt[4])/pxcnt_tot-(100*pxcnt_stat[4])/pxcnt_tot_stat);
-*/
-        /*printf("%d, %d, %d, %d, %d\n", (100*pxcnt[0])/pxcnt_tot,
-                (100*pxcnt[1])/pxcnt_tot,(100*pxcnt[2])/pxcnt_tot,
-                (100*pxcnt[3])/pxcnt_tot,(100*pxcnt[4])/pxcnt_tot);
-*/
-       /* printf("%d, %d, %d, %d, %d\n", (100*(pxcnt[0]-pxcnt_stat[0]))/pxcnt_stat[0],
-                (100*(pxcnt[1]-pxcnt_stat[1]))/pxcnt_stat[1],(100*(pxcnt[2]-pxcnt_stat[2]))/pxcnt_stat[2],
-                (100*(pxcnt[3]-pxcnt_stat[3]))/pxcnt_stat[3],(100*(pxcnt[4]-pxcnt_stat[4]))/pxcnt_stat[4]);*/
-        double perc_flow,perc_stat,perc_compare;
-        for(int i=0;i<5;i++){
-            perc_flow=(double)pxcnt[i]/(double)pxcnt_tot;
-            perc_stat=(double)pxcnt_stat[i]/(double)pxcnt_tot_stat;
-            perc_compare=(double)pxcnt[i]*(1-perc_stat);
-            printf("%f, ",perc_flow);
 
         }
-        printf("\n");
-       /* printf("%d, %d, %d, %d, %d\n", (100*pxcnt[0])/pxcnt_tot,
-                (100*pxcnt[1])/pxcnt_tot,(100*pxcnt[2])/pxcnt_tot,
-                (100*pxcnt[3])/pxcnt_tot,(100*pxcnt[4])/pxcnt_tot);*/
 
-        /*
+        if(stereo_nav_status==3&&intern_nav_status==2){
+            image_difference(&small_frame1,&small_frame2,&small_diff,thres);
+
+            uint8_t pxcnt_size=5;
+            uint32_t pxcnt[5]={0};
+
+            int pxcnt_tot;
+            pxcnt_tot=pixelcount(&small_diff,&pxcnt,pxcnt_size);
+
+            int color_tresh=600;
+            detectobst(pxcnt_tot, pxcnt, color_tresh, 5);
+            intern_nav_status=0;
+
+        }
+
+
+
+
         // image filters
 
-        blur_filter(&small,&small_blur,Gsize,sigma);
+        /*blur_filter(&small,&small_blur,Gsize,sigma);
 
 
         image_difference(&small_blur,&small_prev,&small_diff,thres);
@@ -280,7 +284,7 @@ void *computervision_thread_main(void *data)
 
         // JPEG encode the image:
         uint32_t image_format = FOUR_TWO_TWO;  // format (in jpeg.h)
-        uint8_t *end = encode_image(small_flow.buf, jpegbuf, quality_factor, image_format, small.w, small.h, dri_jpeg_header);
+        uint8_t *end = encode_image(small_diff.buf, jpegbuf, quality_factor, image_format, small.w, small.h, dri_jpeg_header);
         uint32_t size = end - (jpegbuf);
 
         // Send image with RTP

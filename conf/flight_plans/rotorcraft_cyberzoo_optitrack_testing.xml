@@ -130,7 +130,9 @@
    </block>
    <block key="M" name="move_Xm">
       <call fun="NavSetWaypointHere(WP_curr)"/>
+
       <call fun="NavSetWaypointTowardsHeading(WP_curr,55,WP_next)"/>
+
       <call fun="nav_set_heading_towards_waypoint(WP_next)"/>
       <stay wp="curr" until="stage_time>2"/>
       <go from="curr" hmode="route" wp="next" approaching_time="0"/><stay wp="next"/>

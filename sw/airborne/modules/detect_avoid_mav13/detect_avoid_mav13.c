@@ -33,6 +33,8 @@
 #include "stdio.h"
 #include "string.h"
 
+//#include "navigation.h"
+
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -156,7 +158,7 @@ void *computervision_thread_main(void* data)
     // Video transmission
     
     
-    /*
+    
     // JPEG encode the image:
     uint32_t image_format = FOUR_TWO_TWO;  // format (in jpeg.h)
     uint8_t* end = encode_image (small.buf, jpegbuf, quality_factor, image_format, small.w, small.h, dri_jpeg_header);
@@ -173,7 +175,7 @@ void *computervision_thread_main(void* data)
         dri_jpeg_header,                // DRI Header
         0              // 90kHz time increment
      );
-     */
+    
      
   }
   printf("Thread Closed\n");
@@ -206,9 +208,7 @@ void detect_avoid_stop(void)
 
 //void detect_avoid_callback(void) {}
 
-
-
-////////////////////////////////// Nav functions   ///////////////////////////
+/*///////////////////////////////// Nav functions   ///////////////////////////
 
 #include "generated/airframe.h"
 #include <time.h>
@@ -236,6 +236,6 @@ bool_t NavSetWaypointTowardsHeading(uint8_t curr, uint8_t dist, uint8_t next){
   printf("heading error= %d \n", safe_heading);
   return FALSE;
 }
-
+*/
 
 

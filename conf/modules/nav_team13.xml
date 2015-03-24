@@ -1,0 +1,18 @@
+<!DOCTYPE module SYSTEM "module.dtd">
+
+<module name="nav_team13">
+  <doc>
+    <description>
+    functions to move waypoints to safe zones.  Used in cooperation with detect_avoid_mav13 module.
+    </description>
+  </doc>
+  <header>
+    <file name="nav_team13.h" dir="modules/mavteam13"/>
+  </header>
+  <init fun="nav_team13_init()"/>
+  <!--periodic fun="detect_avoid_run()" freq="10" start="detect_avoid_start()" stop="detect_avoid_stop()" autorun="TRUE"/-->
+  <makefile>
+    <file name="nav_team13.c" dir="modules/mavteam13"/>
+  </makefile>
+</module>
+

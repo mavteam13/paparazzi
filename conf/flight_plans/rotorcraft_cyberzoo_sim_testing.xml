@@ -14,6 +14,7 @@
     <waypoint name="foto2" x="0.0" y="0.0"/>
     <waypoint name="curr" x="0.0" y="0.0"/>
     <waypoint name="deg90" x="0.0" y="0.0"/>
+    <waypoint name="next" x="0.0" y="0.0"/>
     <waypoint lat="51.990639" lon="4.376807" name="p1"/>
     <waypoint lat="51.990624" lon="4.376767" name="p3"/>
     <waypoint lat="51.990648" lon="4.376745" name="p2"/>
@@ -105,12 +106,20 @@
       <deroute block="stereo_foto"/>
     </block-->
     <block name="stereo_foto"> <!--(take a pic @ current, place wp_foto2 ?cm to the right wrt heading)-->
-    <!--call fun="take_still_foto" (determines if still, takes photo)-->
-    <call fun="NavSetWaypointHere(WP_foto1)"/> 
-    <call fun="offset_wp_cm(WP_foto1,WP_foto2,10)"/>
-    <!--call fun="take_still_foto" (determines if still, takes photo)-->
+      <!--call fun="take_still_foto" (determines if still, takes photo)-->
+      <call fun="NavSetWaypointHere(WP_foto1)"/> 
+      <call fun="offset_wp_cm(WP_foto1,WP_foto2,10)"/>
+      <!--call fun="take_still_foto" (determines if still, takes photo)-->
       <stay wp="foto2"/>
-    </block>
+   </block>
+   <block name="move_Xcm">
+      <call fun="NavSetWaypointHere(WP_curr)"/>	
+      <call fun="NavSetWaypointTowardsHeading(WP_curr,51,WP_next)"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_next)"/>
+      <stay wp="curr" until="stage_time>2"/>
+      <go from="curr" hmode="route" wp="next" approaching_time="0"/>
+      <stay wp="next"/>
+   </block>
    <block name="heading_p1">
       <call fun="NavSetWaypointHere(WP_curr)"/>
       <call fun="nav_set_heading_towards_waypoint(WP_p1)"/>
@@ -170,17 +179,6 @@
       <go from="curr" hmode="route" wp="p5" approaching_time="0"/>
       <stay wp="p5" until="stage_time>5"/>
       <deroute block="route_loop_p1"/>
-    </block>
-    <block name="route_loop_wo_heading">
-      <go from="p1" hmode="route" wp="p2"/>
-      <stay wp="p2" until="stage_time>10"/>
-      <go from="p2" hmode="route" wp="p3"/>
-      <stay wp="p3" until="stage_time>10"/>
-      <go from="p3" hmode="route" wp="p4"/>
-      <stay wp="p4" until="stage_time>10"/>
-      <go from="p4" hmode="route" wp="p1"/>
-      <stay wp="p1" until="stage_time>10"/>
-      <deroute block="route_loop_wo_heading"/>
     </block>
     <block name="circle CAM" pre_call="nav_set_heading_towards_waypoint(WP_CAM)">
       <circle radius="nav_radius" wp="CAM"/>

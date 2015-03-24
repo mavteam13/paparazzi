@@ -205,14 +205,14 @@
     <define name="REF_OMEGA" value="RadOfDeg(67.)"/>
     <define name="REF_ZETA" value="0.85"/>
     <define name="REF_MAX_ACCEL" value="5.66"/>
-    <define name="REF_MAX_SPEED" value="0.3"/>
+    <define name="REF_MAX_SPEED" value="5"/>
 
     <!-- gains -->
-    <define name="PGAIN" value="116"/>
-    <define name="DGAIN" value="60"/>
+    <define name="PGAIN" value="250"/>
+    <define name="DGAIN" value="120"/>
     <define name="IGAIN" value="30"/>
     <define name="VGAIN" value="0"/>
-    <define name="AGAIN" value="62"/>
+    <define name="AGAIN" value="0"/>
   </section>
 
   <section name="SIMULATOR" prefix="NPS_">

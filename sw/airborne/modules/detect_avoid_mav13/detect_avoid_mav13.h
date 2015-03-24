@@ -35,6 +35,8 @@ extern void detect_avoid_stop(void);
 //extern void detect_avoid_message(void);
 //extern void detect_avoid_callback(void);
 
+//extern NavSetWaypointTowardsHeading(uint8_t curr, int16_t offset_heading, uint8_t dist, uint8_t next);
+
 extern uint8_t color_lum_min;
 extern uint8_t color_lum_max;
 
@@ -52,13 +54,13 @@ extern int color_tresh;
 extern int safe_heading;
 
 
-// nav functions
+/*/ nav functions
 
 #include "std.h"
 #include "firmwares/rotorcraft/navigation.h"
 extern bool_t NavSetWaypointTowardsHeading(uint8_t curr, uint8_t dist, uint8_t next);
 
-
+// end nav functions */ 
 
 #endif
 

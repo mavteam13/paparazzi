@@ -570,8 +570,17 @@ bool_t offset_wp_cm(uint8_t wp1, uint8_t wp2, uint8_t d){
     return FALSE;
 }
 
-/** kevin code -- set next waypoint based on heading (degree) and distance (meters) wrt current waypoint 
-bool_t NavSetWaypointTowardsHeading(uint8_t curr, int16_t offset_heading, uint8_t dist, uint8_t next){
+/** kevin code -- set next waypoint based on heading (degree) and distance (meters) wrt current waypoint */
+
+float coordinateX(uint8_t wp){
+	return waypoints[wp].x;
+}
+float coordinateY(uint8_t wp){
+	return waypoints[wp].y;
+}
+
+
+/**bool_t NavSetWaypointTowardsHeading(uint8_t curr, int16_t offset_heading, uint8_t dist, uint8_t next){
   int32_t s_heading, c_heading;
   
   offset_heading=safe_heading;

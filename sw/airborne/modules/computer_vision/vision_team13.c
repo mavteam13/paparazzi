@@ -140,6 +140,18 @@ void *computervision_thread_main(void *data)
     small_blur.h = vid.h / VIDEO_DOWNSIZE_FACTOR;
     small_blur.buf = (uint8_t *)malloc(small_blur.w *small_blur.h * 2);
 
+
+    struct img_struct small_blur1;
+    small_blur1.w = vid.w / VIDEO_DOWNSIZE_FACTOR;
+    small_blur1.h = vid.h / VIDEO_DOWNSIZE_FACTOR;
+    small_blur1.buf = (uint8_t *)malloc(small_blur.w *small_blur.h * 2);
+
+
+    struct img_struct small_blur2;
+    small_blur2.w = vid.w / VIDEO_DOWNSIZE_FACTOR;
+    small_blur2.h = vid.h / VIDEO_DOWNSIZE_FACTOR;
+    small_blur2.buf = (uint8_t *)malloc(small_blur.w *small_blur.h * 2);
+
     struct img_struct small_flow;
     small_flow.w = vid.w / VIDEO_DOWNSIZE_FACTOR;
     small_flow.h = vid.h / VIDEO_DOWNSIZE_FACTOR;
@@ -216,23 +228,26 @@ void *computervision_thread_main(void *data)
 
 
         if(stereo_nav_status==1&&intern_nav_status==0){
-            blur_filter(&small,&small_blur,Gsize,sigma);
+           // blur_filter(&small,&small_blur,Gsize,sigma);
 
-            memcpy(small_frame1.buf,small_blur.buf,small.h*small.w*2);
+            memcpy(small_frame1.buf,small.buf,small.h*small.w*2);
             intern_nav_status++;
         }
 
         if(stereo_nav_status==2&&intern_nav_status==1){
-            blur_filter(&small,&small_blur,Gsize,sigma);
+            //blur_filter(&small,&small_blur,Gsize,sigma);
 
-            memcpy(small_frame2.buf,small_blur.buf,small.h*small.w*2);
+            memcpy(small_frame2.buf,small.buf,small.h*small.w*2);
             intern_nav_status++;
 
 
         }
 
-        if(stereo_nav_status==3&&intern_nav_status==2){
-            image_difference(&small_frame1,&small_frame2,&small_diff,thres);
+        if(stereo_nav_status==3){
+            blur_filter(&small_frame1,&small_blur1,Gsize,sigma);
+            blur_filter(&small_frame2,&small_blur2,Gsize,sigma);
+
+            image_difference(&small_blur1,&small_blur2,&small_diff,thres);
 
             uint8_t pxcnt_size=5;
             uint32_t pxcnt[5]={0};

@@ -509,4 +509,5 @@ sw/logalizer
 sw/simulator
 sw/simulator/nps
 tests/math
+var/aircrafts/ardrone2_raw/ap/generated
 var/include

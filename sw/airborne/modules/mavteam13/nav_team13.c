@@ -66,14 +66,21 @@ bool_t NavSetWaypointTowardsHeading(uint8_t curr, uint8_t dist, uint8_t next)
   	PPRZ_ITRIG_COS(c_heading, nav_heading+offset_heading);
   	waypoints[next].x = waypoints[curr].x + INT_MULT_RSHIFT(dist,s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
   	waypoints[next].y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
-
+	
+	if (safe_heading==90 || safe_heading==-90)
+	{
+		waypoints[next].x=waypoints[curr].x;
+		waypoints[next].y=waypoints[curr].y;
+	}
  	 printf("heading error= %d \n", safe_heading);
  	 return FALSE;
 }
 
 bool_t move_global_wp(uint8_t glob,uint8_t fz1,uint8_t fz2,uint8_t fz3,uint8_t fz4,uint8_t nxt,uint8_t curr)
 {
-	if (!InsideFlight_Area((float)INT_MULT_RSHIFT(1,waypoints[nxt].x,INT32_POS_FRAC),(float)INT_MULT_RSHIFT(1,waypoints[nxt].y,INT32_POS_FRAC)))
+	printf("in proximity of: %i \n", nav_approaching_from(&waypoints[glob],NULL,0));
+	if (!InsideFlight_Area((float)INT_MULT_RSHIFT(1,waypoints[nxt].x,INT32_POS_FRAC),(float)INT_MULT_RSHIFT(1,waypoints[nxt].y,INT32_POS_FRAC)) || nav_approaching_from(&waypoints[glob],NULL,0))
+// || waypoints[nxt].x<waypoints[glob].x*1.1 && waypoints[nxt].x>waypoints[glob].x*0.9 && waypoints[nxt].x<waypoints[glob].x*1.1 && waypoints[nxt].x>waypoints[glob].x*0.9 
 	//if (!InsideFlight_Area(GetPosX(),GetPosY()))
 	{
 		printf("out of bound triggered\n");

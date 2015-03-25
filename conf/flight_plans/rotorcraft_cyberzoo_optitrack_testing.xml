@@ -152,12 +152,13 @@
       <call fun="NavSetWaypointHere(WP_curr)"/>
       <call fun="nav_set_heading_towards_waypoint(WP_global)"/>	
       <!--vision stuff-->
-      <call fun="NavSetWaypointTowardsHeading(WP_curr,150,WP_next)"/>
+      <stay wp="curr" until="stage_time>1"/>
+      <call fun="NavSetWaypointTowardsHeading(WP_curr,100,WP_next)"/>
       <call fun="move_global_wp(WP_global,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4, WP_next,WP_curr)"/>
       <call fun="nav_set_heading_towards_waypoint(WP_next)"/>	
       <stay wp="curr" until="stage_time>0"/>
       <go from="curr" hmode="route" wp="next" approaching_time="0"/>
-      <stay wp="next" until="stage_time>3"/>
+      <stay wp="next" until="stage_time>1"/>
       <deroute block="move_next_wp"/>
    </block>	
    <block name="heading_p1">
@@ -257,8 +258,11 @@
     <block name="circle CAM" pre_call="nav_set_heading_towards_waypoint(WP_CAM)">
       <circle radius="nav_radius" wp="CAM"/>
     </block>
-    <block key="D" name="land here" strip_button="Land Here" strip_icon="land-right.png">
+    <block key="A" name="land here" strip_button="Land Here" strip_icon="land-right.png">
       <call fun="NavSetWaypointHere(WP_TD)"/>
+      <!--go wp="TD"/>
+      <stay wp="TD" until="stage_time>2"/>
+      <deroute block="Holding point"/-->
     </block>
     <block name="land">
       <go wp="TD"/>
@@ -267,9 +271,11 @@
       <exception cond="NavDetectGround()" deroute="Holding point"/>
       <exception cond="!nav_is_in_flight()" deroute="landed"/>
       <call fun="NavStartDetectGround()"/>
-      <stay climb="-0.8" vmode="climb" wp="TD"/>
+      <stay climb="-0.8" vmode="climb" wp="TD" until="stage_time>3"/>
+      <deroute block="Holding point"/>
     </block>
     <block name="landed">
+      <deroute block="Holding point"/>
       <attitude pitch="0" roll="0" throttle="0" vmode="throttle" until="FALSE"/>
     </block>
   </blocks>

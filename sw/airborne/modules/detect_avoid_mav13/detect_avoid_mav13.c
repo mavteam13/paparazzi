@@ -52,7 +52,7 @@
 
 // Intensity -1 --> 1
 uint8_t color_lum_min = 105; // 105
-uint8_t color_lum_max = 165; // 205
+uint8_t color_lum_max = 200; // 205
 // Cb -1 --> 1
 uint8_t color_cb_min  = 50; // 52
 uint8_t color_cb_max  = 128; // 140
@@ -63,7 +63,7 @@ uint8_t color_cr_max  = 200; // 255
 int color_count;
 
 int color_detected = 0;
-int color_tresh = 600;
+int color_tresh = 1200;
 
 int safe_heading = 0;
 

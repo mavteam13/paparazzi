@@ -3891,6 +3891,12 @@ tests/math/tap.h
 tests/math/test_pprz_geodetic.c
 tests/math/test_pprz_math.c
 tests/math/test_state_interface.c
+var/aircrafts/ardrone2_raw/ap/generated/airframe.h
+var/aircrafts/ardrone2_raw/ap/generated/flight_plan.h
+var/aircrafts/ardrone2_raw/ap/generated/modules.h
+var/aircrafts/ardrone2_raw/ap/generated/periodic_telemetry.h
+var/aircrafts/ardrone2_raw/ap/generated/radio.h
+var/aircrafts/ardrone2_raw/ap/generated/settings.h
 var/include/abi_messages.h
 var/include/dl_protocol.h
 var/include/messages.h

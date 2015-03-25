@@ -570,7 +570,14 @@ bool_t offset_wp_cm(uint8_t wp1, uint8_t wp2, uint8_t d){
     return FALSE;
 }
 
-/** kevin code -- set next waypoint based on heading (degree) and distance (meters) wrt current waypoint */
+bool_t obstacle_in_path(void)
+{
+  int safe_heading = 0;
+  if (safe_heading=0) { return TRUE; }
+  return FALSE;
+}
+
+/* kevin code */
 
 float coordinateX(uint8_t wp){
 	return waypoints[wp].x;
@@ -578,21 +585,4 @@ float coordinateX(uint8_t wp){
 float coordinateY(uint8_t wp){
 	return waypoints[wp].y;
 }
-
-
-/**bool_t NavSetWaypointTowardsHeading(uint8_t curr, int16_t offset_heading, uint8_t dist, uint8_t next){
-  int32_t s_heading, c_heading;
-  
-  offset_heading=safe_heading;
-  offset_heading = INT32_RAD_OF_DEG(offset_heading << (INT32_ANGLE_FRAC));
-  printf("nav_heading= %d \n", nav_heading);
-  printf("offset_heading= %d \n", offset_heading);
-  PPRZ_ITRIG_SIN(s_heading, nav_heading+offset_heading);
-  PPRZ_ITRIG_COS(c_heading, nav_heading+offset_heading);
-  waypoints[next].x = waypoints[curr].x + INT_MULT_RSHIFT(dist,s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC);
-  waypoints[next].y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC);
-
-  printf("heading error= %d \n", safe_heading);
-  return FALSE;
-}*/
 

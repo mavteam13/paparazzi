@@ -34,7 +34,6 @@
 
 
 // Macros
-
 #define ObstacleInPath() obstacle_in_path()
 
 //******* FUNCTIONS *******//

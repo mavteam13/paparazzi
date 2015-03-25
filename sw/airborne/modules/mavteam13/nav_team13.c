@@ -119,6 +119,7 @@ bool_t offset_wp_cm(uint8_t wp1, uint8_t wp2, uint8_t d){
 bool_t obstacle_in_path(void)
 {
  // int safe_heading = 0;  //sim hack
+ //printf("safe_heading = %d\n", safe_heading);
   if (safe_heading==0) { return TRUE; }
   return FALSE;
 }

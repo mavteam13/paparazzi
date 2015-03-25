@@ -3,6 +3,9 @@
 <flight_plan alt="148.5" ground_alt="147" lat0="51.990634" lon0="4.376789" max_dist_from_home="150" name="Rotorcraft Basic (Enac)" security_height="1">
   <header>
 #include "autopilot.h"
+#include "subsystems/ahrs.h"
+#include "subsystems/electrical.h"
+#include "subsystems/datalink/datalink.h"
   </header>
   <waypoints>
     <waypoint name="HOME" x="0.0" y="0.0"/>
@@ -14,6 +17,7 @@
     <waypoint name="foto2" x="0.0" y="0.0"/>
     <waypoint name="curr" x="0.0" y="0.0"/>
     <waypoint name="next" x="0.0" y="0.0"/>
+    <waypoint name="global" lat="51.9906502" lon="4.3767212"/>
     <waypoint name="deg90" x="0.0" y="0.0"/>
     <waypoint lat="51.9906414" lon="4.3767839" name="p1"/>
     <waypoint lat="51.9906441" lon="4.3767692" name="p2"/>
@@ -28,22 +32,39 @@
     <!--waypoint lat="51.990639" lon="4.376807" name="p6"/-->
     <!--waypoint lat="51.990639" lon="4.376807" name="p7"/-->
     <!--waypoint lat="51.990639" lon="4.376807" name="p8"/-->
-    <waypoint lat="51.990635" lon="4.376836" name="FA1"/>
+    <waypoint lat="51.990635" lon="4.376836" name="FA3"/>
+    <waypoint lat="51.990606" lon="4.376760" name="FA4"/>
+    <waypoint lat="51.990652" lon="4.376712" name="FA1"/>
+    <waypoint lat="51.990681" lon="4.376791" name="FA2"/>
+    <waypoint lat="51.9906370" lon="4.3768241" name="FZ3"/>
+    <waypoint lat="51.9906120" lon="4.3767618" name="FZ4"/>
+    <waypoint lat="51.9906502" lon="4.3767212" name="FZ1"/>
+    <waypoint lat="51.9906748" lon="4.3767886" name="FZ2"/>
+    <!--waypoint lat="51.990635" lon="4.376836" name="FA1"/>
     <waypoint lat="51.990606" lon="4.376760" name="FA2"/>
-    <waypoint lat="51.990652" lon="4.376712" name="FA3"/>
-    <waypoint lat="51.990681" lon="4.376791" name="FA4"/>
+    <waypoint lat="51.990607" lon="4.376712" name="FA3"/>
+    <waypoint lat="51.990681" lon="4.376791" name="FA4"/-->
   </waypoints>
   <sectors>
     <sector color="red" name="Flight_Area">
-      <corner name="FA4"/>
-      <corner name="FA3"/>
-      <corner name="FA2"/>
       <corner name="FA1"/>
+      <corner name="FA2"/>
+      <corner name="FA3"/>
+      <corner name="FA4"/>
+    </sector>
+    <sector color="blue" name="Flight_Zone">
+      <corner name="FZ1"/>
+      <corner name="FZ2"/>
+      <corner name="FZ3"/>
+      <corner name="FZ4"/>
     </sector>
   </sectors>
   <exceptions>
-      <!--exception cond="electrical.bat_low" deroute="land here"/-->
-      <!--exception cond="10>PowerVoltage()" deroute="land here"/-->
+    <!--exception cond="electrical.bat_low" deroute="land here"/-->
+    <!--exception cond="10>PowerVoltage()" deroute="land here"/-->
+    <!--exception cond="InsideFlight_Area(coordinateX(WP_next),coordinateY(WP_next))" deroute="move_global_wp"/-->
+    <!--exception cond="! InsideFlight_Area(GetPosX(),GetPosY())"    deroute="move_global_wp"/-->
+    <!--exception cond="!InsideFlight_Area(GetPosX(), GetPosY()) && !(nav_block == IndexOfBlock('Wait GPS')) && !(nav_block == IndexOfBlock('Geo init') && !(nav_block == IndexOfBlock('Holding point')))" deroute="Standby"/-->
   </exceptions>
   <blocks>
     <block name="Wait GPS">
@@ -107,13 +128,38 @@
     <!--call fun="take_still_foto" (determines if still, takes photo)-->
       <stay wp="foto2"/>
    </block>
-   <block name="move_2m">
+   <block key="M" name="move_Xm">
       <call fun="NavSetWaypointHere(WP_curr)"/>
-      <call fun="NavSetWaypointTowardsHeading(WP_curr,51,WP_next)"/>
+
+      <call fun="NavSetWaypointTowardsHeading(WP_curr,55,WP_next)"/>
+
       <call fun="nav_set_heading_towards_waypoint(WP_next)"/>
       <stay wp="curr" until="stage_time>2"/>
       <go from="curr" hmode="route" wp="next" approaching_time="0"/><stay wp="next"/>
    </block>
+   <block name="move_global_wp">
+     <call fun="move_global_wp(WP_global,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4, WP_next)"/>
+     <!--Calls function that changes the global wp to the next in a list of 4 corner wp's--> 
+     <deroute block="move_next_wp"/>
+   </block>
+   <block name="check exeption">
+      <exception cond="!InsideFlight_Area(GetPosX(), GetPosY())" deroute="Standby"/>
+      <stay wp="p1"/>
+   </block>
+   <block name="move_next_wp">
+      <!--exception cond="!InsideFlight_Area(coordinateX(WP_next), coordinateY(WP_next))" deroute="move_global_wp"/-->
+
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_global)"/>	
+      <!--vision stuff-->
+      <call fun="NavSetWaypointTowardsHeading(WP_curr,150,WP_next)"/>
+      <call fun="move_global_wp(WP_global,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4, WP_next,WP_curr)"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_next)"/>	
+      <stay wp="curr" until="stage_time>0"/>
+      <go from="curr" hmode="route" wp="next" approaching_time="0"/>
+      <stay wp="next" until="stage_time>3"/>
+      <deroute block="move_next_wp"/>
+   </block>	
    <block name="heading_p1">
       <call fun="NavSetWaypointHere(WP_curr)"/>
       <call fun="nav_set_heading_towards_waypoint(WP_p1)"/>
@@ -211,7 +257,7 @@
     <block name="circle CAM" pre_call="nav_set_heading_towards_waypoint(WP_CAM)">
       <circle radius="nav_radius" wp="CAM"/>
     </block>
-    <block name="land here" strip_button="Land Here" strip_icon="land-right.png">
+    <block key="D" name="land here" strip_button="Land Here" strip_icon="land-right.png">
       <call fun="NavSetWaypointHere(WP_TD)"/>
     </block>
     <block name="land">

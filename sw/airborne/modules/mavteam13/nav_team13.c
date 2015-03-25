@@ -48,24 +48,60 @@ void nav_team13_init(void) {
 	
 }
 
-bool_t NavSetWaypointTowardsHeading(uint8_t curr, uint8_t dist, uint8_t next){
+bool_t NavSetWaypointTowardsHeading(uint8_t curr, uint8_t dist, uint8_t next)
+{
 // distance in cm's
 
 // random heading (angle) -32,-16,0,16,32 degrees
+
 //  safe_heading = ((rand() % 5) * 16) - 32;
 // safe_heading = 45;  //hack for sim testing
 
-  offset_heading = INT32_RAD_OF_DEG(safe_heading << (INT32_ANGLE_FRAC));
-  
-  printf("nav_heading= %d \n", nav_heading);
-  printf("offset_heading= %d \n", offset_heading);
-  PPRZ_ITRIG_SIN(s_heading, nav_heading+offset_heading);
-  PPRZ_ITRIG_COS(c_heading, nav_heading+offset_heading);
-  waypoints[next].x = waypoints[curr].x + INT_MULT_RSHIFT(dist,s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
-  waypoints[next].y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
 
-  printf("heading error= %d \n", safe_heading);
-  return FALSE;
+  	offset_heading = INT32_RAD_OF_DEG(safe_heading << (INT32_ANGLE_FRAC));
+  
+  	printf("nav_heading= %d \n", nav_heading);
+  	printf("offset_heading= %d \n", offset_heading);
+  	PPRZ_ITRIG_SIN(s_heading, nav_heading+offset_heading);
+  	PPRZ_ITRIG_COS(c_heading, nav_heading+offset_heading);
+  	waypoints[next].x = waypoints[curr].x + INT_MULT_RSHIFT(dist,s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
+  	waypoints[next].y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
+
+ 	 printf("heading error= %d \n", safe_heading);
+ 	 return FALSE;
 }
+
+bool_t move_global_wp(uint8_t glob,uint8_t fz1,uint8_t fz2,uint8_t fz3,uint8_t fz4,uint8_t nxt,uint8_t curr)
+{
+	if (!InsideFlight_Area((float)INT_MULT_RSHIFT(1,waypoints[nxt].x,INT32_POS_FRAC),(float)INT_MULT_RSHIFT(1,waypoints[nxt].y,INT32_POS_FRAC)))
+	//if (!InsideFlight_Area(GetPosX(),GetPosY()))
+	{
+		printf("out of bound triggered\n");
+		printf("getposx %f \n",GetPosX());
+		printf("getposy %f \n",GetPosY());
+		printf("wp x %f \n",(float)waypoints[nxt].x);
+		printf("wp y %f \n",(float)waypoints[nxt].y);
+		if (waypoints[glob].x==waypoints[fz1].x) {
+			waypoints[glob].x=waypoints[fz2].x;
+			waypoints[glob].y=waypoints[fz2].y;
+		}
+		else if (waypoints[glob].x==waypoints[fz2].x) {
+			waypoints[glob].x=waypoints[fz3].x;
+			waypoints[glob].y=waypoints[fz3].y;
+		}
+		else if (waypoints[glob].x==waypoints[fz3].x) {
+			waypoints[glob].x=waypoints[fz4].x;
+			waypoints[glob].y=waypoints[fz4].y;
+		}
+		else if (waypoints[glob].x==waypoints[fz4].x) {
+			waypoints[glob].x=waypoints[fz1].x;
+			waypoints[glob].y=waypoints[fz1].y;
+		}
+		nav_set_heading_towards_waypoint(glob);
+		NavSetWaypointTowardsHeading(curr,55,nxt);
+	}
+	return FALSE;
+}
+
 
 

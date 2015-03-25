@@ -570,6 +570,13 @@ bool_t offset_wp_cm(uint8_t wp1, uint8_t wp2, uint8_t d){
     return FALSE;
 }
 
+bool_t obstacle_in_path(void)
+{
+  int safe_heading = 0;
+  if (safe_heading=0) { return TRUE; }
+  return FALSE;
+}
+
 /** kevin code -- set next waypoint based on heading (degree) and distance (meters) wrt current waypoint 
 bool_t NavSetWaypointTowardsHeading(uint8_t curr, int16_t offset_heading, uint8_t dist, uint8_t next){
   int32_t s_heading, c_heading;

@@ -96,9 +96,9 @@ extern bool_t nav_set_heading_towards_waypoint(uint8_t wp);
 extern bool_t nav_set_heading_current(void);
 
 //Jaime code
-extern bool_t offset_wp_cm(uint8_t wp1, uint8_t wp2, uint8_t d);
-bool_t obstacle_in_path(void);
-#define ObstacleInPath() obstacle_in_path()
+//extern bool_t offset_wp_cm(uint8_t wp1, uint8_t wp2, uint8_t d);
+//bool_t obstacle_in_path(void);
+//#define ObstacleInPath() obstacle_in_path()
 /*extern bool_t NavSetWaypointTowardsHeading(uint8_t curr, int16_t offset_heading, uint8_t dist, uint8_t next); */
 extern float coordinateX(uint8_t wp);
 extern float coordinateY(uint8_t wp);

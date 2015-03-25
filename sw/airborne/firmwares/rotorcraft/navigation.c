@@ -556,10 +556,10 @@ bool_t nav_set_heading_current(void)
   return FALSE;
 }
 
-/** jaime code -- set wp2, d cm to the right of wp1 (wrt heading) */
+/** jaime code -- set wp2, d cm to the right of wp1 (wrt heading) 
 bool_t offset_wp_cm(uint8_t wp1, uint8_t wp2, uint8_t d){
 
-	/*int32_t nh = stateGetNedToBodyEulers_i() ->psi; */
+	//int32_t nh = stateGetNedToBodyEulers_i() ->psi; 
 	int32_t s_heading, c_heading;
 	
     PPRZ_ITRIG_SIN(s_heading, nav_heading);
@@ -568,14 +568,14 @@ bool_t offset_wp_cm(uint8_t wp1, uint8_t wp2, uint8_t d){
     waypoints[wp2].x = waypoints[wp1].x + INT_MULT_RSHIFT(d,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC)/100;
     waypoints[wp2].y = waypoints[wp1].y + INT_MULT_RSHIFT(d,-s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC)/100;
     return FALSE;
-}
-
+}*/
+/*
 bool_t obstacle_in_path(void)
 {
   int safe_heading = 0;
   if (safe_heading=0) { return TRUE; }
   return FALSE;
-}
+}*/
 
 /* kevin code */
 

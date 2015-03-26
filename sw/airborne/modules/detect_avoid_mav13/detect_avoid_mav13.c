@@ -23,20 +23,30 @@
  * Detect a specific colour and avoid it or track it
  */
  
- 
- 
 // Remark for sending data: uint32 is atomic --> can be read within one clock tic
  
-
 // own header file
 #include "modules/detect_avoid_mav13/detect_avoid_mav13.h"
 #include "stdio.h"
 #include "string.h"
-
-//#include "navigation.h"
+#include "unistd.h"
 
 
 ////////////////////////////////////////////////////////////////////////
+// GENERAL VARIABLES (independent on the chosen vision algorithm)
+
+int obstac[5] = { 0 }; 
+int safe_heading = 0;
+int obs_2sect_front = 0;
+
+// vision algorithm switch:
+int vision_switch = 1; // 1 - color detection
+                       // 2 - stereo vision
+                       // Should we define this as "extern" to be able to switch from the GUI?
+                       
+
+////////////////////////////////////////////////////////////////////////
+// COLOR DETECTION INCLUDES AND VARIABLES
 
 // obstacle detection and safe heading estimation based on color filtering
 #include "detect_obstacle.h"
@@ -64,12 +74,23 @@ int color_count;
 
 int color_detected = 0;
 int color_tresh = 1200;
+int result[5] = { 0 }; 
 
-int safe_heading = 0;
-int obs_2sect_front= 0;
+
+////////////////////////////////////////////////////////////////////////
+// STEREO VISION INCLUDES AND VARIABLES
+
+
+
+
+// Stereo vision variables and includes to be pasted here
+
+
+
+
 
 /////////////////////////////////////////////////////////////////////////
-// COMPUTER VISION THREAD
+// COMPUTER VISION THREAD - independent on vision algorithm
 
 // Video
 #include "modules/computer_vision/lib/v4l/video.h"
@@ -132,40 +153,62 @@ void *computervision_thread_main(void* data)
     resize_uyuv(img_new, &small, DOWNSIZE_FACTOR);
     
     
-    ////////////////////////////////////////////////////////////////////////
-    // Obstacle detection by color filtering
+    switch (vision_switch)
+        {
+        ////////////////////////////////////////////////////////////////////////
+        // DETECTION BY COLOR FILTERING
+        case 1 :       
+          
+        // reset the result array to zero
+        for (int i=0; i<5; i++) { result[i] = 0; }
+        
+        // filter selected colors and sort the filtered pixels in 5 segments    
+        color_count = colorfilt_uyvy_mod(&small,&small,
+            color_lum_min,color_lum_max,
+            color_cb_min,color_cb_max,
+            color_cr_min,color_cr_max,
+            &result, 5);
 
-    // filter selected colors and sort the filtered pixels in n segments    
+        printf("Color Detected L --> R = %d %d %d %d %d \n", result[0], result[1], result[2], result[3], result[4]);
     
-    // int n_segments=5; // only 5 is working now !!! (otherwise changes required below, in color_mod.h and in detect_obstacle.h)
-    int result[5] = { 0 }; 
+        // compute safe heading based on above data    
+        safe_heading=detectobst(color_count, &result, &obstac, color_tresh, 5);
+                
+    	break;
+    	    	
+    	////////////////////////////////////////////////////////////////////////
+        // DETECTION BY STEREO VISION
+    	case 2 :
+    	
+
+    	// space for stereo vision code
+
+
+    	// the following variables should store the results:
+        // safe_heading
+    	// obstac[5]
+    	
+        break;
+        }
     
-    color_count = colorfilt_uyvy_mod(&small,&small,
-        color_lum_min,color_lum_max,
-        color_cb_min,color_cb_max,
-        color_cr_min,color_cr_max,
-        &result, 5);
-
-    printf("ColorDetected L --> R = %d %d %d %d %d \n", result[0], result[1], result[2], result[3], result[4]);
-
+    //////////////////////////////////////////////////////////////////////
+    // Common code independent on vision algorithm
     
-    // compute safe heading based on above data    
-    safe_heading=detectobst(color_count, &result, color_tresh, 5);
-
-    //printf("Safe heading = %d \n", safe_heading);
+    printf("Obstacles Detected L --> R = %d %d %d %d %d \n", obstac[0], obstac[1], obstac[2], obstac[3], obstac[4]);
+    printf("Safe heading = %d \n", safe_heading);
     
     //compute if obstacle occupies 2 sections including forward section
     // we are approximately within 1 meter of a pole if this is true. - Jaime
     if (safe_heading==0){obs_2sect_front = 0;}
-	else if (result[2]==1 && result[3]==1){obs_2sect_front = 1;}
-	else if (result[2]==1 && result[1]==1){obs_2sect_front = 1;}
-	else {obs_2sect_front = 0;}
+    else if (obstac[2]==1 && obstac[3]==1){obs_2sect_front = 1;}
+    else if (obstac[2]==1 && obstac[1]==1){obs_2sect_front = 1;}
+    else {obs_2sect_front = 0;}
+    	
+    printf("2 obstacles in front = %d \n", obs_2sect_front);
+    	
     
-    //////////////////////////////////////////////////////////////////////
-    
-    // Video transmission
-    
-    
+    /////////////////////////////////////////////////////////////////////
+    // Video transmission - can be commented if video stream is not needed
     
     // JPEG encode the image:
     uint32_t image_format = FOUR_TWO_TWO;  // format (in jpeg.h)
@@ -215,35 +258,3 @@ void detect_avoid_stop(void)
 
 
 //void detect_avoid_callback(void) {}
-
-/*///////////////////////////////// Nav functions   ///////////////////////////
-
-#include "generated/airframe.h"
-#include <time.h>
-#include <stdlib.h>
-
-#include "messages.h"
-#include "mcu_periph/uart.h"
-#include "subsystems/datalink/downlink.h"
-#include "generated/flight_plan.h" 
-#include "math/pprz_algebra_int.h"
-
-
-bool_t NavSetWaypointTowardsHeading(uint8_t curr, uint8_t dist, uint8_t next){
-  int32_t s_heading, c_heading;
-  int16_t offset_heading;
-  
-  offset_heading = INT32_RAD_OF_DEG(safe_heading << (INT32_ANGLE_FRAC));
-  printf("nav_heading= %d \n", nav_heading);
-  printf("offset_heading= %d \n", offset_heading);
-  PPRZ_ITRIG_SIN(s_heading, nav_heading+offset_heading);
-  PPRZ_ITRIG_COS(c_heading, nav_heading+offset_heading);
-  waypoints[next].x = waypoints[curr].x + INT_MULT_RSHIFT(dist,s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC);
-  waypoints[next].y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC);
-
-  printf("heading error= %d \n", safe_heading);
-  return FALSE;
-}
-*/
-
-

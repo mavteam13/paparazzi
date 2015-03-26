@@ -39,8 +39,10 @@
 
 
 //******* FUNCTIONS *******//
+void nav_team13_init(void);
 extern bool_t NavSetWaypointTowardsHeading(uint8_t curr, uint8_t dist, uint8_t next);
 extern bool_t offset_wp_cm(uint8_t wp1, uint8_t wp2, uint8_t d);
+bool_t move_global_wp(uint8_t glob,uint8_t fz1,uint8_t fz2,uint8_t fz3,uint8_t fz4,uint8_t nxt,uint8_t curr);
 bool_t obstacle_in_path(void);
 bool_t obstacle_nearby(void);
 

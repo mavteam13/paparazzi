@@ -28,7 +28,7 @@
 #include "generated/airframe.h"
 #include <time.h>
 #include <stdlib.h>
-
+#include <stdio.h>
 #include "messages.h"
 #include "mcu_periph/uart.h"
 #include "subsystems/datalink/downlink.h"
@@ -36,9 +36,10 @@
 #include "math/pprz_algebra_int.h"
 
 //****** Declare variables ******//
-  int32_t s_heading, c_heading;
+
   int16_t offset_heading;
   int safe_heading;
+  int obs_2sect_front;
 
 //****** Functions ******//
 
@@ -50,6 +51,7 @@ void nav_team13_init(void) {
 
 bool_t NavSetWaypointTowardsHeading(uint8_t curr, uint8_t dist, uint8_t next)
 {
+  int32_t s_heading, c_heading;
 // distance in cm's
 
 // random heading (angle) -32,-16,0,16,32 degrees

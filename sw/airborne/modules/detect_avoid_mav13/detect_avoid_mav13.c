@@ -66,6 +66,7 @@ int color_detected = 0;
 int color_tresh = 1200;
 
 int safe_heading = 0;
+int obs_2sect_front= 0;
 
 /////////////////////////////////////////////////////////////////////////
 // COMPUTER VISION THREAD
@@ -152,6 +153,13 @@ void *computervision_thread_main(void* data)
     safe_heading=detectobst(color_count, &result, color_tresh, 5);
 
     //printf("Safe heading = %d \n", safe_heading);
+    
+    //compute if obstacle occupies 2 sections including forward section
+    // we are approximately within 1 meter of a pole if this is true. - Jaime
+    if (safe_heading==0){obs_2sect_front = 0;}
+	else if (result[2]==1 && result[3]==1){obs_2sect_front = 1;}
+	else if (result[2]==1 && result[1]==1){obs_2sect_front = 1;}
+	else {obs_2sect_front = 0;}
     
     //////////////////////////////////////////////////////////////////////
     

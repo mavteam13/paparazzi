@@ -35,12 +35,14 @@
 
 // Macros
 #define ObstacleInPath() obstacle_in_path()
+#define ObstacleNearby() obstacle_nearby()
+
 
 //******* FUNCTIONS *******//
 extern bool_t NavSetWaypointTowardsHeading(uint8_t curr, uint8_t dist, uint8_t next);
 extern bool_t offset_wp_cm(uint8_t wp1, uint8_t wp2, uint8_t d);
 bool_t obstacle_in_path(void);
-
+bool_t obstacle_nearby(void);
 
 
 #endif

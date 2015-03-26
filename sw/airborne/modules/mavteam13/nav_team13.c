@@ -67,7 +67,7 @@ bool_t NavSetWaypointTowardsHeading(uint8_t curr, uint8_t dist, uint8_t next)
   	waypoints[next].x = waypoints[curr].x + INT_MULT_RSHIFT(dist,s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
   	waypoints[next].y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
 
- 	 printf("heading error= %d \n", safe_heading);
+ 	 //printf("heading error= %d \n", safe_heading);
  	 return FALSE;
 }
 
@@ -116,13 +116,17 @@ bool_t offset_wp_cm(uint8_t wp1, uint8_t wp2, uint8_t d){
     return FALSE;
 }
 
+// Is the safe heading not ==0?
 bool_t obstacle_in_path(void)
 {
  // int safe_heading = 0;  //sim hack
- //printf("safe_heading = %d\n", safe_heading);
-  if (safe_heading==0) { return TRUE; }
-  return FALSE;
+  if (safe_heading==0) { return FALSE; }
+  return TRUE;
 }
-
-
-
+// Is the obstacle in front of me and nearby?
+bool_t obstacle_nearby(void)
+{
+	if (safe_heading==0){return FALSE;}
+	else if (obs_2sect_front){return TRUE;}
+	else {return FALSE;}
+}

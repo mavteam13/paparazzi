@@ -229,12 +229,15 @@ void *computervision_thread_main(void *data)
 
         if(stereo_nav_status==1&&intern_nav_status==0){
            // blur_filter(&small,&small_blur,Gsize,sigma);
+            printf("Taking first image\n");
 
             memcpy(small_frame1.buf,small.buf,small.h*small.w*2);
             intern_nav_status++;
         }
 
         if(stereo_nav_status==2&&intern_nav_status==1){
+
+            printf("Taking second image\n");
             //blur_filter(&small,&small_blur,Gsize,sigma);
 
             memcpy(small_frame2.buf,small.buf,small.h*small.w*2);
@@ -243,7 +246,9 @@ void *computervision_thread_main(void *data)
 
         }
 
-        if(stereo_nav_status==3){
+        if(stereo_nav_status==2&&intern_nav_status==2){
+            printf("Processing stereo image\n");
+
             blur_filter(&small_frame1,&small_blur1,Gsize,sigma);
             blur_filter(&small_frame2,&small_blur2,Gsize,sigma);
 
@@ -257,10 +262,14 @@ void *computervision_thread_main(void *data)
 
             int color_tresh=600;
             detectobst(pxcnt_tot, pxcnt, color_tresh, 5);
-            intern_nav_status=0;
+           // intern_nav_status=0;
 
         }
 
+        if(stereo_nav_status==0&&intern_nav_status==2) {
+            intern_nav_status=0;
+            printf("Stereo vision navigation off\n");
+        }
 
 
 

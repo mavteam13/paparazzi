@@ -40,11 +40,9 @@
   int16_t offset_heading;
   int safe_heading;
   int obs_2sect_front;
-<<<<<<< HEAD
-=======
   int stereo_nav_status = 0; 
   int stereo_vision_status; 
->>>>>>> e3d642804bfe5547ad0c4bcd7b333e663bfbcf6b
+
 
 //****** Functions ******//
 
@@ -56,12 +54,11 @@ void nav_team13_init(void) {
 
 bool_t NavSetWaypointTowardsHeading(uint8_t curr, uint8_t dist, uint8_t next)
 {
-  int32_t s_heading, c_heading;
 
 // distance in cm's
+  int32_t s_heading, c_heading;
 
 // random heading (angle) -32,-16,0,16,32 degrees
-
 //  safe_heading = ((rand() % 5) * 16) - 32;
 // safe_heading = 45;  //hack for sim testing
 

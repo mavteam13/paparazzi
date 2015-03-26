@@ -31,7 +31,7 @@
 // Own header
 #include "modules/computer_vision/vision_team13.h"
 #include "modules/detect_avoid_mav13/detect_obstacle.h"
-
+#include "modules/computer_vision/edgefilter.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -84,10 +84,7 @@
 #define VIDEO_FPS 4.
 #endif
 
-int Gsize=3;
-double sigma=1.0;
-int thres=30;
-int stereo_nav_status=0;
+
 int intern_nav_status=0;
 void vision_team13_run(void) {}
 
@@ -249,19 +246,24 @@ void *computervision_thread_main(void *data)
         if(stereo_nav_status==2&&intern_nav_status==2){
             printf("Processing stereo image\n");
 
-            blur_filter(&small_frame1,&small_blur1,Gsize,sigma);
-            blur_filter(&small_frame2,&small_blur2,Gsize,sigma);
+            blur_filter(&small_frame1,&small_blur1);
+            blur_filter(&small_frame2,&small_blur2);
 
-            image_difference(&small_blur1,&small_blur2,&small_diff,thres);
+            image_difference(&small_blur1,&small_blur2,&small_diff);
 
-            uint8_t pxcnt_size=5;
-            uint32_t pxcnt[5]={0};
+           // uint8_t pxcnt_size=5;
+            //uint32_t pxcnt[5]={0};
 
-            int pxcnt_tot;
-            pxcnt_tot=pixelcount(&small_diff,&pxcnt,pxcnt_size);
 
-            int color_tresh=600;
-            detectobst(pxcnt_tot, pxcnt, color_tresh, 5);
+            uint8_t pxlcnt_lines[small.w];
+
+            detect_vertical_lines(&small_diff,&small_edge,&pxlcnt_lines);
+
+           // int pxcnt_tot;
+           // pxcnt_tot=pixelcount(&small_diff,&pxcnt,pxcnt_size);
+
+            //int color_tresh=600;
+          //  detectobst(pxcnt_tot, pxcnt, color_tresh, 5);
            // intern_nav_status=0;
 
         }

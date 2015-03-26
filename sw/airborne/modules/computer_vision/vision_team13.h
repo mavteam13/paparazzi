@@ -31,10 +31,10 @@
 
 
 
-extern int Gsize;
-extern double sigma;
-extern  int thres;
-extern int stereo_nav_status;
+//extern int Gsize;
+//extern double sigma;
+//extern  int thres;
+//extern int stereo_nav_status;
 
 // Module functions
 extern void vision_team13_run(void);

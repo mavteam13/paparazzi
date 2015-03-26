@@ -39,6 +39,9 @@
   int32_t s_heading, c_heading;
   int16_t offset_heading;
   int safe_heading;
+  int obs_2sect_front;
+  int stereo_nav_status = 0; 
+  int stereo_vision_status; 
 
 //****** Functions ******//
 
@@ -105,16 +108,51 @@ bool_t move_global_wp(uint8_t glob,uint8_t fz1,uint8_t fz2,uint8_t fz3,uint8_t f
 
 bool_t offset_wp_cm(uint8_t wp1, uint8_t wp2, uint8_t d){
 
-	/*int32_t nh = stateGetNedToBodyEulers_i() ->psi; */
+    /*int32_t nh = stateGetNedToBodyEulers_i() ->psi; */
 	int32_t s_heading, c_heading;
 	
     PPRZ_ITRIG_SIN(s_heading, nav_heading);
     PPRZ_ITRIG_COS(c_heading, nav_heading);
-  
+      
     waypoints[wp2].x = waypoints[wp1].x + INT_MULT_RSHIFT(d,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC)/100;
     waypoints[wp2].y = waypoints[wp1].y + INT_MULT_RSHIFT(d,-s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC)/100;
+    
     return FALSE;
 }
+
+
+bool_t wait_wp1(void){
+
+    // Set flag: position ready for first photo
+    stereo_nav_status = 1; 
+    
+    // Wait till the first photo is taken
+    while (stereo_vision_status != 1)
+        {
+        usleep(10000); // check once each 10 milliseconds
+        }
+        
+    return FALSE;
+}
+
+
+bool_t wait_wp2(){
+
+    // Set flag: position ready for second photo
+    stereo_nav_status = 2; 
+    
+    // Wait till the second photo is taken
+    while (stereo_vision_status != 2)
+        {
+        usleep(10000); // check once each 10 milliseconds
+        }
+    
+    // Reset the flag
+    stereo_nav_status = 0; 
+        
+    return FALSE;
+}
+
 
 // Is the safe heading not ==0?
 bool_t obstacle_in_path(void)

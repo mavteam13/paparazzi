@@ -54,13 +54,6 @@
       <corner name="_FZ4"/>
     </sector>
   </sectors>
-  <exceptions>
-    <!--exception cond="electrical.bat_low" deroute="land here"/-->
-    <!--exception cond="10>PowerVoltage()" deroute="land here"/-->
-    <!--exception cond="InsideFlight_Area(coordinateX(WP_next),coordinateY(WP_next))" deroute="move_global_wp"/-->
-    <!--exception cond="! InsideFlight_Area(GetPosX(),GetPosY())"    deroute="move_global_wp"/-->
-    <!--exception cond="!InsideFlight_Area(GetPosX(), GetPosY()) && !(nav_block == IndexOfBlock('Wait GPS')) && !(nav_block == IndexOfBlock('Geo init') && !(nav_block == IndexOfBlock('Holding point')))" deroute="Standby"/-->
-  </exceptions>
   <blocks>
     <block name="Wait GPS">
       <call fun="NavKillThrottle()"/>
@@ -149,7 +142,7 @@
     </block>
     <block name="safemove_wp1_go">
       <call fun="NavSetWaypointHere(WP_curr)"/>	
-      <call fun="NavSetWaypointAvoidInBounds(WP_curr,100,WP_p1)"/>
+      <call fun="NavSetWaypointTowardsHeading(WP_curr,100,WP_p1)"/>
       <stay wp="curr" until="stage_time>5"/>
       <deroute block="route_loop_p1"/>
    </block>
@@ -164,7 +157,7 @@
     </block>
     <block name="safemove_wp2_go">
       <call fun="NavSetWaypointHere(WP_curr)"/>	
-      <call fun="NavSetWaypointAvoidInBounds(WP_curr,100,WP_p2)"/>
+      <call fun="NavSetWaypointTowardsHeading(WP_curr,100,WP_p2)"/>
       <stay wp="curr" until="stage_time>5"/>
       <deroute block="route_loop_p2"/>
    </block>
@@ -179,7 +172,7 @@
     </block>
     <block name="safemove_wp3_go">
       <call fun="NavSetWaypointHere(WP_curr)"/>	
-      <call fun="NavSetWaypointAvoidInBounds(WP_curr,100,WP_p3)"/>
+      <call fun="NavSetWaypointTowardsHeading(WP_curr,100,WP_p3)"/>
       <stay wp="curr" until="stage_time>5"/>
       <deroute block="route_loop_p3"/>
    </block>
@@ -194,7 +187,7 @@
     </block>
     <block name="safemove_wp4_go">
       <call fun="NavSetWaypointHere(WP_curr)"/>	
-      <call fun="NavSetWaypointAvoidInBounds(WP_curr,100,WP_p4)"/>
+      <call fun="NavSetWaypointTowardsHeading(WP_curr,100,WP_p4)"/>
       <stay wp="curr" until="stage_time>5"/>
       <deroute block="route_loop_p4"/>
    </block>
@@ -209,7 +202,7 @@
     </block>
     <block name="safemove_wp5_go">
       <call fun="NavSetWaypointHere(WP_curr)"/>	
-      <call fun="NavSetWaypointAvoidInBounds(WP_curr,100,WP_p5)"/>
+      <call fun="NavSetWaypointTowardsHeading(WP_curr,100,WP_p5)"/>
       <stay wp="curr" until="stage_time>5"/>
       <deroute block="route_loop_p6"/>
    </block>
@@ -224,7 +217,7 @@
     </block>
     <block name="safemove_wp6_go">
       <call fun="NavSetWaypointHere(WP_curr)"/>	
-      <call fun="NavSetWaypointAvoidInBounds(WP_curr,100,WP_p6)"/>
+      <call fun="NavSetWaypointTowardsHeading(WP_curr,100,WP_p6)"/>
       <stay wp="curr" until="stage_time>5"/>
       <deroute block="route_loop_p6"/>
    </block>
@@ -239,7 +232,7 @@
     </block>
     <block name="safemove_wp7_go">
       <call fun="NavSetWaypointHere(WP_curr)"/>	
-      <call fun="NavSetWaypointAvoidInBounds(WP_curr,100,WP_p7)"/>
+      <call fun="NavSetWaypointTowardsHeading(WP_curr,100,WP_p7)"/>
       <stay wp="curr" until="stage_time>5"/>
       <deroute block="route_loop_p7"/>
    </block>
@@ -254,7 +247,7 @@
     </block>
     <block name="safemove_wp8_go">
       <call fun="NavSetWaypointHere(WP_curr)"/>	
-      <call fun="NavSetWaypointAvoidInBounds(WP_curr,100,WP_p8)"/>
+      <call fun="NavSetWaypointTowardsHeading(WP_curr,100,WP_p8)"/>
       <stay wp="curr" until="stage_time>5"/>
       <deroute block="route_loop_p8"/>
    </block>

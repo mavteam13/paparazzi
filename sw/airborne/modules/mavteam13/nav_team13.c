@@ -207,40 +207,17 @@ bool_t stereo_loop(uint8_t wpfoto){
 
 
 bool_t wait_wp1(void){
-
     printf("In wp1\n");
     // Set flag: position ready for first photo
-    stereo_nav_status = 1; 
-    
-    // Wait till the first photo is taken
-    while (stereo_vision_status != 1)
-        {
-      //  printf("In wp1 sleep while loop\n");
-
-      //  usleep(10000); // check once each 10 milliseconds
-        }
-        
+    stereo_nav_status = 1;        
     return FALSE;
 }
 
 
 bool_t wait_wp2(){
-
     printf("In wp2\n");
-
-
     // Set flag: position ready for second photo
     stereo_nav_status = 2; 
-    
-    // Wait till the second photo is taken
-    while (stereo_vision_status != 2)
-        {
-     //   usleep(10000); // check once each 10 milliseconds
-        }
-    
-    // Reset the flag
-    stereo_nav_status = 0; 
-        
     return FALSE;
 }
 

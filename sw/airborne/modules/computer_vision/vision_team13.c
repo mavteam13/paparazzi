@@ -31,7 +31,7 @@
 // Own header
 #include "modules/computer_vision/vision_team13.h"
 #include "modules/detect_avoid_mav13/detect_obstacle.h"
-
+#include "modules/computer_vision/edgefilter.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -84,10 +84,7 @@
 #define VIDEO_FPS 4.
 #endif
 
-int Gsize=3;
-double sigma=1.0;
-int thres=30;
-int stereo_nav_status=0;
+
 int intern_nav_status=0;
 void vision_team13_run(void) {}
 
@@ -134,6 +131,12 @@ void *computervision_thread_main(void *data)
     small_edge.w = vid.w / VIDEO_DOWNSIZE_FACTOR;
     small_edge.h = vid.h / VIDEO_DOWNSIZE_FACTOR;
     small_edge.buf = (uint8_t *)malloc(small_edge.w *small_edge.h * 2);
+
+    struct img_struct small_sobel;
+    small_sobel.w = vid.w / VIDEO_DOWNSIZE_FACTOR;
+    small_sobel.h = vid.h / VIDEO_DOWNSIZE_FACTOR;
+    small_sobel.buf = (uint8_t *)malloc(small_sobel.w *small_sobel.h * 2);
+
 
     struct img_struct small_blur;
     small_blur.w = vid.w / VIDEO_DOWNSIZE_FACTOR;
@@ -229,38 +232,59 @@ void *computervision_thread_main(void *data)
 
         if(stereo_nav_status==1&&intern_nav_status==0){
            // blur_filter(&small,&small_blur,Gsize,sigma);
+            printf("Taking first image\n");
 
             memcpy(small_frame1.buf,small.buf,small.h*small.w*2);
+
+
             intern_nav_status++;
         }
 
         if(stereo_nav_status==2&&intern_nav_status==1){
+
+            printf("Taking second image\n");
             //blur_filter(&small,&small_blur,Gsize,sigma);
 
             memcpy(small_frame2.buf,small.buf,small.h*small.w*2);
+            //sobel_edge_filter(&small_frame1, &small_sobel);
+            //blur_filter(&small_frame2,&small_blur)
             intern_nav_status++;
 
 
         }
 
-        if(stereo_nav_status==3){
-            blur_filter(&small_frame1,&small_blur1,Gsize,sigma);
-            blur_filter(&small_frame2,&small_blur2,Gsize,sigma);
+        if(stereo_nav_status==2&&intern_nav_status==2){
+            printf("Processing stereo image\n");
 
-            image_difference(&small_blur1,&small_blur2,&small_diff,thres);
+            blur_filter(&small_frame1,&small_blur1);
+            blur_filter(&small_frame2,&small_blur2);
 
-            uint8_t pxcnt_size=5;
-            uint32_t pxcnt[5]={0};
+            image_difference(&small_blur1,&small_blur2,&small_diff);
 
-            int pxcnt_tot;
-            pxcnt_tot=pixelcount(&small_diff,&pxcnt,pxcnt_size);
 
-            int color_tresh=600;
-            detectobst(pxcnt_tot, pxcnt, color_tresh, 5);
-            intern_nav_status=0;
+           // uint8_t pxcnt_size=5;
+            //uint32_t pxcnt[5]={0};
+
+
+            uint8_t pxlcnt_lines[small.w];
+            uint8_t pxlcnt_lines_bin[small.w];
+
+
+            detect_vertical_lines(&small_diff,&small_edge,&pxlcnt_lines,&pxlcnt_lines_bin);
+
+           // int pxcnt_tot;
+           // pxcnt_tot=pixelcount(&small_diff,&pxcnt,pxcnt_size);
+
+            //int color_tresh=600;
+          //  detectobst(pxcnt_tot, pxcnt, color_tresh, 5);
+           // intern_nav_status=0;
 
         }
 
+        if(stereo_nav_status==0&&intern_nav_status==2) {
+            intern_nav_status=0;
+            printf("Stereo vision navigation off\n");
+        }
 
 
 
@@ -299,7 +323,7 @@ void *computervision_thread_main(void *data)
 
         // JPEG encode the image:
         uint32_t image_format = FOUR_TWO_TWO;  // format (in jpeg.h)
-        uint8_t *end = encode_image(small_diff.buf, jpegbuf, quality_factor, image_format, small.w, small.h, dri_jpeg_header);
+        uint8_t *end = encode_image(small_edge.buf, jpegbuf, quality_factor, image_format, small.w, small.h, dri_jpeg_header);
         uint32_t size = end - (jpegbuf);
 
         // Send image with RTP

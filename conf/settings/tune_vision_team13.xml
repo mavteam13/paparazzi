@@ -4,10 +4,13 @@
   <dl_settings>
 
     <dl_settings NAME="VisionTuner">
-       <dl_setting var="Gsize" min="3" step="2" max="15" module="computer_vision/vision_team13" shortname="gsize" />
+       <dl_setting var="Gsize" min="3" step="2" max="15" module="computer_vision/edgefilter" shortname="gsize" />
        <dl_setting var="sigma" min="1.0" step="1.0" max="8" shortname="sigma" />
        <dl_setting var="thres"  min="0" step="1" max="255" shortname="threshold" />
-       <dl_setting var="stereo_nav_status"  min="0" step="1" max="3" shortname="stereo_nav_status" />
+       <dl_setting var="thres_verticalcount"  min="0" step="1" max="255" shortname="thres_verticalcount" />
+       <dl_setting var="thres_disparity"  min="0" step="1" max="255" shortname="thres_disparity" />
+       <dl_setting var="multiply_disparity"  min="1" step="1" max="5" shortname="multiply_disparity" />
+       <dl_setting var="stereo_nav_status"  min="0" step="1" max="2" module="mavteam13/nav_team13" shortname="stereo_nav_status" />
     </dl_settings>
 
   </dl_settings>

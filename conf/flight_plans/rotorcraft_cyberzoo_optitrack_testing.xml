@@ -122,13 +122,38 @@
       <call fun="nav_set_heading_towards_waypoint(WP_deg90)"/>
       <stay wp="curr"/>
     </block>
-    <block name="stereo_foto"> <!--(take a pic @ current, place wp_foto2 ?cm to the right wrt heading)-->
-    <!--call fun="take_still_foto" (determines if still, takes photo)-->
-    <call fun="NavSetWaypointHere(WP_foto1)"/> 
-    <call fun="offset_wp_cm(WP_foto1,WP_foto2,10)"/>
-    <!--call fun="take_still_foto" (determines if still, takes photo)-->
-      <stay wp="foto2"/>
+    <block name="stereo_foto_init">
+        <call fun="stereo_init(WP_foto1)"/>
+        <stay wp="foto1"/>
+        <deroute block="stereo_foto_loop"/>
+    </block>
+    <block name="stereo_foto_loop">
+        <call fun="stereo_loop(WP_foto1)"/>
+        <stay wp="foto1"/>
+        <deroute block="stereo_foto_loop"/>
+    </block>
+   <block name="stereo_foto"> <!--(take a pic @ current, place wp_foto2 ?cm to the right wrt heading)-->
+        <call fun="NavSetWaypointHere(WP_foto1)"/>
+        <!-- Wait till the WP_foto1 is reached -->
+        <stay wp="foto1" until="stage_time>1"/>
+        <!-- set a flag 1st position is ready, wait for a flag from vision-->
+        <call fun="wait_wp1()"/>
+        <!-- Move to the 2nd position, wait till it's reached, set a second flag, wait for confirmation-->
+        <call fun="offset_wp_cm(WP_foto1,WP_foto2,10)"/>
+        <stay wp="foto2" until="stage_time>1"/>
+        <!-- set a flag 2nd position is ready, wait for a flag from vision-->
+        <call fun="wait_wp2()"/>
    </block>
+    <block name="stereo_foto_testing"> 
+        <call fun="NavSetWaypointHere(WP_foto1)"/>
+        <call fun="wait_wp1()"/>
+        <stay wp="foto1" until="stage_time>1"/>
+        <call fun="offset_wp_cm(WP_foto1,WP_foto2,50)"/>
+        <stay wp="foto2" until="stage_time>3"/>
+        <call fun="wait_wp2()"/>
+        <stay wp="foto2"/>
+   </block>
+
    <block key="M" name="move_Xm">
       <call fun="NavSetWaypointHere(WP_curr)"/>
 
@@ -139,7 +164,7 @@
       <go from="curr" hmode="route" wp="next" approaching_time="0"/><stay wp="next"/>
    </block>
    <block name="move_global_wp">
-     <call fun="move_global_wp(WP_global,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4, WP_next)"/>
+     <call fun="move_global_wp(WP_global,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4, WP_next, WP_curr)"/>
      <!--Calls function that changes the global wp to the next in a list of 4 corner wp's--> 
      <deroute block="move_next_wp"/>
    </block>

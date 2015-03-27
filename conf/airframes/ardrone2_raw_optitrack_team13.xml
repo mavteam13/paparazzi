@@ -28,6 +28,7 @@
 
   <modules main_freq="512">
     <load name="detect_avoid_mav13.xml"/>
+    <!--load name="vision_team13.xml"/-->
     <load name="nav_team13.xml"/>
     <load name="send_imu_mag_current.xml"/>
     <load name="follow.xml">

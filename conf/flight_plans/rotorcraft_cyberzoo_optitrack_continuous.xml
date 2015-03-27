@@ -1,0 +1,280 @@
+<!DOCTYPE flight_plan SYSTEM "flight_plan.dtd">
+
+<flight_plan alt="148.5" ground_alt="147" lat0="51.990634" lon0="4.376789" max_dist_from_home="150" name="Rotorcraft Basic (Enac)" security_height="1">
+  <header>
+#include "autopilot.h"
+#include "subsystems/ahrs.h"
+#include "subsystems/electrical.h"
+#include "subsystems/datalink/datalink.h"
+  </header>
+  <waypoints>
+    <waypoint name="HOME" x="0.0" y="0.0"/>
+    <waypoint name="CLIMB" x="0.0" y="0.0"/>
+    <waypoint name="STDBY" x="0.0" y="0.0"/>
+    <waypoint name="CAM" x="0.0" y="0.0" height="2."/>
+    <waypoint name="TD" x="0.0" y="0.0"/>
+    <waypoint name="foto1" x="0.0" y="0.0"/>
+    <waypoint name="foto2" x="0.0" y="0.0"/>
+    <waypoint name="curr" x="0.0" y="0.0"/>
+    <waypoint name="next" x="0.0" y="0.0"/>
+    <waypoint name="global" lat="51.9906502" lon="4.3767212"/>
+    <waypoint name="deg90" x="0.0" y="0.0"/>
+    <waypoint lat="51.9906370" lon="4.3768241" name="p1"/>
+    <waypoint lat="51.9906120" lon="4.3767618" name="p2"/>
+    <waypoint lat="51.9906120" lon="4.3767618" name="p3"/>
+    <waypoint lat="51.9906748" lon="4.3767886" name="p4"/>
+    <waypoint lat="51.9906748" lon="4.3767886" name="p5"/>
+    <waypoint lat="51.9906502" lon="4.3767212" name="p6"/>
+    <waypoint lat="51.9906502" lon="4.3767212" name="p7"/>
+    <waypoint lat="51.9906370" lon="4.3768241" name="p8"/>
+    <waypoint lat="51.990635" lon="4.376836" name="FA3"/>
+    <waypoint lat="51.990606" lon="4.376760" name="FA4"/>
+    <waypoint lat="51.990652" lon="4.376712" name="FA1"/>
+    <waypoint lat="51.990681" lon="4.376791" name="FA2"/>
+    <waypoint lat="51.9906370" lon="4.3768241" name="_FZ3"/>
+    <waypoint lat="51.9906120" lon="4.3767618" name="_FZ4"/>
+    <waypoint lat="51.9906502" lon="4.3767212" name="_FZ1"/>
+    <waypoint lat="51.9906748" lon="4.3767886" name="_FZ2"/>
+    <!--waypoint lat="51.990635" lon="4.376836" name="FA1"/>
+    <waypoint lat="51.990606" lon="4.376760" name="FA2"/>
+    <waypoint lat="51.990607" lon="4.376712" name="FA3"/>
+    <waypoint lat="51.990681" lon="4.376791" name="FA4"/-->
+  </waypoints>
+  <sectors>
+    <sector color="red" name="Flight_Area">
+      <corner name="FA1"/>
+      <corner name="FA2"/>
+      <corner name="FA3"/>
+      <corner name="FA4"/>
+    </sector>
+    <sector color="blue" name="Flight_Zone">
+      <corner name="_FZ1"/>
+      <corner name="_FZ2"/>
+      <corner name="_FZ3"/>
+      <corner name="_FZ4"/>
+    </sector>
+  </sectors>
+  <exceptions>
+    <!--exception cond="electrical.bat_low" deroute="land here"/-->
+    <!--exception cond="10>PowerVoltage()" deroute="land here"/-->
+    <!--exception cond="InsideFlight_Area(coordinateX(WP_next),coordinateY(WP_next))" deroute="move_global_wp"/-->
+    <!--exception cond="! InsideFlight_Area(GetPosX(),GetPosY())"    deroute="move_global_wp"/-->
+    <!--exception cond="!InsideFlight_Area(GetPosX(), GetPosY()) && !(nav_block == IndexOfBlock('Wait GPS')) && !(nav_block == IndexOfBlock('Geo init') && !(nav_block == IndexOfBlock('Holding point')))" deroute="Standby"/-->
+  </exceptions>
+  <blocks>
+    <block name="Wait GPS">
+      <call fun="NavKillThrottle()"/>
+      <while cond="!GpsFixValid()"/>
+    </block>
+    <block name="Geo init">
+      <while cond="LessThan(NavBlockTime(), 10)"/>
+      <call fun="NavSetWaypointHere(WP_HOME)"/>
+      <call fun="NavSetWaypointHere(WP_CLIMB)"/>
+      <call fun="NavSetWaypointHere(WP_STDBY)"/>
+      <call fun="NavSetWaypointHere(WP_TD)"/>
+      <call fun="NavSetAltitudeReferenceHere()"/>
+    </block>
+    <block name="Holding point">
+      <call fun="NavKillThrottle()"/>
+      <attitude pitch="0" roll="0" throttle="0" vmode="throttle" until="FALSE"/>
+    </block>
+    <block name="Start Engine">
+      <call fun="NavResurrect()"/>
+      <attitude pitch="0" roll="0" throttle="0" vmode="throttle" until="FALSE"/>
+    </block>
+    <block name="Takeoff" strip_button="Takeoff" strip_icon="takeoff.png">
+      <exception cond="stateGetPositionEnu_f()->z > 2.0" deroute="Standby"/>
+      <call fun="NavSetWaypointHere(WP_CLIMB)"/>
+      <stay vmode="climb" climb="0.5" wp="CLIMB"/>
+    </block>
+    <block name="Standby" strip_button="Standby" strip_icon="home.png">
+      <stay wp="STDBY"/>
+    </block>
+    <block name="hover_in_place">
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr"/>
+    </block>
+    <block name="stay_p1">
+      <stay wp="p1"/>
+    </block>
+    <block name="stay_p2">
+      <stay wp="p2"/>
+    </block>
+    <block name="stay_p3">
+      <stay wp="p3"/>
+    </block>
+    <block name="confirmation maneuver">
+    <!-- yaw 90deg cw-->
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <call fun="offset_wp_cm(WP_curr,WP_deg90,100)"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_deg90)"/>
+      <stay wp="curr"/>
+    </block>
+   <block name="heading_p1">
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_p1)"/>
+      <stay wp="curr"/>
+   </block>
+   <block name="heading_p2">
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_p2)"/>
+      <stay wp="curr"/>
+   </block>
+    <block name="heading_north">
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <call fun="nav_set_heading_deg(0)"/>
+      <stay wp="curr"/>
+   </block>
+    <block name="heading_east">
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <call fun="nav_set_heading_deg(90)"/>
+      <stay wp="curr"/>
+   </block>
+   <block name="move_Xcm">
+      <call fun="NavSetWaypointHere(WP_curr)"/>	
+      <call fun="NavSetWaypointTowardsHeading(WP_curr,51,WP_next)"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_next)"/>
+      <stay wp="curr" until="stage_time>2"/>
+      <go from="curr" hmode="route" wp="next" approaching_time="0"/>
+      <stay wp="next"/>
+   </block>
+      <block name="route_loop_p1">
+      <exception cond="ObstacleNearby()" deroute="safemove_wp1_go"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_p1)"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr" until="stage_time>2"/>
+      <go from="curr" hmode="route" wp="p1" approaching_time="0"/>
+      <stay wp="p1" until="stage_time>5"/>
+      <deroute block="route_loop_p2"/>
+    </block>
+    <block name="safemove_wp1_go">
+      <call fun="NavSetWaypointHere(WP_curr)"/>	
+      <call fun="NavSetWaypointAvoidInBounds(WP_curr,100,WP_p1)"/>
+      <stay wp="curr" until="stage_time>5"/>
+      <deroute block="route_loop_p1"/>
+   </block>
+    <block name="route_loop_p2">
+      <exception cond="ObstacleNearby()" deroute="safemove_wp2_go"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_p2)"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr" until="stage_time>2"/>
+      <go from="curr" hmode="route" wp="p2" approaching_time="0"/>
+      <stay wp="p2" until="stage_time>5"/>
+      <deroute block="route_loop_p3"/>
+    </block>
+    <block name="safemove_wp2_go">
+      <call fun="NavSetWaypointHere(WP_curr)"/>	
+      <call fun="NavSetWaypointAvoidInBounds(WP_curr,100,WP_p2)"/>
+      <stay wp="curr" until="stage_time>5"/>
+      <deroute block="route_loop_p2"/>
+   </block>
+    <block name="route_loop_p3">
+      <exception cond="ObstacleNearby()" deroute="safemove_wp3_go"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_p3)"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr" until="stage_time>2"/>
+      <go from="curr" hmode="route" wp="p3" approaching_time="0"/>
+      <stay wp="p3" until="stage_time>5"/>
+      <deroute block="route_loop_p4"/>
+    </block>
+    <block name="safemove_wp3_go">
+      <call fun="NavSetWaypointHere(WP_curr)"/>	
+      <call fun="NavSetWaypointAvoidInBounds(WP_curr,100,WP_p3)"/>
+      <stay wp="curr" until="stage_time>5"/>
+      <deroute block="route_loop_p3"/>
+   </block>
+    <block name="route_loop_p4">
+      <exception cond="ObstacleNearby()" deroute="safemove_wp4_go"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_p4)"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr" until="stage_time>2"/>
+      <go from="curr" hmode="route" wp="p4" approaching_time="0"/>
+      <stay wp="p4" until="stage_time>5"/>
+      <deroute block="route_loop_p5"/>
+    </block>
+    <block name="safemove_wp4_go">
+      <call fun="NavSetWaypointHere(WP_curr)"/>	
+      <call fun="NavSetWaypointAvoidInBounds(WP_curr,100,WP_p4)"/>
+      <stay wp="curr" until="stage_time>5"/>
+      <deroute block="route_loop_p4"/>
+   </block>
+    <block name="route_loop_p5">
+      <exception cond="ObstacleNearby()" deroute="safemove_wp5_go"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_p5)"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr" until="stage_time>2"/>
+      <go from="curr" hmode="route" wp="p5" approaching_time="0"/>
+      <stay wp="p5" until="stage_time>5"/>
+      <deroute block="route_loop_p6"/>
+    </block>
+    <block name="safemove_wp5_go">
+      <call fun="NavSetWaypointHere(WP_curr)"/>	
+      <call fun="NavSetWaypointAvoidInBounds(WP_curr,100,WP_p5)"/>
+      <stay wp="curr" until="stage_time>5"/>
+      <deroute block="route_loop_p6"/>
+   </block>
+    <block name="route_loop_p6">
+      <exception cond="ObstacleNearby()" deroute="safemove_wp6_go"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_p6)"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr" until="stage_time>2"/>
+      <go from="curr" hmode="route" wp="p6" approaching_time="0"/>
+      <stay wp="p6" until="stage_time>5"/>
+      <deroute block="route_loop_p7"/>
+    </block>
+    <block name="safemove_wp6_go">
+      <call fun="NavSetWaypointHere(WP_curr)"/>	
+      <call fun="NavSetWaypointAvoidInBounds(WP_curr,100,WP_p6)"/>
+      <stay wp="curr" until="stage_time>5"/>
+      <deroute block="route_loop_p6"/>
+   </block>
+    <block name="route_loop_p7">
+      <exception cond="ObstacleNearby()" deroute="safemove_wp7_go"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_p7)"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr" until="stage_time>2"/>
+      <go from="curr" hmode="route" wp="p7" approaching_time="0"/>
+      <stay wp="p7" until="stage_time>5"/>
+      <deroute block="route_loop_p8"/>
+    </block>
+    <block name="safemove_wp7_go">
+      <call fun="NavSetWaypointHere(WP_curr)"/>	
+      <call fun="NavSetWaypointAvoidInBounds(WP_curr,100,WP_p7)"/>
+      <stay wp="curr" until="stage_time>5"/>
+      <deroute block="route_loop_p7"/>
+   </block>
+    <block name="route_loop_p8">
+      <exception cond="ObstacleNearby()" deroute="safemove_wp8_go"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_p8)"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr" until="stage_time>2"/>
+      <go from="curr" hmode="route" wp="p8" approaching_time="0"/>
+      <stay wp="p8" until="stage_time>5"/>
+      <deroute block="route_loop_p1"/>
+    </block>
+    <block name="safemove_wp8_go">
+      <call fun="NavSetWaypointHere(WP_curr)"/>	
+      <call fun="NavSetWaypointAvoidInBounds(WP_curr,100,WP_p8)"/>
+      <stay wp="curr" until="stage_time>5"/>
+      <deroute block="route_loop_p8"/>
+   </block>
+    <block name="circle CAM" pre_call="nav_set_heading_towards_waypoint(WP_CAM)">
+      <circle radius="nav_radius" wp="CAM"/>
+    </block>
+    <block key="a" name="land here" strip_button="Land Here" strip_icon="land-right.png">
+      <call fun="NavSetWaypointHere(WP_TD)"/>
+    </block>
+    <block name="land">
+      <go wp="TD"/>
+    </block>
+    <block name="flare">
+      <exception cond="NavDetectGround()" deroute="Holding point"/>
+      <exception cond="!nav_is_in_flight()" deroute="landed"/>
+      <call fun="NavStartDetectGround()"/>
+      <stay climb="-0.8" vmode="climb" wp="TD"/>
+    </block>
+    <block name="landed">
+      <attitude pitch="0" roll="0" throttle="0" vmode="throttle" until="FALSE"/>
+    </block>
+  </blocks>
+</flight_plan>

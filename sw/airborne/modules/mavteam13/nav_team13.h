@@ -49,7 +49,7 @@ bool_t move_global_wp(uint8_t glob,uint8_t fz1,uint8_t fz2,uint8_t fz3,uint8_t f
 bool_t obstacle_in_path(void);
 bool_t obstacle_nearby(void);
 
-extern int stero_nav_status; 
+extern int stereo_nav_status;
 
 
 #endif

@@ -132,6 +132,12 @@ void *computervision_thread_main(void *data)
     small_edge.h = vid.h / VIDEO_DOWNSIZE_FACTOR;
     small_edge.buf = (uint8_t *)malloc(small_edge.w *small_edge.h * 2);
 
+    struct img_struct small_sobel;
+    small_sobel.w = vid.w / VIDEO_DOWNSIZE_FACTOR;
+    small_sobel.h = vid.h / VIDEO_DOWNSIZE_FACTOR;
+    small_sobel.buf = (uint8_t *)malloc(small_sobel.w *small_sobel.h * 2);
+
+
     struct img_struct small_blur;
     small_blur.w = vid.w / VIDEO_DOWNSIZE_FACTOR;
     small_blur.h = vid.h / VIDEO_DOWNSIZE_FACTOR;
@@ -229,6 +235,8 @@ void *computervision_thread_main(void *data)
             printf("Taking first image\n");
 
             memcpy(small_frame1.buf,small.buf,small.h*small.w*2);
+
+
             intern_nav_status++;
         }
 
@@ -238,6 +246,8 @@ void *computervision_thread_main(void *data)
             //blur_filter(&small,&small_blur,Gsize,sigma);
 
             memcpy(small_frame2.buf,small.buf,small.h*small.w*2);
+            //sobel_edge_filter(&small_frame1, &small_sobel);
+            //blur_filter(&small_frame2,&small_blur)
             intern_nav_status++;
 
 
@@ -251,13 +261,16 @@ void *computervision_thread_main(void *data)
 
             image_difference(&small_blur1,&small_blur2,&small_diff);
 
+
            // uint8_t pxcnt_size=5;
             //uint32_t pxcnt[5]={0};
 
 
             uint8_t pxlcnt_lines[small.w];
+            uint8_t pxlcnt_lines_bin[small.w];
 
-            detect_vertical_lines(&small_diff,&small_edge,&pxlcnt_lines);
+
+            detect_vertical_lines(&small_diff,&small_edge,&pxlcnt_lines,&pxlcnt_lines_bin);
 
            // int pxcnt_tot;
            // pxcnt_tot=pixelcount(&small_diff,&pxcnt,pxcnt_size);

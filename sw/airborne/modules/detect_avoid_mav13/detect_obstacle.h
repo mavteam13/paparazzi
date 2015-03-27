@@ -122,9 +122,9 @@ inline int detectobst(int cnt_tot, int* counter, int* obstacle, int clr_tresh, i
   // no obstacle  
   else
     { safe_head = 0;}
-  printf("Obstacles L --> R = %d %d %d %d %d \n", obst[0], obst[1], obst[2], obst[3], obst[4]);
+  //printf("Obstacles L --> R = %d %d %d %d %d \n", obst[0], obst[1], obst[2], obst[3], obst[4]);
   //printf("Obstacle heading = %d \n", obst_heading);
-  printf("Safe heading = %d \n", safe_head);
+  //printf("Safe heading = %d \n", safe_head);
     
   return safe_head;
   

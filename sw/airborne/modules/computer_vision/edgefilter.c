@@ -4,16 +4,16 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-int Gsize=3;
-double sigma=1.0;
+int Gsize=7;
+double sigma=3.0;
 int thres=30;
-int stereo_nav_status=0;
-int thres_verticalcount=80;
-
+//int stereo_nav_status=0;
+int thres_verticalcount=90;
+int thres_disparity=0;
 void sobel_edge_filter(struct img_struct *input,struct img_struct *output)
 {
 
-    uint32_t  Sobel[3] = {-1, 0, 1};
+    uint32_t  Sobel[3][3] = {{-1, 0, 1},{-2,0,2},{-1,0,1}};
     int8_t r, c;
     uint32_t  sobel;
     uint8_t *source = input->buf;
@@ -28,12 +28,12 @@ void sobel_edge_filter(struct img_struct *input,struct img_struct *output)
             //Convolution
             if(y>1&&y<input->h-1&&x>1&&x<input->w-1)
             {
-                for(r = 0; r <=1; r++)
+                for(r = -1; r <=1; r++)
                 {
                     for(c = -1; c <= 1; c++)
                     {
                         uint32_t idx_filter = input->w*(y+r)*2 + (x+c)*2;
-                        sobel += Sobel[c+1] * (source[idx_filter]);
+                        sobel += Sobel[r+1][c+1] * (source[idx_filter]);
                     }
                 }}
             sobel=abs(sobel);
@@ -139,15 +139,17 @@ void image_difference(struct img_struct *input,struct img_struct *input_prev,str
     }
 }
 
-void detect_vertical_lines(struct img_struct *input, struct img_struct *output ,uint8_t *pxlcnt_lines){
+void detect_vertical_lines(struct img_struct *input, struct img_struct *output ,uint8_t *pxlcnt_lines,uint8_t *pxlcnt_lines_bin){
 
     uint8_t *source = input->buf;
     uint8_t *dest = output->buf;
 
 
     uint8_t pxlcnt_temp;
+   // uint8_t pxlcnt_lines_bin[input->w];
 
-    for(uint16_t x = 0; x < input->w; x++) {
+    for(uint16_t x = 0;x<input->w; x++) {
+        pxlcnt_lines[x]=0;
         pxlcnt_temp=0;
         for(uint16_t y = 0; y < input->h; y++) {
             uint32_t idx = input->w*y*2 + (x)*2;
@@ -161,123 +163,139 @@ void detect_vertical_lines(struct img_struct *input, struct img_struct *output ,
 
         }
         if(pxlcnt_temp>thres_verticalcount){
-           // printf("increment pxlcnt");
-            pxlcnt_lines[x]=pxlcnt_lines[x]+1;
-            // pxlcnt_lines[x-1]=0;
+            // printf("increment pxlcnt");
+            pxlcnt_lines[x]=pxlcnt_lines[x-1]+1;
+            pxlcnt_lines[x-1]=0;
 
-        }else pxlcnt_lines[x]=0;
+        }//else pxlcnt_lines[x]=0;
     }
+   // for(uint16_t x = 0;x<input->w; x++) pxlcnt_lines_bin[x]=0;
 
+    for(uint16_t x = 0;x<input->w; x++) {
 
-    for(uint16_t y = 0; y < input->h; y++) {
-        for(uint16_t x = 0; x < input->w; x++) {
-            uint32_t idx = input->w*y*2 + (x)*2;
+        if(pxlcnt_lines[x]>thres_disparity){
+            int D=pxlcnt_lines[x];
+            printf(" disparity is %d\n",D);
+            for(int r=-D;r<D;r++)
+            {
+                if(x+r>=0 && x+r<input->w){
+                    pxlcnt_lines_bin[x+r]=1;}
 
-            if(pxlcnt_lines[x]>1){
-                dest[idx]=0;
-            }else     dest[idx]=127;
-
-            dest[idx+1]=source[idx+1];
-        }
-
-    }
-
-
-
-}
-void image_flow(struct img_struct *input,struct img_struct *input_prev,struct img_struct *output,double increment_value)
-{
-
-
-    uint8_t *source = input->buf;
-    uint8_t *source_prev = input_prev->buf;
-    uint8_t *dest = output->buf;
-    uint8_t value=0;
-
-    for(uint16_t y = 0; y < input->h; y++) {
-        for(uint16_t x = 0; x < input->w; x++) {
-            uint32_t idx = input->w*y*2 + (x)*2;
-            if (source[idx+1]>10)
-                value=(uint8_t)(increment_value*source_prev[idx+1]+5*source[idx+1]);
-            else value=(increment_value*source_prev[idx+1]+0);
-            if( value>254) value= 255;
-            if( value<0) value= 0;
-            //else dest[idx+1]=value;
-            dest[idx+1]=value;
-            dest[idx]=127;
-        }
-    }
-}
-
-
-
-
-
-
-int pixelcount(struct img_struct* input, uint32_t* pxcnt, uint8_t pxcnt_size)
-{
-
-    //uint32_t pixelcount[5]={0};
-    uint8_t idx_count;
-    uint8_t *source = input->buf;
-    uint8_t value=0;
-    int pxcnt_tot=0;
-
-
-
-    for(uint16_t y = 0; y < input->h; y++) {
-        idx_count=0;
-        for(uint16_t x = 0; x < input->w; x++) {
-            uint32_t idx = input->w*y*2 + (x)*2;
-            value=source[idx+1];
-
-            if (x%(input->w/(pxcnt_size))==0){
-                idx_count++;
-            }
-            // printf("%d",idx_count);
-
-            if(value>200){
-                pxcnt[idx_count-1]=pxcnt[idx_count-1]+1;
-                pxcnt_tot++;
+                }
             }
 
 
-
-
         }
-    }
-    return pxcnt_tot;
-}
 
-int pixelratio(struct img_struct* input, uint32_t* pxcnt, uint8_t pxcnt_size)
-{
+        for(uint16_t y = 0; y < input->h; y++) {
+            for(uint16_t x = 0; x < input->w; x++) {
+                uint32_t idx = input->w*y*2 + (x)*2;
 
-    //uint32_t pixelcount[5]={0};
-    uint8_t idx_count;
-    uint8_t *source = input->buf;
-    uint8_t value=0;
-    int pxcnt_tot=0;
+                if(pxlcnt_lines_bin[x]==1){
+                    dest[idx]=0;
+                }else     dest[idx]=127;
 
-
-
-    for(uint16_t y = 0; y < input->h; y++) {
-        idx_count=0;
-        for(uint16_t x = 0; x < input->w; x++) {
-            uint32_t idx = input->w*y*2 + (x)*2;
-            value=source[idx+1];
-
-            if (x%(input->w/(pxcnt_size))==0){
-                idx_count++;
+                dest[idx+1]=source[idx+1];
             }
-            //printf("%d",idx_count);
-
-            pxcnt[idx_count-1]=pxcnt[idx_count-1]+value;
-            pxcnt_tot=pxcnt_tot+value;
-
-
-
 
         }
+
+
+
     }
-    return pxcnt_tot;
-}
+    void image_flow(struct img_struct *input,struct img_struct *input_prev,struct img_struct *output,double increment_value)
+    {
+
+
+        uint8_t *source = input->buf;
+        uint8_t *source_prev = input_prev->buf;
+        uint8_t *dest = output->buf;
+        uint8_t value=0;
+
+        for(uint16_t y = 0; y < input->h; y++) {
+            for(uint16_t x = 0; x < input->w; x++) {
+                uint32_t idx = input->w*y*2 + (x)*2;
+                if (source[idx+1]>10)
+                    value=(uint8_t)(increment_value*source_prev[idx+1]+5*source[idx+1]);
+                else value=(increment_value*source_prev[idx+1]+0);
+                if( value>254) value= 255;
+                if( value<0) value= 0;
+                //else dest[idx+1]=value;
+                dest[idx+1]=value;
+                dest[idx]=127;
+            }
+        }
+    }
+
+
+
+
+
+
+    int pixelcount(struct img_struct* input, uint32_t* pxcnt, uint8_t pxcnt_size)
+    {
+
+        //uint32_t pixelcount[5]={0};
+        uint8_t idx_count;
+        uint8_t *source = input->buf;
+        uint8_t value=0;
+        int pxcnt_tot=0;
+
+
+
+        for(uint16_t y = 0; y < input->h; y++) {
+            idx_count=0;
+            for(uint16_t x = 0; x < input->w; x++) {
+                uint32_t idx = input->w*y*2 + (x)*2;
+                value=source[idx+1];
+
+                if (x%(input->w/(pxcnt_size))==0){
+                    idx_count++;
+                }
+                // printf("%d",idx_count);
+
+                if(value>200){
+                    pxcnt[idx_count-1]=pxcnt[idx_count-1]+1;
+                    pxcnt_tot++;
+                }
+
+
+
+
+            }
+        }
+        return pxcnt_tot;
+    }
+
+    int pixelratio(struct img_struct* input, uint32_t* pxcnt, uint8_t pxcnt_size)
+    {
+
+        //uint32_t pixelcount[5]={0};
+        uint8_t idx_count;
+        uint8_t *source = input->buf;
+        uint8_t value=0;
+        int pxcnt_tot=0;
+
+
+
+        for(uint16_t y = 0; y < input->h; y++) {
+            idx_count=0;
+            for(uint16_t x = 0; x < input->w; x++) {
+                uint32_t idx = input->w*y*2 + (x)*2;
+                value=source[idx+1];
+
+                if (x%(input->w/(pxcnt_size))==0){
+                    idx_count++;
+                }
+                //printf("%d",idx_count);
+
+                pxcnt[idx_count-1]=pxcnt[idx_count-1]+value;
+                pxcnt_tot=pxcnt_tot+value;
+
+
+
+
+            }
+        }
+        return pxcnt_tot;
+    }

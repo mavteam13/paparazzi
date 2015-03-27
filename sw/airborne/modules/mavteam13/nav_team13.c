@@ -159,7 +159,6 @@ bool_t offset_wp_cm(uint8_t wp1, uint8_t wp2, uint8_t d){
     return FALSE;
 }
 
-
 bool_t stereo_init(uint8_t wpfoto){
         // Initialize
         NavSetWaypointHere(wpfoto);
@@ -171,9 +170,7 @@ bool_t stereo_loop(uint8_t wpfoto){
     switch(stereo_nav_status)
         {
         case -1 :
-        // wait till it gets to next wp - to be implemented
-        // once point is reached:
-        stereo_nav_status = 1; 
+        if (nav_approaching_from(wpfoto, NULL, 0)) { stereo_nav_status = 1; printf("Wp1 reached");}
         break;
         
         case 1 :
@@ -186,11 +183,8 @@ bool_t stereo_loop(uint8_t wpfoto){
         break;
         
         case -2 :
-        // wait till it gets to next wp - to be implemented
-        // once point is reached:
-        stereo_nav_status = 2; 
+        if (nav_approaching_from(wpfoto, NULL, 0)) { stereo_nav_status = 2; printf("Wp2 reached"); }
         break;
-        
         
         case 2 :
         // Waiting for a response from vision

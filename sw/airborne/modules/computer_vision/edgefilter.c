@@ -121,9 +121,9 @@ void image_difference(struct img_struct *input,struct img_struct *input_prev,str
             uint32_t idx = input->w*y*2 + (x)*2;
             value= abs(source_prev[idx+1]-source[idx+1]);
 
-            dest[idx+1]=value;
-            dest[idx]=127;
-            /*if(value>thres){
+            //dest[idx+1]=value;
+            //dest[idx]=127;
+            if(value>thres){
                 dest[idx+1]=255;
 
                 dest[idx]=127;
@@ -131,7 +131,7 @@ void image_difference(struct img_struct *input,struct img_struct *input_prev,str
 
                 dest[idx+1]=0;
 
-                dest[idx]=127;}*/
+                dest[idx]=127;}
 
         }
 

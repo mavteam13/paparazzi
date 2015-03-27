@@ -145,7 +145,7 @@ void *computervision_thread_main(void* data)
         color_cr_min,color_cr_max,
         &result, 5);
 
-    printf("ColorDetected L --> R = %d %d %d %d %d \n", result[0], result[1], result[2], result[3], result[4]);
+    //printf("ColorDetected L --> R = %d %d %d %d %d \n", result[0], result[1], result[2], result[3], result[4]);
 
     
     // compute safe heading based on above data    

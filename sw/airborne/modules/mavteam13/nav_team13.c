@@ -38,6 +38,7 @@
 //****** Declare variables ******//
   int32_t s_heading, c_heading;
   int16_t offset_heading;
+  int16_t next_heading;
   int safe_heading;
 
 //****** Functions ******//
@@ -56,24 +57,43 @@ bool_t NavSetWaypointTowardsHeading(uint8_t curr, uint8_t dist, uint8_t next)
 
 //  safe_heading = ((rand() % 5) * 16) - 32;
 // safe_heading = 45;  //hack for sim testing
-
-
-  	offset_heading = INT32_RAD_OF_DEG(safe_heading << (INT32_ANGLE_FRAC));
+	printf("0 \n");
+	offset_heading = 0;
+	PPRZ_ITRIG_SIN(s_heading, nav_heading+offset_heading);
+  	PPRZ_ITRIG_COS(c_heading, nav_heading+offset_heading);
+        while (safe_heading != 0)
+	{
+	printf("1 \n");
+  	offset_heading = offset_heading+INT32_RAD_OF_DEG(safe_heading << (INT32_ANGLE_FRAC));
   
   	printf("nav_heading= %d \n", nav_heading);
   	printf("offset_heading= %d \n", offset_heading);
   	PPRZ_ITRIG_SIN(s_heading, nav_heading+offset_heading);
   	PPRZ_ITRIG_COS(c_heading, nav_heading+offset_heading);
-  	waypoints[next].x = waypoints[curr].x + INT_MULT_RSHIFT(dist,s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
-  	waypoints[next].y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
+	next_heading=nav_heading+offset_heading; 	
 	
-	if (safe_heading==90 || safe_heading==-90)
+	//waypoints[heading].x = waypoints[curr].x + INT_MULT_RSHIFT(dist,s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
+  	//waypoints[heading].y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
+	waypoints[next].x = waypoints[curr].x + INT_MULT_RSHIFT(dist,s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
+  	waypoints[next].y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
+
+	//if (safe_heading==90 || safe_heading==-90)
+	//{
+	//	waypoints[next].x=waypoints[curr].x;
+	//	waypoints[next].y=waypoints[curr].y;
+	//}
+	
+        nav_set_heading_towards_waypoint(next);
+	while ( (nav_heading - next_heading)>-20 && (nav_heading - next_heading)<20 )
 	{
-		waypoints[next].x=waypoints[curr].x;
-		waypoints[next].y=waypoints[curr].y;
+		printf("2 \n");
 	}
- 	 printf("heading error= %d \n", safe_heading);
- 	 return FALSE;
+ 	printf("heading error= %d \n", safe_heading);
+ 	return FALSE;
+	}
+	waypoints[next].x = waypoints[curr].x + INT_MULT_RSHIFT(dist,s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
+  	waypoints[next].y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
+	printf("3 \n");
 }
 
 bool_t move_global_wp(uint8_t glob,uint8_t fz1,uint8_t fz2,uint8_t fz3,uint8_t fz4,uint8_t nxt,uint8_t curr)

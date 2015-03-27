@@ -123,6 +123,52 @@ bool_t offset_wp_cm(uint8_t wp1, uint8_t wp2, uint8_t d){
 }
 
 
+bool_t stereo_init(uint8_t wpfoto){
+        // Initialize
+        NavSetWaypointHere(wpfoto);
+        stereo_nav_status=-1;
+        return FALSE;
+        }
+
+bool_t stereo_loop(uint8_t wpfoto){
+    switch(stereo_nav_status)
+        {
+        case -1 :
+        // wait till it gets to next wp - to be implemented
+        // once point is reached:
+        stereo_nav_status = 1; 
+        break;
+        
+        case 1 :
+        // Waiting for a response from vision
+        if (stereo_vision_status==1) 
+            {
+            offset_wp_cm(wpfoto,wpfoto,10);
+            stereo_nav_status = -2;
+            }
+        break;
+        
+        case -2 :
+        // wait till it gets to next wp - to be implemented
+        // once point is reached:
+        stereo_nav_status = 2; 
+        break;
+        
+        
+        case 2 :
+        // Waiting for a response from vision
+        if (stereo_vision_status==2) 
+            {
+            // set a new wp based on vision info - for now I use current position
+            NavSetWaypointHere(wpfoto);
+            stereo_nav_status = -1;
+            }
+        break;  
+        } 
+    return FALSE;
+}
+
+
 bool_t wait_wp1(void){
 
     // Set flag: position ready for first photo

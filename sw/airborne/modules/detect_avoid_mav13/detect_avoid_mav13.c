@@ -264,19 +264,28 @@ void *computervision_thread_main(void* data)
                 uint8_t pxlcnt_lines[small.w];
                 uint8_t pxlcnt_lines_bin[small.w];
 
+                int safe_head;
 
-                detect_vertical_lines(&small_diff,&small_edge,&pxlcnt_lines,&pxlcnt_lines_bin);
+                safe_head=detect_vertical_lines(&small_diff,&small_edge,&pxlcnt_lines,&pxlcnt_lines_bin);
 
 
 
-                // uint8_t pxcnt_size=5;
-                //uint32_t pxcnt[5]={0};
-                // int pxcnt_tot;
-                // pxcnt_tot=pixelcount(&small_diff,&pxcnt,pxcnt_size);
+               //  uint8_t pxcnt_size=5;
+              //  uint32_t pxcnt[5]={0};
 
-                //int color_tresh=600;
-                //  detectobst(pxcnt_tot, pxcnt, color_tresh, 5);
-                // intern_nav_status=0;
+              //  int pxcnt_tot;
+               //  pxcnt_tot=pixelcount(&small_edge,&pxcnt,pxcnt_size);
+
+               // int color_tresh=600;
+
+
+                //uint32_t obst[5]={0};
+                  //safe_head=detectobst(pxcnt_tot, pxcnt,obst, color_tresh, 5);
+
+                 //printf("Obstacles L --> R = %d %d %d %d %d \n", obst[0], obst[1], obst[2], obst[3], obst[4]);
+                 printf("Safe heading = %d \n", safe_head);
+
+                 // intern_nav_status=0;
 
 
             }
@@ -318,7 +327,7 @@ void *computervision_thread_main(void* data)
 
         // JPEG encode the image:
         uint32_t image_format = FOUR_TWO_TWO;  // format (in jpeg.h)
-        uint8_t* end = encode_image (small.buf, jpegbuf, quality_factor, image_format, small.w, small.h, dri_jpeg_header);
+        uint8_t* end = encode_image (small_edge.buf, jpegbuf, quality_factor, image_format, small.w, small.h, dri_jpeg_header);
         uint32_t size = end-(jpegbuf);
 
         //printf("Sending an image ...%u\n",size);

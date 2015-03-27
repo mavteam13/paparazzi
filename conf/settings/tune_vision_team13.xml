@@ -9,6 +9,7 @@
        <dl_setting var="thres"  min="0" step="1" max="255" shortname="threshold" />
        <dl_setting var="thres_verticalcount"  min="0" step="1" max="255" shortname="thres_verticalcount" />
        <dl_setting var="thres_disparity"  min="0" step="1" max="255" shortname="thres_disparity" />
+       <dl_setting var="multiply_disparity"  min="1" step="1" max="5" shortname="multiply_disparity" />
        <dl_setting var="stereo_nav_status"  min="0" step="1" max="2" module="mavteam13/nav_team13" shortname="stereo_nav_status" />
     </dl_settings>
 

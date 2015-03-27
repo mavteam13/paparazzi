@@ -10,6 +10,8 @@ int thres=30;
 //int stereo_nav_status=0;
 int thres_verticalcount=90;
 int thres_disparity=0;
+int multiply_disparity=1;
+
 void sobel_edge_filter(struct img_struct *input,struct img_struct *output)
 {
 
@@ -139,11 +141,11 @@ void image_difference(struct img_struct *input,struct img_struct *input_prev,str
     }
 }
 
-void detect_vertical_lines(struct img_struct *input, struct img_struct *output ,uint8_t *pxlcnt_lines,uint8_t *pxlcnt_lines_bin){
+int detect_vertical_lines(struct img_struct *input, struct img_struct *output ,uint8_t *pxlcnt_lines,uint8_t *pxlcnt_lines_bin){
 
     uint8_t *source = input->buf;
     uint8_t *dest = output->buf;
-
+    int safe_heading_disp;
 
     uint8_t pxlcnt_temp;
    // uint8_t pxlcnt_lines_bin[input->w];
@@ -174,7 +176,7 @@ void detect_vertical_lines(struct img_struct *input, struct img_struct *output ,
     for(uint16_t x = 0;x<input->w; x++) {
 
         if(pxlcnt_lines[x]>thres_disparity){
-            int D=pxlcnt_lines[x];
+            int D=multiply_disparity*pxlcnt_lines[x];
             printf(" disparity is %d\n",D);
             for(int r=-D;r<D;r++)
             {
@@ -192,15 +194,38 @@ void detect_vertical_lines(struct img_struct *input, struct img_struct *output ,
                 uint32_t idx = input->w*y*2 + (x)*2;
 
                 if(pxlcnt_lines_bin[x]==1){
-                    dest[idx]=0;
-                }else     dest[idx]=127;
+                    dest[idx+1]=255;
+                }else     dest[idx+1]=0;
 
-                dest[idx+1]=source[idx+1];
+                dest[idx]=127;//source[idx+1];
             }
 
         }
 
+        //search right
+        int safe_heading_disp_left=-45;
 
+        for(uint16_t x=(input->w)/2;x>=0;x--)
+        {if(pxlcnt_lines_bin[x]==0){
+                safe_heading_disp_left=-(input->w/2-x)/4;
+                break;
+            }}
+        int safe_heading_disp_right=45;
+
+        for(uint16_t x=0;x<(input->w)/2;x++)
+        {if(pxlcnt_lines_bin[x]==0){
+                safe_heading_disp_right=-(input->w/2-x)/4;
+                break;
+            }}
+
+        if (abs(safe_heading_disp_left)<abs(safe_heading_disp_right))
+        {
+            safe_heading_disp=safe_heading_disp_left;
+        }else{
+            safe_heading_disp=safe_heading_disp_right;
+        }
+
+        return safe_heading_disp;
 
     }
     void image_flow(struct img_struct *input,struct img_struct *input_prev,struct img_struct *output,double increment_value)
@@ -254,7 +279,7 @@ void detect_vertical_lines(struct img_struct *input, struct img_struct *output ,
                 }
                 // printf("%d",idx_count);
 
-                if(value>200){
+                if(value==255){
                     pxcnt[idx_count-1]=pxcnt[idx_count-1]+1;
                     pxcnt_tot++;
                 }

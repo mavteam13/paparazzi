@@ -145,10 +145,12 @@
    </block>
     <block name="stereo_foto_testing"> 
         <call fun="NavSetWaypointHere(WP_foto1)"/>
+        <call fun="wait_wp1()"/>
         <stay wp="foto1" until="stage_time>1"/>
-        <call fun="offset_wp_cm(WP_foto1,WP_foto2,10)"/>
-        <stay wp="foto2" />
-	     
+        <call fun="offset_wp_cm(WP_foto1,WP_foto2,50)"/>
+        <stay wp="foto2" until="stage_time>3"/>
+        <call fun="wait_wp2()"/>
+        <stay wp="foto2"/>
    </block>
 
    <block key="M" name="move_Xm">

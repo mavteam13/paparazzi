@@ -180,7 +180,7 @@ bool_t stereo_loop(uint8_t wpfoto){
         // Waiting for a response from vision
         if (stereo_vision_status==1) 
             {
-            offset_wp_cm(wpfoto,wpfoto,10);
+            offset_wp_cm(wpfoto,wpfoto,50);
             stereo_nav_status = -2;
             }
         break;

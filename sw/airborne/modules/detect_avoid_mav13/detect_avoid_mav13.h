@@ -53,6 +53,10 @@ extern int color_tresh;
 // extern int obstacle_heading;
 extern int safe_heading;
 
+//for stereo vision
+
+extern int stereo_vision_status;
+
 // by Jaime - finds if obstacle is in path and nearby.
 extern int obs_2sect_front;
 

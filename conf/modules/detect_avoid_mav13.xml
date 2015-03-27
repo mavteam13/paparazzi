@@ -11,6 +11,7 @@
   <periodic fun="detect_avoid_run()" freq="10" start="detect_avoid_start()" stop="detect_avoid_stop()" autorun="TRUE"/>
   <!--datalink message="detect_avoid_message" fun="detect_avoid_callback"/-->
   <makefile>
+    <file name="edgefilter.c" dir="modules/computer_vision"/>
     <file name="detect_avoid_mav13.c"/>
     <file name="jpeg.c" dir="modules/computer_vision/cv/encoding"/>
     <file name="rtp.c" dir="modules/computer_vision/cv/encoding"/>

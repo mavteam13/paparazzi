@@ -143,6 +143,14 @@
         <!-- set a flag 2nd position is ready, wait for a flag from vision-->
         <call fun="wait_wp2()"/>
    </block>
+    <block name="stereo_foto_testing"> 
+        <call fun="NavSetWaypointHere(WP_foto1)"/>
+        <stay wp="foto1" until="stage_time>1"/>
+        <call fun="offset_wp_cm(WP_foto1,WP_foto2,10)"/>
+        <stay wp="foto2" />
+	     
+   </block>
+
    <block key="M" name="move_Xm">
       <call fun="NavSetWaypointHere(WP_curr)"/>
 
@@ -153,7 +161,7 @@
       <go from="curr" hmode="route" wp="next" approaching_time="0"/><stay wp="next"/>
    </block>
    <block name="move_global_wp">
-     <call fun="move_global_wp(WP_global,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4, WP_next,WP_curr)"/>
+     <call fun="move_global_wp(WP_global,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4, WP_next, WP_curr)"/>
      <!--Calls function that changes the global wp to the next in a list of 4 corner wp's--> 
      <deroute block="move_next_wp"/>
    </block>

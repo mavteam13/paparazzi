@@ -170,7 +170,7 @@ bool_t stereo_loop(uint8_t wpfoto){
     switch(stereo_nav_status)
         {
         case -1 :
-        if (nav_approaching_from(wpfoto, NULL, 0)) { stereo_nav_status = 1; printf("Wp1 reached");}
+        if (nav_approaching_from(&waipoints[wpfoto], NULL, 0)) { stereo_nav_status = 1; printf("Wp1 reached");}
         break;
         
         case 1 :
@@ -183,7 +183,7 @@ bool_t stereo_loop(uint8_t wpfoto){
         break;
         
         case -2 :
-        if (nav_approaching_from(wpfoto, NULL, 0)) { stereo_nav_status = 2; printf("Wp2 reached"); }
+        if (nav_approaching_from(&waipoints[wpfoto], NULL, 0)) { stereo_nav_status = 2; printf("Wp2 reached"); }
         break;
         
         case 2 :

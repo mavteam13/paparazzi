@@ -43,7 +43,7 @@ int16_t next_heading;
 int safe_heading;
 int obs_2sect_front;
 int stereo_nav_status = 0; 
-int stereo_vision_status; 
+int stereo_vision_status;
 
 
 //****** Functions ******//
@@ -124,6 +124,71 @@ bool_t move_global_wp(uint8_t glob,uint8_t fz1,uint8_t fz2,uint8_t fz3,uint8_t f
   }
   return FALSE;
 }
+
+//////////////////////////////////////////////////////
+// New functions added by Matej
+
+bool_t NavSetWaypointTowardsHeadingNew(uint8_t curr, uint8_t dist, uint8_t next, uint8_t heading)
+    {
+    int32_t s_heading, c_heading;
+    // distance in cm's
+    // random heading (angle) -32,-16,0,16,32 degrees
+    // safe_heading = ((rand() % 5) * 16) - 32;
+    // safe_heading = 45; //hack for sim testing
+    offset_heading = INT32_RAD_OF_DEG(safe_heading << (INT32_ANGLE_FRAC));
+    printf("nav_heading= %d \n", nav_heading);
+    printf("offset_heading= %d \n", offset_heading);
+    PPRZ_ITRIG_SIN(s_heading, nav_heading+offset_heading);
+    PPRZ_ITRIG_COS(c_heading, nav_heading+offset_heading);
+    waypoints[heading].x = waypoints[curr].x + INT_MULT_RSHIFT(dist,s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
+    waypoints[heading].y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
+    if (safe_heading==90 || safe_heading==-90)
+    {
+        waypoints[next].x=waypoints[curr].x;
+        waypoints[next].y=waypoints[curr].y;
+    }
+    else
+    {
+        waypoints[next].x=waypoints[heading].x;
+        waypoints[next].y=waypoints[heading].y;
+    }
+    printf("heading error= %d \n", safe_heading);
+    return FALSE;
+}
+
+
+bool_t move_global_wp_new(uint8_t glob,uint8_t fz1,uint8_t fz2,uint8_t fz3,uint8_t fz4,uint8_t nxt,uint8_t curr,uint8_t heading)
+{
+  if (!InsideFlight_Area((float)INT_MULT_RSHIFT(1,waypoints[nxt].x,INT32_POS_FRAC),(float)INT_MULT_RSHIFT(1,waypoints[nxt].y,INT32_POS_FRAC)) || nav_approaching_from(&waypoints[glob],NULL,0))
+  //if (!InsideFlight_Area(GetPosX(),GetPosY()))
+  {
+    printf("out of bound triggered\n");
+    if (waypoints[glob].x==waypoints[fz1].x)
+    {
+      waypoints[glob].x=waypoints[fz2].x;
+      waypoints[glob].y=waypoints[fz2].y;
+    }
+    else if (waypoints[glob].x==waypoints[fz2].x) {
+      waypoints[glob].x=waypoints[fz3].x;
+      waypoints[glob].y=waypoints[fz3].y;
+    }
+    else if (waypoints[glob].x==waypoints[fz3].x) {
+      waypoints[glob].x=waypoints[fz4].x;
+      waypoints[glob].y=waypoints[fz4].y;
+    }
+    else if (waypoints[glob].x==waypoints[fz4].x) {
+      waypoints[glob].x=waypoints[fz1].x;
+      waypoints[glob].y=waypoints[fz1].y;
+    }
+    waypoints[heading].x=waypoints[glob].x;
+    waypoints[heading].y=waypoints[glob].y;
+    waypoints[nxt].x=waypoints[curr].x;
+    waypoints[nxt].y=waypoints[curr].y;
+  }
+  return FALSE;
+}
+
+//////////////////////////////////////////////////////////////////////////////////
 
 bool_t NavSetWaypointAvoidInBounds(uint8_t curr, uint8_t dist, uint8_t next)
 {

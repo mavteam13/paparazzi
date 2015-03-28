@@ -1,6 +1,6 @@
 <!DOCTYPE flight_plan SYSTEM "flight_plan.dtd">
 
-<flight_plan alt="148.5" ground_alt="147" lat0="51.990634" lon0="4.376789" max_dist_from_home="150" name="Rotorcraft Basic (Enac)" security_height="1">
+<flight_plan alt="1.5" ground_alt="0" lat0="51.990634" lon0="4.376789" max_dist_from_home="150" name="Rotorcraft Basic (Enac)" security_height="1">
   <header>
 #include "autopilot.h"
 #include "subsystems/ahrs.h"
@@ -124,12 +124,12 @@
     </block>
     <block name="stereo_foto_init">
         <call fun="stereo_init(WP_foto1)"/>
-        <stay wp="foto1"/>
+        <stay wp="foto1" until="stage_time>2"/>
         <deroute block="stereo_foto_loop"/>
     </block>
     <block name="stereo_foto_loop">
         <call fun="stereo_loop(WP_foto1)"/>
-        <stay wp="foto1"/>
+        <stay wp="foto1" until="stage_time>0"/>
         <deroute block="stereo_foto_loop"/>
     </block>
     <block name="stereo_foto_testing"> 
@@ -140,6 +140,47 @@
         <stay wp="foto2" until="stage_time>3"/>
         <call fun="flag_wp2()"/>
         <stay wp="foto2"/>
+   </block>
+   <block name="stereo_foto_testing_loop"> 
+        <!-- Stereo vision manouvre -->
+        <call fun="NavSetWaypointHere(WP_foto1)"/>
+        <call fun="nav_set_heading_towards_waypoint(WP_global)"/>
+        <stay wp="foto1" until="stage_time>1"/>
+        <call fun="flag_wp1()"/>
+        <stay wp="foto1" until="stage_time>1"/>
+        <call fun="offset_wp_cm(WP_foto1,WP_foto2,50)"/>
+        <stay wp="foto2" until="stage_time>3"/>
+        <call fun="flag_wp2()"/>
+        <stay wp="foto2" until="stage_time>2"/>
+        <!-- navigation to the next WP -->
+        <call fun="NavSetWaypointHere(WP_curr)"/>
+        <!-- New heading based on vision--> 
+        <call fun="NavSetWaypointTowardsHeadingNew(WP_curr,100,WP_next,WP_heading)"/> 
+        <!-- Change if not in the area--> 
+        <call fun="move_global_wp_new(WP_global,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4, WP_next,WP_curr,WP_heading)"/>
+        <!-- Move--> 
+        <stay wp="curr" until="stage_time>0"/>
+        <call fun="nav_set_heading_towards_waypoint(WP_heading)"/>	
+        <stay wp="curr" until="stage_time>0"/>
+        <go from="curr" hmode="route" wp="next" approaching_time="0"/>
+        <stay wp="next" until="stage_time>2"/>
+        <deroute block="stereo_foto_testing_loop"/>
+   </block>
+   <block name="color_testing_loop"> 
+        <call fun="NavSetWaypointHere(WP_curr)"/>
+        <call fun="nav_set_heading_towards_waypoint(WP_global)"/>	
+        <stay wp="curr" until="stage_time>1"/>
+        <!-- New heading based on vision--> 
+        <call fun="NavSetWaypointTowardsHeadingNew(WP_curr,100,WP_next,WP_heading)"/> 
+        <!-- Change if not in the area--> 
+        <call fun="move_global_wp_new(WP_global,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4, WP_next,WP_curr,WP_heading)"/>
+        <!-- Move--> 
+        <stay wp="curr" until="stage_time>0"/>
+        <call fun="nav_set_heading_towards_waypoint(WP_heading)"/>	
+        <stay wp="curr" until="stage_time>0"/>
+        <go from="curr" hmode="route" wp="next" approaching_time="0"/>
+        <stay wp="next" until="stage_time>2"/>
+        <deroute block="color_testing_loop"/>
    </block>
    <block key="M" name="move_Xm">
       <call fun="NavSetWaypointHere(WP_curr)"/>
@@ -161,8 +202,8 @@
    </block>
    <block name="move_next_wp">
       <call fun="NavSetWaypointHere(WP_curr)"/>
-      <call fun="nav_set_heading_towards_waypoint(WP_global)"/>	
-      <stay wp="curr" until="stage_time>1"/>
+      <!--call fun="nav_set_heading_towards_waypoint(WP_global)"/-->	
+      <!--stay wp="curr" until="stage_time>1"/-->
       <call fun="NavSetWaypointTowardsHeading(WP_curr,100,WP_next)"/> 
       <!--call fun="nav_set_heading_towards_waypoint(WP_heading)"/>	set heading to next waypoint and check again
       <while cond="!safe_heading==0">

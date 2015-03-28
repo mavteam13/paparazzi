@@ -17,6 +17,7 @@
     <waypoint name="foto2" x="0.0" y="0.0"/>
     <waypoint name="curr" x="0.0" y="0.0"/>
     <waypoint name="next" x="0.0" y="0.0"/>
+    <waypoint name="heading" x="0.0" y="0.0"/>
     <waypoint name="global" lat="51.9906502" lon="4.3767212"/>
     <waypoint name="deg90" x="0.0" y="0.0"/>
     <waypoint lat="51.9906414" lon="4.3767839" name="p1"/>
@@ -172,20 +173,21 @@
       <stay wp="p1"/>
    </block>
    <block name="move_next_wp">
-      <!--exception cond="!InsideFlight_Area(coordinateX(WP_next), coordinateY(WP_next))" deroute="move_global_wp"/-->
-
       <call fun="NavSetWaypointHere(WP_curr)"/>
       <call fun="nav_set_heading_towards_waypoint(WP_global)"/>	
-      <!--vision stuff-->
       <stay wp="curr" until="stage_time>1"/>
-      <call fun="NavSetWaypointTowardsHeading(WP_curr,100,WP_next)"/>
+      <call fun="NavSetWaypointTowardsHeading(WP_curr,100,WP_next)"/> 
+      <!--call fun="nav_set_heading_towards_waypoint(WP_heading)"/>	set heading to next waypoint and check again
+      <while cond="!safe_heading==0">
+        <call fun="NavSetWaypointTowardsHeading(WP_curr,100,WP_next,WP_heading)"/> create new next waypoint
+        <call fun="nav_set_heading_towards_waypoint(WP_heading)"/>	set heading to next waypoint and check again
+      </while-->
       <call fun="move_global_wp(WP_global,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4, WP_next,WP_curr)"/>
-      <call fun="nav_set_heading_towards_waypoint(WP_next)"/>	
       <stay wp="curr" until="stage_time>0"/>
       <go from="curr" hmode="route" wp="next" approaching_time="0"/>
-      <stay wp="next" until="stage_time>1"/>
+      <stay wp="next" until="stage_time>2"/>
       <deroute block="move_next_wp"/>
-   </block>	
+   </block>
    <block name="heading_p1">
       <call fun="NavSetWaypointHere(WP_curr)"/>
       <call fun="nav_set_heading_towards_waypoint(WP_p1)"/>

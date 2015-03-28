@@ -34,129 +34,144 @@
 #include "subsystems/datalink/downlink.h"
 #include "generated/flight_plan.h" 
 #include "math/pprz_algebra_int.h"
+#include "navigation.h" 
 
 //****** Declare variables ******//
 
-  int16_t offset_heading;
-  int safe_heading;
-  int obs_2sect_front;
-  int stereo_nav_status = 0; 
-  int stereo_vision_status; 
+int16_t offset_heading;
+int16_t next_heading;
+int safe_heading;
+int obs_2sect_front;
+int stereo_nav_status = 0; 
+int stereo_vision_status; 
 
 
 //****** Functions ******//
 
-void nav_team13_init(void) {
-	printf("init1\n");
-	srand(time(NULL));
-	
+void nav_team13_init(void)
+{
+  printf("init1\n");
+  srand(time(NULL));
 }
 
 bool_t NavSetWaypointTowardsHeading(uint8_t curr, uint8_t dist, uint8_t next)
 {
-
-// distance in cm's
+  // distance in cm's
   int32_t s_heading, c_heading;
 
-// random heading (angle) -32,-16,0,16,32 degrees
-//  safe_heading = ((rand() % 5) * 16) - 32;
-// safe_heading = 45;  //hack for sim testing
-
-
-  	offset_heading = INT32_RAD_OF_DEG(safe_heading << (INT32_ANGLE_FRAC));
+  // random heading (angle) -32,-16,0,16,32 degrees
+  // safe_heading = ((rand() % 5) * 16) - 32;
+  // safe_heading = 45;  //hack for sim testing
+  printf("0 \n");
+  offset_heading = 0;
+  PPRZ_ITRIG_SIN(s_heading, nav_heading+offset_heading);
+  PPRZ_ITRIG_COS(c_heading, nav_heading+offset_heading);
+  while (safe_heading != 0)
+  {
+    printf("1 \n");
+    offset_heading = offset_heading+INT32_RAD_OF_DEG(safe_heading << (INT32_ANGLE_FRAC));
   
-  	printf("nav_heading= %d \n", nav_heading);
-  	printf("offset_heading= %d \n", offset_heading);
-  	PPRZ_ITRIG_SIN(s_heading, nav_heading+offset_heading);
-  	PPRZ_ITRIG_COS(c_heading, nav_heading+offset_heading);
-  	waypoints[next].x = waypoints[curr].x + INT_MULT_RSHIFT(dist,s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
-  	waypoints[next].y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
+    printf("nav_heading= %d \n", nav_heading);
+    printf("offset_heading= %d \n", offset_heading);
+    PPRZ_ITRIG_SIN(s_heading, nav_heading+offset_heading);
+    PPRZ_ITRIG_COS(c_heading, nav_heading+offset_heading);
+    next_heading=nav_heading+offset_heading; 	
 
- 	 //printf("heading error= %d \n", safe_heading);
- 	 return FALSE;
-}
+    waypoints[next].x = waypoints[curr].x + INT_MULT_RSHIFT(dist,s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
+    waypoints[next].y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
 
-bool_t NavSetWaypointAvoidInBounds(uint8_t curr, uint8_t dist, uint8_t next)
-{
-// distance in cm's
+    nav_set_heading_towards_waypoint(next);
+    while ( (nav_heading - next_heading)>-20 && (nav_heading - next_heading)<20 )
+    {
+      printf("2 \n");
+    }
+    printf("heading error= %d \n", safe_heading);
+    return FALSE;
+  }
+  waypoints[next].x = waypoints[curr].x + INT_MULT_RSHIFT(dist,s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
+  waypoints[next].y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
+  printf("3 \n");
 
-// declare variables
-  int32_t s_heading, c_heading;
-  int8_t InBoundAndSafe = 0;   // flag to determine if next heading is inbounds and safe
-  int8_t offsetsign;
-  int16_t turncount = 0;
-// safe_heading = 45;  //hack for sim testing
-
-  	offset_heading = INT32_RAD_OF_DEG(safe_heading << (INT32_ANGLE_FRAC));
-  if (offset_heading==0){offsetsign=0;} else if (offset_heading>0){offsetsign=1;} else {offsetsign=-1;}  //determine sign of offset
-  
-while (InBoundAndSafe == 0)
-{
-turncount++;
-// calculate location for next waypoint
-  	offset_heading = INT32_RAD_OF_DEG(safe_heading << (INT32_ANGLE_FRAC));
-
-  	PPRZ_ITRIG_SIN(s_heading, nav_heading+offset_heading);
-  	PPRZ_ITRIG_COS(c_heading, nav_heading+offset_heading);
-  	waypoints[next].x = waypoints[curr].x + INT_MULT_RSHIFT(dist,s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
-  	waypoints[next].y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
-
-	if (!InsideFlight_Area((float)INT_MULT_RSHIFT(1,waypoints[next].x,INT32_POS_FRAC),(float)INT_MULT_RSHIFT(1,waypoints[next].y,INT32_POS_FRAC)))
-	{  // if the new wp is not within the boundary of Flight_area, turn the opposite direction to find a new safe heading.
-	nav_heading = nav_heading- offsetsign * 45;
-		
-	}
-	
-	else { InBoundAndSafe=1;}
-	}
- 	 //printf("heading error= %d \n", safe_heading);
- 	 return FALSE;
+  //printf("heading error= %d \n", safe_heading);
+  return FALSE;
 }
 
 bool_t move_global_wp(uint8_t glob,uint8_t fz1,uint8_t fz2,uint8_t fz3,uint8_t fz4,uint8_t nxt,uint8_t curr)
 {
-	if (!InsideFlight_Area((float)INT_MULT_RSHIFT(1,waypoints[nxt].x,INT32_POS_FRAC),(float)INT_MULT_RSHIFT(1,waypoints[nxt].y,INT32_POS_FRAC)))
-	//if (!InsideFlight_Area(GetPosX(),GetPosY()))
-	{
-		printf("out of bound triggered\n");
-		printf("getposx %f \n",GetPosX());
-		printf("getposy %f \n",GetPosY());
-		printf("wp x %f \n",(float)waypoints[nxt].x);
-		printf("wp y %f \n",(float)waypoints[nxt].y);
-		if (waypoints[glob].x==waypoints[fz1].x) {
-			waypoints[glob].x=waypoints[fz2].x;
-			waypoints[glob].y=waypoints[fz2].y;
-		}
-		else if (waypoints[glob].x==waypoints[fz2].x) {
-			waypoints[glob].x=waypoints[fz3].x;
-			waypoints[glob].y=waypoints[fz3].y;
-		}
-		else if (waypoints[glob].x==waypoints[fz3].x) {
-			waypoints[glob].x=waypoints[fz4].x;
-			waypoints[glob].y=waypoints[fz4].y;
-		}
-		else if (waypoints[glob].x==waypoints[fz4].x) {
-			waypoints[glob].x=waypoints[fz1].x;
-			waypoints[glob].y=waypoints[fz1].y;
-		}
-		nav_set_heading_towards_waypoint(glob);
-		NavSetWaypointTowardsHeading(curr,55,nxt);
-	}
-	return FALSE;
+  if (!InsideFlight_Area((float)INT_MULT_RSHIFT(1,waypoints[nxt].x,INT32_POS_FRAC),(float)INT_MULT_RSHIFT(1,waypoints[nxt].y,INT32_POS_FRAC)) || nav_approaching_from(&waypoints[glob],NULL,0))
+  //if (!InsideFlight_Area(GetPosX(),GetPosY()))
+  {
+    printf("out of bound triggered\n");
+    if (waypoints[glob].x==waypoints[fz1].x)
+    {
+      waypoints[glob].x=waypoints[fz2].x;
+      waypoints[glob].y=waypoints[fz2].y;
+    }
+    else if (waypoints[glob].x==waypoints[fz2].x) {
+      waypoints[glob].x=waypoints[fz3].x;
+      waypoints[glob].y=waypoints[fz3].y;
+    }
+    else if (waypoints[glob].x==waypoints[fz3].x) {
+      waypoints[glob].x=waypoints[fz4].x;
+      waypoints[glob].y=waypoints[fz4].y;
+    }
+    else if (waypoints[glob].x==waypoints[fz4].x) {
+      waypoints[glob].x=waypoints[fz1].x;
+      waypoints[glob].y=waypoints[fz1].y;
+    }
+    nav_set_heading_towards_waypoint(glob);
+    NavSetWaypointTowardsHeading(curr,55,nxt);
+  }
+  return FALSE;
 }
 
-bool_t offset_wp_cm(uint8_t wp1, uint8_t wp2, uint8_t d){
+bool_t NavSetWaypointAvoidInBounds(uint8_t curr, uint8_t dist, uint8_t next)
+{
+  // distance in cm's
 
-    /*int32_t nh = stateGetNedToBodyEulers_i() ->psi; */
-	int32_t s_heading, c_heading;
-	
-    PPRZ_ITRIG_SIN(s_heading, nav_heading);
-    PPRZ_ITRIG_COS(c_heading, nav_heading);
-      
-    waypoints[wp2].x = waypoints[wp1].x + INT_MULT_RSHIFT(d,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC)/100;
-    waypoints[wp2].y = waypoints[wp1].y + INT_MULT_RSHIFT(d,-s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC)/100;
+  // declare variables
+  int32_t s_heading, c_heading;
+  int8_t InBoundAndSafe = 0;   // flag to determine if next heading is inbounds and safe
+  int8_t offsetsign;
+  int16_t turncount = 0;
+  // safe_heading = 45;  //hack for sim testing
+
+  offset_heading = INT32_RAD_OF_DEG(safe_heading << (INT32_ANGLE_FRAC));
+  if (offset_heading==0){offsetsign=0;} else if (offset_heading>0){offsetsign=1;} else {offsetsign=-1;}  //determine sign of offset
+  
+  while (InBoundAndSafe == 0)
+  {
+    turncount++;
+    // calculate location for next waypoint
+    offset_heading = INT32_RAD_OF_DEG(safe_heading << (INT32_ANGLE_FRAC));
+
+    PPRZ_ITRIG_SIN(s_heading, nav_heading+offset_heading);
+    PPRZ_ITRIG_COS(c_heading, nav_heading+offset_heading);
+    waypoints[next].x = waypoints[curr].x + INT_MULT_RSHIFT(dist,s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
+    waypoints[next].y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
     
-    return FALSE;
+    if (!InsideFlight_Area((float)INT_MULT_RSHIFT(1,waypoints[next].x,INT32_POS_FRAC),(float)INT_MULT_RSHIFT(1,waypoints[next].y,INT32_POS_FRAC)))
+      {  // if the new wp is not within the boundary of Flight_area, turn the opposite direction to find a new safe heading.
+        nav_heading = nav_heading- offsetsign * 45;
+      }
+    else { InBoundAndSafe=1;}
+  }
+  //printf("heading error= %d \n", safe_heading);
+  return FALSE;
+}
+
+bool_t offset_wp_cm(uint8_t wp1, uint8_t wp2, uint8_t d)
+{
+  /*int32_t nh = stateGetNedToBodyEulers_i() ->psi; */
+  int32_t s_heading, c_heading;
+	
+  PPRZ_ITRIG_SIN(s_heading, nav_heading);
+  PPRZ_ITRIG_COS(c_heading, nav_heading);
+      
+  waypoints[wp2].x = waypoints[wp1].x + INT_MULT_RSHIFT(d,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC)/100;
+  waypoints[wp2].y = waypoints[wp1].y + INT_MULT_RSHIFT(d,-s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC)/100;
+    
+  return FALSE;
 }
 
 bool_t stereo_init(uint8_t wpfoto){
@@ -197,24 +212,22 @@ bool_t stereo_loop(uint8_t wpfoto){
         break;  
         } 
     return FALSE;
+
+bool_t wait_wp1(void)
+{
+  printf("In wp1\n");
+  // Set flag: position ready for first photo
+  stereo_nav_status = 1;        
+  return FALSE;
 }
 
-
-bool_t wait_wp1(void){
-    printf("In wp1\n");
-    // Set flag: position ready for first photo
-    stereo_nav_status = 1;        
-    return FALSE;
+bool_t wait_wp2()
+{
+  printf("In wp2\n");
+  // Set flag: position ready for second photo
+  stereo_nav_status = 2; 
+  return FALSE;
 }
-
-
-bool_t wait_wp2(){
-    printf("In wp2\n");
-    // Set flag: position ready for second photo
-    stereo_nav_status = 2; 
-    return FALSE;
-}
-
 
 // Is the safe heading not ==0?
 bool_t obstacle_in_path(void)
@@ -228,10 +241,11 @@ bool_t obstacle_in_path(void)
   if (safe_heading==0) { return FALSE; }
   return TRUE;
 }
+
 // Is the obstacle in front of me and nearby?
 bool_t obstacle_nearby(void)
 {
-	if (safe_heading==0){return FALSE;}
-	else if (obs_2sect_front){return TRUE;}
-	else {return FALSE;}
+  if (safe_heading==0){return FALSE;}
+  else if (obs_2sect_front){return TRUE;}
+  else {return FALSE;}
 }

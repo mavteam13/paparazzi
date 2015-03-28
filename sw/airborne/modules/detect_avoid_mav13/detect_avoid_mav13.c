@@ -236,14 +236,22 @@ void *computervision_thread_main(void* data)
 
             if(stereo_nav_status==2&&intern_nav_status==1){
 
+
+                usleep(2000000);
                 printf("Taking second image\n");
                 //blur_filter(&small,&small_blur,Gsize,sigma);
+
 
                 memcpy(small_frame2.buf,small.buf,small.h*small.w*2);
                 //sobel_edge_filter(&small_frame1, &small_sobel);
                 //blur_filter(&small_frame2,&small_blur)
 
+                printf("Saving first image\n");
+
                 stereo_vision_status=2;
+
+                printf("Flag send for second image\n");
+
 
                 intern_nav_status++;
 
@@ -252,6 +260,8 @@ void *computervision_thread_main(void* data)
 
             if(stereo_nav_status==2&&intern_nav_status==2){
                 printf("Processing stereo image\n");
+
+
 
                 blur_filter(&small_frame1,&small_blur1);
                 blur_filter(&small_frame2,&small_blur2);
@@ -283,20 +293,21 @@ void *computervision_thread_main(void* data)
                   //safe_head=detectobst(pxcnt_tot, pxcnt,obst, color_tresh, 5);
 
                  //printf("Obstacles L --> R = %d %d %d %d %d \n", obst[0], obst[1], obst[2], obst[3], obst[4]);
-                 printf("Safe heading = %d \n", safe_head);
 
-                 // intern_nav_status=0;
+                printf("Safe heading = %d \n", safe_head);
+
+                  intern_nav_status=0;
 
 
             }
 
             //for tuning
-            if(stereo_nav_status==0&&intern_nav_status==2) {
+            /*if(stereo_nav_status==0&&intern_nav_status==2) {
                 intern_nav_status=0;
                 stereo_vision_status=0;
 
                 printf("Stereo vision navigation off\n");
-            }
+            }*/
 
 
             // the following variables should store the results:
@@ -373,3 +384,4 @@ void detect_avoid_stop(void)
 
 
 //void detect_avoid_callback(void) {}
+

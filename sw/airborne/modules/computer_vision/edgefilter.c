@@ -9,8 +9,8 @@ double sigma=3.0;
 int thres=30;
 //int stereo_nav_status=0;
 int thres_verticalcount=90;
-int thres_disparity=0;
-int multiply_disparity=1;
+int thres_disparity=10;
+int multiply_disparity=2;
 
 void sobel_edge_filter(struct img_struct *input,struct img_struct *output)
 {

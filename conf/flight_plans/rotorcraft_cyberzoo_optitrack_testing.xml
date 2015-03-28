@@ -149,7 +149,7 @@
         <stay wp="foto1" until="stage_time>1"/>
         <call fun="flag_wp1()"/>
         <stay wp="foto1" until="stage_time>1"/>
-        <call fun="offset_wp_cm(WP_foto1,WP_foto2,50)"/>
+        <call fun="offset_wp_cm(WP_foto1,WP_foto2,20)"/>
         <stay wp="foto2" until="stage_time>3"/>
         <call fun="flag_wp2()"/>
         <stay wp="foto2" until="stage_time>2"/>

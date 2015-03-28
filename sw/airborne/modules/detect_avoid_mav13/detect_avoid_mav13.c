@@ -41,9 +41,9 @@ int obs_2sect_front = 0;
 
 
 // vision algorithm switch:
-int vision_switch = 1; // 1 - color detection
-                       // 2 - stereo vision
-                       // Should we define this as "extern" to be able to switch from the GUI?
+int vision_switch = 2; // 1 - color detection
+// 2 - stereo vision
+// Should we define this as "extern" to be able to switch from the GUI?
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -142,7 +142,7 @@ void *computervision_thread_main(void* data)
     small.h = vid.h / DOWNSIZE_FACTOR;
     small.buf = (uint8_t*)malloc(small.w*small.h*2);
 
-        struct img_struct small_edge;
+    struct img_struct small_edge;
     small_edge.w = vid.w / DOWNSIZE_FACTOR;
     small_edge.h = vid.h / DOWNSIZE_FACTOR;
     small_edge.buf = (uint8_t *)malloc(small_edge.w *small_edge.h * 2);
@@ -274,29 +274,29 @@ void *computervision_thread_main(void* data)
                 uint8_t pxlcnt_lines[small.w];
                 uint8_t pxlcnt_lines_bin[small.w];
 
-                int safe_head;
+                //int safe_head;
 
-                safe_head=detect_vertical_lines(&small_diff,&small_edge,&pxlcnt_lines,&pxlcnt_lines_bin);
+                safe_heading=detect_vertical_lines(&small_diff,&small_edge,&pxlcnt_lines,&pxlcnt_lines_bin);
 
 
 
-               //  uint8_t pxcnt_size=5;
-              //  uint32_t pxcnt[5]={0};
+                //  uint8_t pxcnt_size=5;
+                //  uint32_t pxcnt[5]={0};
 
-              //  int pxcnt_tot;
-               //  pxcnt_tot=pixelcount(&small_edge,&pxcnt,pxcnt_size);
+                //  int pxcnt_tot;
+                //  pxcnt_tot=pixelcount(&small_edge,&pxcnt,pxcnt_size);
 
-               // int color_tresh=600;
+                // int color_tresh=600;
 
 
                 //uint32_t obst[5]={0};
-                  //safe_head=detectobst(pxcnt_tot, pxcnt,obst, color_tresh, 5);
+                //safe_head=detectobst(pxcnt_tot, pxcnt,obst, color_tresh, 5);
 
-                 //printf("Obstacles L --> R = %d %d %d %d %d \n", obst[0], obst[1], obst[2], obst[3], obst[4]);
+                //printf("Obstacles L --> R = %d %d %d %d %d \n", obst[0], obst[1], obst[2], obst[3], obst[4]);
 
-                printf("Safe heading = %d \n", safe_head);
+                printf("Safe heading = %d \n", safe_heading);
 
-                  intern_nav_status=0;
+                intern_nav_status=0;
 
 
             }
@@ -320,7 +320,7 @@ void *computervision_thread_main(void* data)
         //////////////////////////////////////////////////////////////////////
         // Common code independent on vision algorithm
 
-        printf("Obstacles Detected L --> R = %d %d %d %d %d \n", obstac[0], obstac[1], obstac[2], obstac[3], obstac[4]);
+        // printf("Obstacles Detected L --> R = %d %d %d %d %d \n", obstac[0], obstac[1], obstac[2], obstac[3], obstac[4]);
         // printf("Safe heading = %d \n", safe_heading);
 
         //compute if obstacle occupies 2 sections including forward section
@@ -330,7 +330,7 @@ void *computervision_thread_main(void* data)
         else if (obstac[2]==1 && obstac[1]==1){obs_2sect_front = 1;}
         else {obs_2sect_front = 0;}
 
-      //  printf("2 obstacles in front = %d \n", obs_2sect_front);
+        //  printf("2 obstacles in front = %d \n", obs_2sect_front);
 
 
         /////////////////////////////////////////////////////////////////////

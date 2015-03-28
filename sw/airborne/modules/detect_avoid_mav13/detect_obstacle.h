@@ -50,9 +50,9 @@ inline int detectobst(int cnt_tot, int* counter, int* obstacle, int clr_tresh, i
   if (Nobst > 3)
     { 
     if ( obst_heading > 0 )
-        { safe_head = -90; }
+        { safe_head = 90; }
     else
-        { safe_head = -90; }
+        { safe_head = 90; }
     }
     
   // 3 obstacles
@@ -65,9 +65,9 @@ inline int detectobst(int cnt_tot, int* counter, int* obstacle, int clr_tresh, i
     else
         {
         if ( obst_heading > 0 )
-            { safe_head = -90; }
+            { safe_head = 90; }
         else
-            { safe_head = -90; }
+            { safe_head = 90; }
         }
         
     }
@@ -93,9 +93,9 @@ inline int detectobst(int cnt_tot, int* counter, int* obstacle, int clr_tresh, i
         else
             {
             if ( obst_heading > 0 )
-                { safe_head = -90; }
+                { safe_head = 90; }
             else
-                { safe_head = -90; }
+                { safe_head = 90; }
             }    
         }
     }

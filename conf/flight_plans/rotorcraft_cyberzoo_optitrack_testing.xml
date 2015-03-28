@@ -19,6 +19,7 @@
     <waypoint name="next" x="0.0" y="0.0"/>
     <waypoint name="heading" x="0.0" y="0.0"/>
     <waypoint name="global" lat="51.9906502" lon="4.3767212"/>
+    <waypoint name="global_prev" lat="51.9906502" lon="4.3767212"/>
     <waypoint name="deg90" x="0.0" y="0.0"/>
     <waypoint lat="51.9906414" lon="4.3767839" name="p1"/>
     <waypoint lat="51.9906441" lon="4.3767692" name="p2"/>
@@ -155,15 +156,15 @@
         <!-- navigation to the next WP -->
         <call fun="NavSetWaypointHere(WP_curr)"/>
         <!-- New heading based on vision--> 
-        <call fun="NavSetWaypointTowardsHeadingNew(WP_curr,100,WP_next,WP_heading)"/> 
+        <call fun="NavSetWaypointTowardsHeadingNew(WP_curr,100,WP_next,WP_heading,WP_global,WP_global_prev)"/> 
         <!-- Change if not in the area--> 
-        <call fun="move_global_wp_new(WP_global,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4, WP_next,WP_curr,WP_heading)"/>
+        <call fun="move_global_wp_new(WP_global,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4, WP_next,WP_curr,WP_heading,WP_global_prev)"/>
         <!-- Move--> 
         <stay wp="curr" until="stage_time>0"/>
         <call fun="nav_set_heading_towards_waypoint(WP_heading)"/>	
         <stay wp="curr" until="stage_time>0"/>
         <go from="curr" hmode="route" wp="next" approaching_time="0"/>
-        <stay wp="next" until="stage_time>2"/>
+        <stay wp="next" until="stage_time>wait_time"/>
         <deroute block="stereo_foto_testing_loop"/>
    </block>
    <block name="color_testing_loop"> 
@@ -171,15 +172,15 @@
         <call fun="nav_set_heading_towards_waypoint(WP_global)"/>	
         <stay wp="curr" until="stage_time>1"/>
         <!-- New heading based on vision--> 
-        <call fun="NavSetWaypointTowardsHeadingNew(WP_curr,100,WP_next,WP_heading)"/> 
+        <call fun="NavSetWaypointTowardsHeadingNew(WP_curr,100,WP_next,WP_heading,WP_global,WP_global_prev)"/> 
         <!-- Change if not in the area--> 
-        <call fun="move_global_wp_new(WP_global,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4, WP_next,WP_curr,WP_heading)"/>
+        <call fun="move_global_wp_new(WP_global,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4, WP_next,WP_curr,WP_heading,WP_global_prev)"/>
         <!-- Move--> 
         <stay wp="curr" until="stage_time>0"/>
         <call fun="nav_set_heading_towards_waypoint(WP_heading)"/>	
         <stay wp="curr" until="stage_time>0"/>
         <go from="curr" hmode="route" wp="next" approaching_time="0"/>
-        <stay wp="next" until="stage_time>2"/>
+        <stay wp="next" until="stage_time>wait_time"/>
         <deroute block="color_testing_loop"/>
    </block>
    <block key="M" name="move_Xm">

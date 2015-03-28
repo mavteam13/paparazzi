@@ -41,6 +41,7 @@
 int16_t offset_heading;
 int16_t next_heading;
 int safe_heading;
+int wait_time = 2;
 int obs_2sect_front;
 int stereo_nav_status = 0; 
 int stereo_vision_status;
@@ -128,7 +129,7 @@ bool_t move_global_wp(uint8_t glob,uint8_t fz1,uint8_t fz2,uint8_t fz3,uint8_t f
 //////////////////////////////////////////////////////
 // New functions added by Matej
 
-bool_t NavSetWaypointTowardsHeadingNew(uint8_t curr, uint8_t dist, uint8_t next, uint8_t heading)
+bool_t NavSetWaypointTowardsHeadingNew(uint8_t curr, uint8_t dist, uint8_t next, uint8_t heading, uint8_t global, uint8_t global_prev)
     {
     int32_t s_heading, c_heading;
     // distance in cm's
@@ -146,18 +147,26 @@ bool_t NavSetWaypointTowardsHeadingNew(uint8_t curr, uint8_t dist, uint8_t next,
     {
         waypoints[next].x=waypoints[curr].x;
         waypoints[next].y=waypoints[curr].y;
+        // waypoints[global_prev].x=waypoints[global].x;
+        // waypoints[global_prev].y=waypoints[global].y;
+        // waypoints[global].x=waypoints[heading].x;
+        // waypoints[global].y=waypoints[heading].y;
+        printf("90 deg heading detected");
+        
     }
     else
     {
         waypoints[next].x=waypoints[heading].x;
         waypoints[next].y=waypoints[heading].y;
+        // waypoints[global].x=waypoints[global_prev].x;
+        // waypoints[global].y=waypoints[global_prev].y;
     }
     printf("heading error= %d \n", safe_heading);
     return FALSE;
 }
 
 
-bool_t move_global_wp_new(uint8_t glob,uint8_t fz1,uint8_t fz2,uint8_t fz3,uint8_t fz4,uint8_t nxt,uint8_t curr,uint8_t heading)
+bool_t move_global_wp_new(uint8_t glob,uint8_t fz1,uint8_t fz2,uint8_t fz3,uint8_t fz4,uint8_t nxt,uint8_t curr,uint8_t heading, uint8_t glob_prev)
 {
   if (!InsideFlight_Area((float)INT_MULT_RSHIFT(1,waypoints[nxt].x,INT32_POS_FRAC),(float)INT_MULT_RSHIFT(1,waypoints[nxt].y,INT32_POS_FRAC)) || nav_approaching_from(&waypoints[glob],NULL,0))
   //if (!InsideFlight_Area(GetPosX(),GetPosY()))
@@ -180,10 +189,17 @@ bool_t move_global_wp_new(uint8_t glob,uint8_t fz1,uint8_t fz2,uint8_t fz3,uint8
       waypoints[glob].x=waypoints[fz1].x;
       waypoints[glob].y=waypoints[fz1].y;
     }
+    // waypoints[glob_prev].x=waypoints[glob].x;
+    // waypoints[glob_prev].y=waypoints[glob].y;
     waypoints[heading].x=waypoints[glob].x;
     waypoints[heading].y=waypoints[glob].y;
     waypoints[nxt].x=waypoints[curr].x;
     waypoints[nxt].y=waypoints[curr].y;
+    wait_time=0;
+  }
+  else
+  {
+    wait_time=2;
   }
   return FALSE;
 }

@@ -132,28 +132,15 @@
         <stay wp="foto1"/>
         <deroute block="stereo_foto_loop"/>
     </block>
-   <block name="stereo_foto"> <!--(take a pic @ current, place wp_foto2 ?cm to the right wrt heading)-->
-        <call fun="NavSetWaypointHere(WP_foto1)"/>
-        <!-- Wait till the WP_foto1 is reached -->
-        <stay wp="foto1" until="stage_time>1"/>
-        <!-- set a flag 1st position is ready, wait for a flag from vision-->
-        <call fun="wait_wp1()"/>
-        <!-- Move to the 2nd position, wait till it's reached, set a second flag, wait for confirmation-->
-        <call fun="offset_wp_cm(WP_foto1,WP_foto2,10)"/>
-        <stay wp="foto2" until="stage_time>1"/>
-        <!-- set a flag 2nd position is ready, wait for a flag from vision-->
-        <call fun="wait_wp2()"/>
-   </block>
     <block name="stereo_foto_testing"> 
         <call fun="NavSetWaypointHere(WP_foto1)"/>
-        <call fun="wait_wp1()"/>
+        <call fun="flag_wp1()"/>
         <stay wp="foto1" until="stage_time>1"/>
         <call fun="offset_wp_cm(WP_foto1,WP_foto2,50)"/>
         <stay wp="foto2" until="stage_time>3"/>
-        <call fun="wait_wp2()"/>
+        <call fun="flag_wp2()"/>
         <stay wp="foto2"/>
    </block>
-
    <block key="M" name="move_Xm">
       <call fun="NavSetWaypointHere(WP_curr)"/>
 

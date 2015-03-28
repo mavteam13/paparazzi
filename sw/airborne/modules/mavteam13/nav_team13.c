@@ -185,7 +185,7 @@ bool_t stereo_loop(uint8_t wpfoto){
     switch(stereo_nav_status)
         {
         case -1 :
-        if (nav_approaching_from(&waipoints[wpfoto], NULL, 0)) { stereo_nav_status = 1; printf("Wp1 reached");}
+        if (nav_approaching_from(&waypoints[wpfoto], NULL, 0)) { stereo_nav_status = 1; printf("Wp1 reached");}
         break;
         
         case 1 :
@@ -198,7 +198,7 @@ bool_t stereo_loop(uint8_t wpfoto){
         break;
         
         case -2 :
-        if (nav_approaching_from(&waipoints[wpfoto], NULL, 0)) { stereo_nav_status = 2; printf("Wp2 reached"); }
+        if (nav_approaching_from(&waypoints[wpfoto], NULL, 0)) { stereo_nav_status = 2; printf("Wp2 reached"); }
         break;
         
         case 2 :
@@ -212,8 +212,9 @@ bool_t stereo_loop(uint8_t wpfoto){
         break;  
         } 
     return FALSE;
+}
 
-bool_t wait_wp1(void)
+bool_t flag_wp1(void)
 {
   printf("In wp1\n");
   // Set flag: position ready for first photo
@@ -221,7 +222,7 @@ bool_t wait_wp1(void)
   return FALSE;
 }
 
-bool_t wait_wp2()
+bool_t flag_wp2()
 {
   printf("In wp2\n");
   // Set flag: position ready for second photo

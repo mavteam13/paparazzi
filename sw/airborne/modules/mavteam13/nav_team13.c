@@ -67,11 +67,11 @@ bool_t NavSetWaypointTowardsHeading(uint8_t curr, uint8_t dist, uint8_t next)
   	waypoints[next].x = waypoints[curr].x + INT_MULT_RSHIFT(dist,s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
   	waypoints[next].y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
 	
-	if (safe_heading==90 || safe_heading==-90)
+	/*if (safe_heading==90 || safe_heading==-90)
 	{
 		waypoints[next].x=waypoints[curr].x;
 		waypoints[next].y=waypoints[curr].y;
-	}
+	}*/
  	 printf("heading error= %d \n", safe_heading);
  	 return FALSE;
 }

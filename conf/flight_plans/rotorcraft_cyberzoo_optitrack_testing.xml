@@ -158,7 +158,7 @@
       <call fun="nav_set_heading_towards_waypoint(WP_next)"/>	
       <stay wp="curr" until="stage_time>0"/>
       <go from="curr" hmode="route" wp="next" approaching_time="0"/>
-      <stay wp="next" until="stage_time>1"/>
+      <stay wp="next" until="stage_time>2"/>
       <deroute block="move_next_wp"/>
    </block>	
    <block name="heading_p1">

@@ -9,8 +9,8 @@ double sigma=3.0;
 int thres=30;
 //int stereo_nav_status=0;
 int thres_verticalcount=90;
-int thres_disparity=10;
-int multiply_disparity=2;
+int thres_disparity=30;
+int multiply_disparity=3;
 
 void sobel_edge_filter(struct img_struct *input,struct img_struct *output)
 {
@@ -184,7 +184,7 @@ int detect_vertical_lines(struct img_struct *input, struct img_struct *output ,u
             Disp=(int)(multiply_disparity*pxlcnt_lines[x]);
 
             printf(" disparity is %d\n",Disp);
-            for(int r=Disp;r<Disp;r++)
+            for(int r=-Disp;r<Disp;r++)
             {
                 if(x+r>=0 && x+r<input->w){
                     pxlcnt_lines_bin[x+r]=1;}

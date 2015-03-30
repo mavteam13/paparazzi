@@ -1,6 +1,6 @@
 <!DOCTYPE flight_plan SYSTEM "flight_plan.dtd">
 
-<flight_plan alt="148.5" ground_alt="147" lat0="51.990634" lon0="4.376789" max_dist_from_home="150" name="Rotorcraft Basic (Enac)" security_height="1">
+<flight_plan alt="1.5" ground_alt="0" lat0="51.990634" lon0="4.376789" max_dist_from_home="15" name="Rotorcraft Basic (Enac)" security_height="0.5">
   <header>
 #include "autopilot.h"
 #include "subsystems/ahrs.h"
@@ -90,9 +90,9 @@
       <attitude pitch="0" roll="0" throttle="0" vmode="throttle" until="FALSE"/>
     </block>
     <block name="Takeoff" strip_button="Takeoff" strip_icon="takeoff.png">
-      <exception cond="stateGetPositionEnu_f()->z > 2.0" deroute="Standby"/>
+      <exception cond="stateGetPositionEnu_f()->z > 1.5" deroute="Standby"/>
       <call fun="NavSetWaypointHere(WP_CLIMB)"/>
-      <stay vmode="climb" climb="0.5" wp="CLIMB"/>
+      <stay vmode="climb" climb="1" wp="CLIMB"/>
     </block>
     <block name="Standby" strip_button="Standby" strip_icon="home.png">
       <stay wp="STDBY"/>
@@ -156,7 +156,7 @@
         <!-- navigation to the next WP -->
         <call fun="NavSetWaypointHere(WP_curr)"/>
         <!-- New heading based on vision--> 
-        <call fun="NavSetNewWayPoint(WP_curr,100,WP_next,WP_heading,WP_global,WP_look,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4)"/>
+        <call fun="NavSetNewWayPoint(WP_curr,200,WP_next,WP_heading,WP_global,WP_look,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4)"/>
         <!--call fun="NavSetWaypointTowardsHeadingNew(WP_curr,100,WP_next,WP_heading,WP_global,WP_global_prev)"/--> 
         <!-- Change if not in the area--> 
         <!--call fun="move_global_wp_new(WP_global,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4, WP_next,WP_curr,WP_heading,WP_global_prev)"/-->

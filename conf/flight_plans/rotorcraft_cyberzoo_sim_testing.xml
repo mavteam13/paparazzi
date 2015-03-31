@@ -23,10 +23,19 @@
     <!--waypoint lat="51.990639" lon="4.376807" name="p6"/-->
     <!--waypoint lat="51.990639" lon="4.376807" name="p7"/-->
     <!--waypoint lat="51.990639" lon="4.376807" name="p8"/-->
-    <waypoint lat="51.990635" lon="4.376836" name="FA1"/>
-    <waypoint lat="51.990606" lon="4.376760" name="FA2"/>
-    <waypoint lat="51.990652" lon="4.376712" name="FA3"/>
-    <waypoint lat="51.990681" lon="4.376791" name="FA4"/>
+<waypoint lat="51.990624" lon="4.376867" name="CORNER3"/>
+<waypoint lat="51.990593" lon="4.376779" name="CORNER4"/>
+<waypoint lat="51.990646" lon="4.376724" name="CORNER1"/>
+<waypoint lat="51.990677" lon="4.376812" name="CORNER2"/>
+
+    <waypoint lat="51.990635" lon="4.376836" name="FA3"/>
+    <waypoint lat="51.990606" lon="4.376760" name="FA4"/>
+    <waypoint lat="51.990652" lon="4.376712" name="FA1"/>
+    <waypoint lat="51.990681" lon="4.376791" name="FA2"/>
+    <waypoint lat="51.9906370" lon="4.3768241" name="FZ3"/>
+    <waypoint lat="51.9906120" lon="4.3767618" name="FZ4"/>
+    <waypoint lat="51.9906502" lon="4.3767212" name="FZ1"/>
+    <waypoint lat="51.9906748" lon="4.3767886" name="FZ2"/>
   </waypoints>
   <sectors>
     <sector color="red" name="Flight_Area">
@@ -34,6 +43,12 @@
       <corner name="FA3"/>
       <corner name="FA2"/>
       <corner name="FA1"/>
+    </sector>
+    <sector color="pink" name="Flight_Area_new">
+      <corner name="CORNER4"/>
+      <corner name="CORNER3"/>
+      <corner name="CORNER2"/>
+      <corner name="CORNER1"/>
     </sector>
   </sectors>
   <blocks>

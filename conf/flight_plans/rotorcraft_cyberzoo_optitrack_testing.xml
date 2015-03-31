@@ -18,8 +18,9 @@
     <waypoint name="curr" x="0.0" y="0.0"/>
     <waypoint name="next" x="0.0" y="0.0"/>
     <waypoint name="heading" x="0.0" y="0.0"/>
-    <waypoint name="global" lat="51.9906502" lon="4.3767212"/>
-    <waypoint name="look" lat="51.9906502" lon="4.3767212"/>
+    <waypoint name="global" lat="51.9906445" lon="4.3767337"/>
+    <waypoint name="look" lat="51.9906445" lon="4.3767337"/>
+    <waypoint name="global_prev" lat="51.9906445" lon="4.3767337"/>
     <waypoint name="deg90" x="0.0" y="0.0"/>
     <waypoint lat="51.9906414" lon="4.3767839" name="p1"/>
     <waypoint lat="51.9906441" lon="4.3767692" name="p2"/>
@@ -34,14 +35,30 @@
     <!--waypoint lat="51.990639" lon="4.376807" name="p6"/-->
     <!--waypoint lat="51.990639" lon="4.376807" name="p7"/-->
     <!--waypoint lat="51.990639" lon="4.376807" name="p8"/-->
-    <waypoint lat="51.990635" lon="4.376836" name="FA3"/>
+    <!--waypoint lat="51.990635" lon="4.376836" name="FA3"/>
     <waypoint lat="51.990606" lon="4.376760" name="FA4"/>
     <waypoint lat="51.990652" lon="4.376712" name="FA1"/>
-    <waypoint lat="51.990681" lon="4.376791" name="FA2"/>
-    <waypoint lat="51.9906370" lon="4.3768241" name="FZ3"/>
+    <waypoint lat="51.990681" lon="4.376791" name="FA2"/-->
+    <waypoint lat="51.990624" lon="4.376867" name="FA3"/>
+    <waypoint lat="51.990593" lon="4.376779" name="FA4"/>
+    <waypoint lat="51.990646" lon="4.376724" name="FA1"/>
+    <waypoint lat="51.990677" lon="4.376812" name="FA2"/>
+    <!--waypoint lat="51.9906370" lon="4.3768241" name="FZ3"/>
     <waypoint lat="51.9906120" lon="4.3767618" name="FZ4"/>
     <waypoint lat="51.9906502" lon="4.3767212" name="FZ1"/>
-    <waypoint lat="51.9906748" lon="4.3767886" name="FZ2"/>
+    <waypoint lat="51.9906748" lon="4.3767886" name="FZ2"/-->
+    <waypoint lat="51.9906253" lon="4.3768574" name="FZ3"/>
+    <waypoint lat="51.9905993" lon="4.3767808" name="FZ4"/>
+    <waypoint lat="51.9906445" lon="4.3767337" name="FZ1"/>
+    <waypoint lat="51.9906707" lon="4.3768103" name="FZ2"/>
+    <!--waypoint lat="51.9906467" lon="4.3768278" name="FZ3"/>
+    <waypoint lat="51.9906148" lon="4.3768168" name="FZ4"/>
+    <waypoint lat="51.9906239" lon="4.3767620" name="FZ1"/>
+    <waypoint lat="51.9906556" lon="4.3767770" name="FZ2"/-->
+    <waypoint lat="51.9906429" lon="4.3767412" name="_FR3"/>
+    <waypoint lat="51.9906653" lon="4.3768090" name="_FR4"/>
+    <waypoint lat="51.9906268" lon="4.3768475" name="_FR1"/>
+    <waypoint lat="51.9906035" lon="4.3767821" name="_FR2"/>
     <!--waypoint lat="51.990635" lon="4.376836" name="FA1"/>
     <waypoint lat="51.990606" lon="4.376760" name="FA2"/>
     <waypoint lat="51.990607" lon="4.376712" name="FA3"/>
@@ -55,10 +72,16 @@
       <corner name="FA4"/>
     </sector>
     <sector color="blue" name="Flight_Zone">
-      <corner name="FZ1"/>
       <corner name="FZ2"/>
       <corner name="FZ3"/>
       <corner name="FZ4"/>
+      <corner name="FZ1"/>
+    </sector>
+    <sector color="green" name="Flight_Region">
+      <corner name="_FR2"/>
+      <corner name="_FR3"/>
+      <corner name="_FR4"/>
+      <corner name="_FR1"/>
     </sector>
   </sectors>
   <exceptions>
@@ -152,7 +175,7 @@
         <call fun="offset_wp_cm(WP_foto1,WP_foto2,20)"/>
         <stay wp="foto2" until="stage_time>3"/>
         <call fun="flag_wp2()"/>
-        <stay wp="foto2" until="stage_time>1"/>
+        <stay wp="foto2" until="stage_time>2"/>
         <!-- navigation to the next WP -->
         <call fun="NavSetWaypointHere(WP_curr)"/>
         <!-- New heading based on vision + check if inside the flight area--> 
@@ -165,7 +188,21 @@
         <stay wp="next" until="stage_time>wait_time"/>
         <deroute block="stereo_foto_testing_loop"/>
    </block>
-      <block name="stereo_foto_testing_faster"> 
+   <block name="color_testing_loop"> 
+        <call fun="NavSetWaypointHere(WP_curr)"/>
+        <call fun="nav_set_heading_towards_waypoint(WP_look)"/>	
+        <stay wp="curr" until="stage_time>1"/>
+        <!-- New heading based on vision + check if inside the flight area--> 
+        <call fun="NavSetNewWayPoint(WP_curr,100,WP_next,WP_heading,WP_global,WP_look,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4)"/>
+        <!-- Move--> 
+        <stay wp="curr" until="stage_time>0"/>
+        <call fun="nav_set_heading_towards_waypoint(WP_heading)"/>	
+        <stay wp="curr" until="stage_time>0"/>
+        <go from="curr" hmode="route" wp="next" approaching_time="0"/>
+        <stay wp="next" until="stage_time>wait_time"/>
+        <deroute block="color_testing_loop"/>
+   </block>
+<block name="stereo_foto_testing_faster"> 
         <!-- Stereo vision manouvre -->
         <call fun="NavSetWaypointHere(WP_foto1)"/>
         <call fun="nav_set_heading_towards_waypoint(WP_global)"/>
@@ -189,20 +226,6 @@
         <go from="curr" hmode="route" wp="next" approaching_time="0"/>
         <stay wp="next" until="stage_time>wait_time"/>
         <deroute block="stereo_foto_testing_faster"/>
-   </block>
-   <block name="color_testing_loop"> 
-        <call fun="NavSetWaypointHere(WP_curr)"/>
-        <call fun="nav_set_heading_towards_waypoint(WP_look)"/>	
-        <stay wp="curr" until="stage_time>1"/>
-        <!-- New heading based on vision + check if inside the flight area--> 
-        <call fun="NavSetNewWayPoint(WP_curr,100,WP_next,WP_heading,WP_global,WP_look,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4)"/>
-        <!-- Move--> 
-        <stay wp="curr" until="stage_time>0"/>
-        <call fun="nav_set_heading_towards_waypoint(WP_heading)"/>	
-        <stay wp="curr" until="stage_time>0"/>
-        <go from="curr" hmode="route" wp="next" approaching_time="0"/>
-        <stay wp="next" until="stage_time>wait_time"/>
-        <deroute block="color_testing_loop"/>
    </block>
    <block key="M" name="move_Xm">
       <call fun="NavSetWaypointHere(WP_curr)"/>

@@ -249,7 +249,7 @@ void *computervision_thread_main(void* data)
 
                 printf("Saving first image\n");
 
-                stereo_vision_status=2;
+
 
                 printf("Flag send for second image\n");
 
@@ -298,17 +298,17 @@ void *computervision_thread_main(void* data)
                 printf("Safe heading = %d \n", safe_heading);
 
                 intern_nav_status=0;
-
+		stereo_vision_status=2;
 
             }
 
             //for tuning
-            /*if(stereo_nav_status==0&&intern_nav_status==2) {
-                intern_nav_status=0;
+            if(stereo_nav_status==0&&stereo_vision_status==2) {
+              // intern_nav_status=0;
                 stereo_vision_status=0;
 
                 printf("Stereo vision navigation off\n");
-            }*/
+            }
 
 
             // the following variables should store the results:
@@ -321,8 +321,8 @@ void *computervision_thread_main(void* data)
         //////////////////////////////////////////////////////////////////////
         // Common code independent on vision algorithm
 
-        // printf("Obstacles Detected L --> R = %d %d %d %d %d \n", obstac[0], obstac[1], obstac[2], obstac[3], obstac[4]);
-        // printf("Safe heading = %d \n", safe_heading);
+         printf("Obstacles Detected L --> R = %d %d %d %d %d \n", obstac[0], obstac[1], obstac[2], obstac[3], obstac[4]);
+         printf("Safe heading = %d \n", safe_heading);
 
         //compute if obstacle occupies 2 sections including forward section
         // we are approximately within 1 meter of a pole if this is true. - Jaime

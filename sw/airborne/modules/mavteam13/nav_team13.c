@@ -225,12 +225,13 @@ bool_t NavSetNewWayPoint(uint8_t curr, uint8_t dist, uint8_t next, uint8_t headi
       waypoints[next].x=waypoints[curr].x;
       waypoints[next].y=waypoints[curr].y;
 
-      // printf("45 deg heading detected");  
+      printf("45 deg heading detected");  
     }
     else
     {
       waypoints[next].x=waypoints[heading].x;
       waypoints[next].y=waypoints[heading].y;
+	printf("1\n");
     }
   
 
@@ -265,6 +266,7 @@ bool_t NavSetNewWayPoint(uint8_t curr, uint8_t dist, uint8_t next, uint8_t headi
   else
   {
     wait_time=2;
+    printf("4\n");
   }
   if (safe_heading>=45 || safe_heading<=-45)
   {
@@ -273,14 +275,14 @@ bool_t NavSetNewWayPoint(uint8_t curr, uint8_t dist, uint8_t next, uint8_t headi
 
     wait_time=0;
 
-    // printf("45 deg heading detected"); 
+    printf("45 deg heading detected 2"); 
   }
   else
   {
     waypoints[look].x=waypoints[glob].x;
     waypoints[look].y=waypoints[glob].y;
 
-    
+    printf("3\n");
   }
   return FALSE;
 }
@@ -312,7 +314,7 @@ bool_t NavSetWaypointAvoidInBounds(uint8_t curr, uint8_t dist, uint8_t next)
     waypoints[next].x = waypoints[curr].x + INT_MULT_RSHIFT(dist,s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
     waypoints[next].y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
     
-    if (!InsideFlight_Area((float)INT_MULT_RSHIFT(1,waypoints[next].x,INT32_POS_FRAC),(float)INT_MULT_RSHIFT(1,waypoints[next].y,INT32_POS_FRAC)))
+    if (!InsideFlight_Region((float)INT_MULT_RSHIFT(1,waypoints[next].x,INT32_POS_FRAC),(float)INT_MULT_RSHIFT(1,waypoints[next].y,INT32_POS_FRAC)))
       {  // if the new wp is not within the boundary of Flight_area, turn the opposite direction to find a new safe heading.
         nav_heading = nav_heading- offsetsign * 45;
       }

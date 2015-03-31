@@ -1,6 +1,6 @@
 <!DOCTYPE flight_plan SYSTEM "flight_plan.dtd">
 
-<flight_plan alt="1.5" ground_alt="0" lat0="51.990634" lon0="4.376789" max_dist_from_home="150" name="Rotorcraft Basic (Enac)" security_height="1">
+<flight_plan alt="1.5" ground_alt="0" lat0="51.990634" lon0="4.376789" max_dist_from_home="15" name="Rotorcraft Basic (Enac)" security_height="0.5">
   <header>
 #include "autopilot.h"
 #include "subsystems/ahrs.h"
@@ -19,7 +19,7 @@
     <waypoint name="next" x="0.0" y="0.0"/>
     <waypoint name="heading" x="0.0" y="0.0"/>
     <waypoint name="global" lat="51.9906502" lon="4.3767212"/>
-    <waypoint name="global_prev" lat="51.9906502" lon="4.3767212"/>
+    <waypoint name="look" lat="51.9906502" lon="4.3767212"/>
     <waypoint name="deg90" x="0.0" y="0.0"/>
     <waypoint lat="51.9906414" lon="4.3767839" name="p1"/>
     <waypoint lat="51.9906441" lon="4.3767692" name="p2"/>
@@ -90,9 +90,9 @@
       <attitude pitch="0" roll="0" throttle="0" vmode="throttle" until="FALSE"/>
     </block>
     <block name="Takeoff" strip_button="Takeoff" strip_icon="takeoff.png">
-      <exception cond="stateGetPositionEnu_f()->z > 2.0" deroute="Standby"/>
+      <exception cond="stateGetPositionEnu_f()->z > 1.5" deroute="Standby"/>
       <call fun="NavSetWaypointHere(WP_CLIMB)"/>
-      <stay vmode="climb" climb="0.5" wp="CLIMB"/>
+      <stay vmode="climb" climb="1" wp="CLIMB"/>
     </block>
     <block name="Standby" strip_button="Standby" strip_icon="home.png">
       <stay wp="STDBY"/>
@@ -145,20 +145,18 @@
    <block name="stereo_foto_testing_loop"> 
         <!-- Stereo vision manouvre -->
         <call fun="NavSetWaypointHere(WP_foto1)"/>
-        <call fun="nav_set_heading_towards_waypoint(WP_global)"/>
+        <call fun="nav_set_heading_towards_waypoint(WP_look)"/>
         <stay wp="foto1" until="stage_time>1"/>
         <call fun="flag_wp1()"/>
         <stay wp="foto1" until="stage_time>1"/>
         <call fun="offset_wp_cm(WP_foto1,WP_foto2,20)"/>
         <stay wp="foto2" until="stage_time>3"/>
         <call fun="flag_wp2()"/>
-        <stay wp="foto2" until="stage_time>2"/>
+        <stay wp="foto2" until="stage_time>1"/>
         <!-- navigation to the next WP -->
         <call fun="NavSetWaypointHere(WP_curr)"/>
-        <!-- New heading based on vision--> 
-        <call fun="NavSetWaypointTowardsHeadingNew(WP_curr,100,WP_next,WP_heading,WP_global,WP_global_prev)"/> 
-        <!-- Change if not in the area--> 
-        <call fun="move_global_wp_new(WP_global,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4, WP_next,WP_curr,WP_heading,WP_global_prev)"/>
+        <!-- New heading based on vision + check if inside the flight area--> 
+        <call fun="NavSetNewWayPoint(WP_curr,200,WP_next,WP_heading,WP_global,WP_look,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4)"/>
         <!-- Move--> 
         <stay wp="curr" until="stage_time>0"/>
         <call fun="nav_set_heading_towards_waypoint(WP_heading)"/>	
@@ -194,12 +192,10 @@
    </block>
    <block name="color_testing_loop"> 
         <call fun="NavSetWaypointHere(WP_curr)"/>
-        <call fun="nav_set_heading_towards_waypoint(WP_global)"/>	
+        <call fun="nav_set_heading_towards_waypoint(WP_look)"/>	
         <stay wp="curr" until="stage_time>1"/>
-        <!-- New heading based on vision--> 
-        <call fun="NavSetWaypointTowardsHeadingNew(WP_curr,100,WP_next,WP_heading,WP_global,WP_global_prev)"/> 
-        <!-- Change if not in the area--> 
-        <call fun="move_global_wp_new(WP_global,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4, WP_next,WP_curr,WP_heading,WP_global_prev)"/>
+        <!-- New heading based on vision + check if inside the flight area--> 
+        <call fun="NavSetNewWayPoint(WP_curr,100,WP_next,WP_heading,WP_global,WP_look,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4)"/>
         <!-- Move--> 
         <stay wp="curr" until="stage_time>0"/>
         <call fun="nav_set_heading_towards_waypoint(WP_heading)"/>	

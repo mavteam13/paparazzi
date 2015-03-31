@@ -47,8 +47,12 @@ extern uint8_t color_cr_min;
 extern uint8_t color_cr_max;
 
 extern int color_tresh;
-// extern int color_count;
-// extern int color_detected;
+
+// video transmission switch
+extern int video_on;
+
+// vision algorithm switch
+extern int vision_switch;
 
 // extern int obstacle_heading;
 extern int safe_heading;

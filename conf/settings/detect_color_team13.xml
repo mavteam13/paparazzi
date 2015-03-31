@@ -4,7 +4,9 @@
   <dl_settings>
 
     <dl_settings NAME="ColorBasedDetection">
-       <dl_setting var="color_tresh" min="40" step="20" max="3000" module="detect_avoid_mav13/detect_avoid_mav13" shortname="Threshold" />
+       <dl_setting var="video_on" min="0" step="1" max="1" module="detect_avoid_mav13/detect_avoid_mav13" shortname="Video ON/OFF" />
+       <dl_setting var="vision_switch" min="1" step="1" max="2" shortname="Vision switch" />
+       <dl_setting var="color_tresh" min="40" step="20" max="3000" shortname="Threshold" />
        <dl_setting var="color_lum_min" min="0" step="1" max="255" shortname="Lum_Min" />
        <dl_setting var="color_lum_max" min="0" step="1" max="255" shortname="Lum_Max" />
        <dl_setting var="color_cb_min" min="0" step="1" max="255" shortname="CB_Min" />

@@ -43,6 +43,7 @@ void nav_team13_init(void);
 extern bool_t NavSetWaypointTowardsHeading(uint8_t curr, uint8_t dist, uint8_t next);
 extern bool_t NavSetWaypointTowardsHeadingNew(uint8_t curr, uint8_t dist, uint8_t next, uint8_t heading, uint8_t global, uint8_t global_prev);
 extern bool_t NavSetWaypointAvoidInBounds(uint8_t curr, uint8_t dist, uint8_t next);
+extern bool_t NavSetNewWayPoint(uint8_t curr, uint8_t dist, uint8_t next, uint8_t heading, uint8_t glob, uint8_t look,uint8_t fz1,uint8_t fz2,uint8_t fz3,uint8_t fz4);
 extern bool_t offset_wp_cm(uint8_t wp1, uint8_t wp2, uint8_t d);
 extern bool_t flag_wp1(void);
 extern bool_t flag_wp2(void);

@@ -204,6 +204,87 @@ bool_t move_global_wp_new(uint8_t glob,uint8_t fz1,uint8_t fz2,uint8_t fz3,uint8
   return FALSE;
 }
 
+bool_t NavSetNewWayPoint(uint8_t curr, uint8_t dist, uint8_t next, uint8_t heading, uint8_t glob, uint8_t look,uint8_t fz1,uint8_t fz2,uint8_t fz3,uint8_t fz4)
+    {
+    int32_t s_heading, c_heading;
+    // distance in cm's
+    // random heading (angle) -32,-16,0,16,32 degrees
+    // safe_heading = ((rand() % 5) * 16) - 32;
+    // safe_heading = 45; //hack for sim testing
+    offset_heading = INT32_RAD_OF_DEG(safe_heading << (INT32_ANGLE_FRAC));
+    printf("nav_heading= %d \n", nav_heading);
+    printf("offset_heading= %d \n", offset_heading);
+    PPRZ_ITRIG_SIN(s_heading, nav_heading+offset_heading);
+    PPRZ_ITRIG_COS(c_heading, nav_heading+offset_heading);
+    waypoints[heading].x = waypoints[curr].x + INT_MULT_RSHIFT(dist,s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
+    waypoints[heading].y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
+
+    printf("heading error= %d \n", safe_heading);
+    if (safe_heading>=45 || safe_heading<=-45)
+    {
+      waypoints[next].x=waypoints[curr].x;
+      waypoints[next].y=waypoints[curr].y;
+
+      // printf("45 deg heading detected");  
+    }
+    else
+    {
+      waypoints[next].x=waypoints[heading].x;
+      waypoints[next].y=waypoints[heading].y;
+    }
+  
+
+  if (!InsideFlight_Area((float)INT_MULT_RSHIFT(1,waypoints[next].x,INT32_POS_FRAC),(float)INT_MULT_RSHIFT(1,waypoints[next].y,INT32_POS_FRAC)) || nav_approaching_from(&waypoints[glob],NULL,0))
+  
+  {
+    printf("out of bound triggered\n");
+    if (waypoints[glob].x==waypoints[fz1].x)
+    {
+      waypoints[glob].x=waypoints[fz2].x;
+      waypoints[glob].y=waypoints[fz2].y;
+    }
+    else if (waypoints[glob].x==waypoints[fz2].x) {
+      waypoints[glob].x=waypoints[fz3].x;
+      waypoints[glob].y=waypoints[fz3].y;
+    }
+    else if (waypoints[glob].x==waypoints[fz3].x) {
+      waypoints[glob].x=waypoints[fz4].x;
+      waypoints[glob].y=waypoints[fz4].y;
+    }
+    else if (waypoints[glob].x==waypoints[fz4].x) {
+      waypoints[glob].x=waypoints[fz1].x;
+      waypoints[glob].y=waypoints[fz1].y;
+    }
+
+    waypoints[heading].x=waypoints[glob].x;
+    waypoints[heading].y=waypoints[glob].y;
+    waypoints[next].x=waypoints[curr].x;
+    waypoints[next].y=waypoints[curr].y;
+    wait_time=0;
+  }
+  else
+  {
+    wait_time=2;
+  }
+  if (safe_heading>=45 || safe_heading<=-45)
+  {
+    waypoints[look].x=waypoints[heading].x;
+    waypoints[look].y=waypoints[heading].y;
+
+    wait_time=0;
+
+    // printf("45 deg heading detected"); 
+  }
+  else
+  {
+    waypoints[look].x=waypoints[glob].x;
+    waypoints[look].y=waypoints[glob].y;
+
+    
+  }
+  return FALSE;
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 
 bool_t NavSetWaypointAvoidInBounds(uint8_t curr, uint8_t dist, uint8_t next)

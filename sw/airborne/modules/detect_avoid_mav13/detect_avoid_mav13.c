@@ -42,8 +42,9 @@ int obs_2sect_front = 0;
 
 // vision algorithm switch:
 int vision_switch = 2; // 1 - color detection
-// 2 - stereo vision
-// Should we define this as "extern" to be able to switch from the GUI?
+                       // 2 - stereo vision
+                       // Should we define this as "extern" to be able to switch from the GUI?
+int video_on = 1; // Video transmission switch
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -334,24 +335,36 @@ void *computervision_thread_main(void* data)
 
 
         /////////////////////////////////////////////////////////////////////
-        // Video transmission - can be commented if video stream is not needed
-
-        // JPEG encode the image:
-        uint32_t image_format = FOUR_TWO_TWO;  // format (in jpeg.h)
-        uint8_t* end = encode_image (small_edge.buf, jpegbuf, quality_factor, image_format, small.w, small.h, dri_jpeg_header);
-        uint32_t size = end-(jpegbuf);
-
-        //printf("Sending an image ...%u\n",size);
-
-        send_rtp_frame(
-                    vsock,            // UDP
-                    jpegbuf,size,     // JPEG
-                    small.w, small.h, // Img Size
-                    0,                // Format 422
-                    quality_factor,               // Jpeg-Quality
-                    dri_jpeg_header,                // DRI Header
-                    0              // 90kHz time increment
-                    );
+        // Video transmission
+        
+        if (video_on==1)
+        {
+            // JPEG encode the image:
+            uint32_t image_format = FOUR_TWO_TWO;  // format (in jpeg.h)
+            uint8_t* end;
+            switch (vision_switch)
+                {
+                case 1 :        
+                end = encode_image (small.buf, jpegbuf, quality_factor, image_format, small.w, small.h, dri_jpeg_header);
+                break;
+                
+                case 2 :
+                end = encode_image (small_edge.buf, jpegbuf, quality_factor, image_format, small.w, small.h, dri_jpeg_header);
+                break;
+                }
+                
+            uint32_t size = end-(jpegbuf);
+    
+            send_rtp_frame(
+                        vsock,            // UDP
+                        jpegbuf,size,     // JPEG
+                        small.w, small.h, // Img Size
+                        0,                // Format 422
+                        quality_factor,               // Jpeg-Quality
+                        dri_jpeg_header,                // DRI Header
+                        0              // 90kHz time increment
+                        );
+        }
 
 
     }

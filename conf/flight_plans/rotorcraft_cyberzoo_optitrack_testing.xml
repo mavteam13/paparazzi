@@ -145,21 +145,18 @@
    <block name="stereo_foto_testing_loop"> 
         <!-- Stereo vision manouvre -->
         <call fun="NavSetWaypointHere(WP_foto1)"/>
-        <call fun="nav_set_heading_towards_waypoint(WP_global)"/>
+        <call fun="nav_set_heading_towards_waypoint(WP_look)"/>
         <stay wp="foto1" until="stage_time>1"/>
         <call fun="flag_wp1()"/>
         <stay wp="foto1" until="stage_time>1"/>
         <call fun="offset_wp_cm(WP_foto1,WP_foto2,20)"/>
         <stay wp="foto2" until="stage_time>3"/>
         <call fun="flag_wp2()"/>
-        <stay wp="foto2" until="stage_time>2"/>
+        <stay wp="foto2" until="stage_time>1"/>
         <!-- navigation to the next WP -->
         <call fun="NavSetWaypointHere(WP_curr)"/>
-        <!-- New heading based on vision--> 
+        <!-- New heading based on vision + check if inside the flight area--> 
         <call fun="NavSetNewWayPoint(WP_curr,200,WP_next,WP_heading,WP_global,WP_look,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4)"/>
-        <!--call fun="NavSetWaypointTowardsHeadingNew(WP_curr,100,WP_next,WP_heading,WP_global,WP_global_prev)"/--> 
-        <!-- Change if not in the area--> 
-        <!--call fun="move_global_wp_new(WP_global,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4, WP_next,WP_curr,WP_heading,WP_global_prev)"/-->
         <!-- Move--> 
         <stay wp="curr" until="stage_time>0"/>
         <call fun="nav_set_heading_towards_waypoint(WP_heading)"/>	
@@ -170,13 +167,10 @@
    </block>
    <block name="color_testing_loop"> 
         <call fun="NavSetWaypointHere(WP_curr)"/>
-        <call fun="nav_set_heading_towards_waypoint(WP_global)"/>	
+        <call fun="nav_set_heading_towards_waypoint(WP_look)"/>	
         <stay wp="curr" until="stage_time>1"/>
-        <!-- New heading based on vision--> 
+        <!-- New heading based on vision + check if inside the flight area--> 
         <call fun="NavSetNewWayPoint(WP_curr,100,WP_next,WP_heading,WP_global,WP_look,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4)"/>
-        <!--call fun="NavSetWaypointTowardsHeadingNew(WP_curr,100,WP_next,WP_heading,WP_global,WP_global_prev)"/--> 
-        <!-- Change if not in the area--> 
-        <!--call fun="move_global_wp_new(WP_global,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4, WP_next,WP_curr,WP_heading,WP_global_prev)"/-->
         <!-- Move--> 
         <stay wp="curr" until="stage_time>0"/>
         <call fun="nav_set_heading_towards_waypoint(WP_heading)"/>	

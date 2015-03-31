@@ -53,6 +53,7 @@ bool_t move_global_wp(uint8_t glob,uint8_t fz1,uint8_t fz2,uint8_t fz3,uint8_t f
 bool_t move_global_wp_new(uint8_t glob,uint8_t fz1,uint8_t fz2,uint8_t fz3,uint8_t fz4,uint8_t nxt,uint8_t curr,uint8_t heading, uint8_t glob_prev);
 bool_t obstacle_in_path(void);
 bool_t obstacle_nearby(void);
+bool_t yawStill(void);
 
 extern int stereo_nav_status;
 extern int wait_time;

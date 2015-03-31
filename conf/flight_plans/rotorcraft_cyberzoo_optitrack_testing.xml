@@ -167,6 +167,31 @@
         <stay wp="next" until="stage_time>wait_time"/>
         <deroute block="stereo_foto_testing_loop"/>
    </block>
+      <block name="stereo_foto_testing_faster"> 
+        <!-- Stereo vision manouvre -->
+        <call fun="NavSetWaypointHere(WP_foto1)"/>
+        <call fun="nav_set_heading_towards_waypoint(WP_global)"/>
+        <stay wp="foto1" until="yawStill()"/>
+        <call fun="flag_wp1()"/>
+        <!--stay wp="foto1" until="stage_time>1"/-->
+        <call fun="offset_wp_cm(WP_foto1,WP_foto2,20)"/>
+        <stay wp="foto2" until="stage_time>2"/>
+        <call fun="flag_wp2()"/>
+        <stay wp="foto2" until="stage_time>1"/>
+        <!-- navigation to the next WP -->
+        <call fun="NavSetWaypointHere(WP_curr)"/>
+        <!-- New heading based on vision--> 
+        <call fun="NavSetWaypointTowardsHeadingNew(WP_curr,100,WP_next,WP_heading,WP_global,WP_global_prev)"/> 
+        <!-- Change if not in the area--> 
+        <call fun="move_global_wp_new(WP_global,WP_FZ1,WP_FZ2,WP_FZ3,WP_FZ4, WP_next,WP_curr,WP_heading,WP_global_prev)"/>
+        <!-- Move--> 
+        <stay wp="curr" until="stage_time>0"/>
+        <call fun="nav_set_heading_towards_waypoint(WP_heading)"/>	
+        <stay wp="curr" until="yawStill()"/>
+        <go from="curr" hmode="route" wp="next" approaching_time="0"/>
+        <stay wp="next" until="stage_time>wait_time"/>
+        <deroute block="stereo_foto_testing_faster"/>
+   </block>
    <block name="color_testing_loop"> 
         <call fun="NavSetWaypointHere(WP_curr)"/>
         <call fun="nav_set_heading_towards_waypoint(WP_global)"/>	

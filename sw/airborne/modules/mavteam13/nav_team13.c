@@ -331,3 +331,28 @@ bool_t obstacle_nearby(void)
   else if (obs_2sect_front){return TRUE;}
   else {return FALSE;}
 }
+
+// Is the vehicle still enough in yaw rate?
+bool_t yawStill(void)
+{
+//stateGetNedToBodyEulers_i() ->psi;
+//stateGetBodyRates_f() -> p;
+//stateGetBodyRates_f() -> q;
+float yawr;
+yawr=stateGetBodyRates_f() -> r;
+
+  if (yawr<5 && yawr>-5){return TRUE;}
+  else {return FALSE;}
+}
+/*
+// Is the vehicle still enough in translational rates?
+bool_t fotoStill(void)
+{
+float xr, yr, zr;
+xr = stateGetAccelNed_f() -> x;
+yr = stateGetAccelNed_f() -> y;
+zr = stateGetAccelNed_f() -> z;
+
+if (xr>){return TRUE;}
+  else {return FALSE;}
+}*/

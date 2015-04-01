@@ -127,35 +127,6 @@
     <block name="stay_p1">
       <stay wp="p1"/>
     </block>
-    <block name="stay_p2">
-      <stay wp="p2"/>
-    </block>
-    <block name="stay_p3">
-      <stay wp="p3"/>
-    </block>
-    <block name="line_p1_p2">
-      <go from="p1" hmode="route" wp="p2"/>
-      <stay wp="p2" until="stage_time>10"/>
-      <go from="p2" hmode="route" wp="p1"/>
-      <deroute block="stay_p1"/>
-    </block>
-    <block name="confirmation maneuver">
-    <!-- yaw 90deg cw-->
-      <call fun="NavSetWaypointHere(WP_curr)"/>
-      <call fun="offset_wp_cm(WP_curr,WP_deg90,100)"/>
-      <call fun="nav_set_heading_towards_waypoint(WP_deg90)"/>
-      <stay wp="curr"/>
-    </block>
-    <block name="stereo_foto_init">
-        <call fun="stereo_init(WP_foto1)"/>
-        <stay wp="foto1" until="stage_time>2"/>
-        <deroute block="stereo_foto_loop"/>
-    </block>
-    <block name="stereo_foto_loop">
-        <call fun="stereo_loop(WP_foto1)"/>
-        <stay wp="foto1" until="stage_time>0"/>
-        <deroute block="stereo_foto_loop"/>
-    </block>
     <block name="stereo_foto_testing"> 
         <call fun="NavSetWaypointHere(WP_foto1)"/>
         <call fun="flag_wp1()"/>
@@ -220,7 +191,7 @@
         <stay wp="curr" until="stage_time>0"/>
         <go from="curr" hmode="route" wp="next" approaching_time="0"/>
         <stay wp="next" until="stage_time>wait_time"/>
-        <deroute block="stereo_foto_testing_loop"/>
+        <deroute block="stereo_foto_fast_loop"/>
    </block>
    <block name="color_testing_loop"> 
         <call fun="NavSetWaypointHere(WP_curr)"/>
@@ -236,7 +207,36 @@
         <stay wp="next" until="stage_time>wait_time"/>
         <deroute block="color_testing_loop"/>
    </block>
-<block name="stereo_foto_testing_faster"> 
+   <block name="stay_p2">
+      <stay wp="p2"/>
+    </block>
+    <block name="stay_p3">
+      <stay wp="p3"/>
+    </block>
+    <block name="line_p1_p2">
+      <go from="p1" hmode="route" wp="p2"/>
+      <stay wp="p2" until="stage_time>10"/>
+      <go from="p2" hmode="route" wp="p1"/>
+      <deroute block="stay_p1"/>
+    </block>
+    <block name="confirmation maneuver">
+    <!-- yaw 90deg cw-->
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <call fun="offset_wp_cm(WP_curr,WP_deg90,100)"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_deg90)"/>
+      <stay wp="curr"/>
+    </block>
+    <block name="stereo_foto_init">
+        <call fun="stereo_init(WP_foto1)"/>
+        <stay wp="foto1" until="stage_time>2"/>
+        <deroute block="stereo_foto_loop"/>
+    </block>
+    <block name="stereo_foto_loop">
+        <call fun="stereo_loop(WP_foto1)"/>
+        <stay wp="foto1" until="stage_time>0"/>
+        <deroute block="stereo_foto_loop"/>
+    </block>
+    <block name="stereo_foto_testing_faster"> 
         <!-- Stereo vision manouvre -->
         <call fun="NavSetWaypointHere(WP_foto1)"/>
         <call fun="nav_set_heading_towards_waypoint(WP_global)"/>

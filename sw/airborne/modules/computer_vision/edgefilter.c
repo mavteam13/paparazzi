@@ -9,7 +9,7 @@ double sigma=3.0;
 int thres=30;
 //int stereo_nav_status=0;
 int thres_verticalcount=90;
-int thres_disparity=30;
+int thres_disparity=20;
 int multiply_disparity=3;
 
 void sobel_edge_filter(struct img_struct *input,struct img_struct *output)
@@ -210,7 +210,7 @@ int detect_vertical_lines(struct img_struct *input, struct img_struct *output ,u
 
     //search right
     int D=20;
-    int safe_heading_disp_left=-90;
+    int safe_heading_disp_left=-50;
     uint8_t safe_region_reached=0;
 
 
@@ -238,7 +238,7 @@ int detect_vertical_lines(struct img_struct *input, struct img_struct *output ,u
     }
 
 
-    int safe_heading_disp_right=90;
+    int safe_heading_disp_right=50;
     safe_region_reached=0;
 
     for(uint16_t x=(input->w)/2;x<(input->w)-D;x++)

@@ -212,7 +212,7 @@ void *computervision_thread_main(void* data)
             // printf("Color Detected L --> R = %d %d %d %d %d \n", result[0], result[1], result[2], result[3], result[4]);
 
             // compute safe heading based on above data
-            safe_heading=detectobst(color_count, &result, &obstac, color_tresh, 5);
+            // safe_heading=detectobst(color_count, &result, &obstac, color_tresh, 5);
 
             break;
 
@@ -321,8 +321,8 @@ void *computervision_thread_main(void* data)
         //////////////////////////////////////////////////////////////////////
         // Common code independent on vision algorithm
 
-         printf("Obstacles Detected L --> R = %d %d %d %d %d \n", obstac[0], obstac[1], obstac[2], obstac[3], obstac[4]);
-         printf("Safe heading = %d \n", safe_heading);
+        // printf("Obstacles Detected L --> R = %d %d %d %d %d \n", obstac[0], obstac[1], obstac[2], obstac[3], obstac[4]);
+        // printf("Safe heading = %d \n", safe_heading);
 
         //compute if obstacle occupies 2 sections including forward section
         // we are approximately within 1 meter of a pole if this is true. - Jaime

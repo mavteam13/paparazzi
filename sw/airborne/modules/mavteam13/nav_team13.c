@@ -421,10 +421,16 @@ bool_t yawStill(void)
 //stateGetNedToBodyEulers_i() ->psi;
 //stateGetBodyRates_f() -> p;
 //stateGetBodyRates_f() -> q;
-float yawr;
+float yawr, yawpsi, diff;
 yawr=stateGetBodyRates_f() -> r;
+yawpsi = stateGetNedToBodyEulers_f() ->psi;  //radians
+diff = yawpsi-ANGLE_FLOAT_OF_BFP(nav_heading);  //diff in radians
+//printf("diff = %f\n", diff);
+//printf("psi (rad)= %f\n", yawpsi);
+//printf("nav_heading_floatofbfp = %f\n", ANGLE_FLOAT_OF_BFP(nav_heading));
 
-  if (yawr<5 && yawr>-5){return TRUE;}
+  if (diff<0.06 && diff>-0.06){ return TRUE; }
+  //if (yawr<(1) && yawr>(-1)){return TRUE;}
   else {return FALSE;}
 }
 /*

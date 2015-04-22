@@ -51,7 +51,7 @@ int stereo_vision_status;
 
 void nav_team13_init(void)
 {
-  printf("init1\n");
+  //printf("init1\n");
   srand(time(NULL));
 }
 

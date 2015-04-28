@@ -29,66 +29,39 @@
     <waypoint lat="51.9906429" lon="4.3767412" name="p8"/>
     <waypoint lat="51.9906268" lon="4.3768475" name="p9"/>
     <waypoint lat="51.9906268" lon="4.3768475" name="p10"/>
-    <waypoint lat="51.990624" lon="4.376867" name="FA1"/>
-    <waypoint lat="51.990593" lon="4.376779" name="FA2"/>
-    <waypoint lat="51.990646" lon="4.376724" name="FA3"/>
-    <waypoint lat="51.990677" lon="4.376812" name="FA4"/>
+    <waypoint lat="51.990624" lon="4.376867" name="_FA1"/>
+    <waypoint lat="51.990593" lon="4.376779" name="_FA2"/>
+    <waypoint lat="51.990646" lon="4.376724" name="_FA3"/>
+    <waypoint lat="51.990677" lon="4.376812" name="_FA4"/>
     <waypoint lat="51.9906253" lon="4.3768574" name="_FR3"/>
     <waypoint lat="51.9905993" lon="4.3767808" name="_FR4"/>
     <waypoint lat="51.9906445" lon="4.3767337" name="_FR1"/>
     <waypoint lat="51.9906707" lon="4.3768103" name="_FR2"/>
-    <!--waypoint lat="51.990624" lon="4.376867" name="_FZ1"/>
-    <waypoint lat="51.990593" lon="4.376779" name="_FZ2"/>
-    <waypoint lat="51.990646" lon="4.376724" name="_FZ3"/>
-    <waypoint lat="51.990677" lon="4.376812" name="_FZ4"/-->
     <waypoint lat="51.9906429" lon="4.3767412" name="_FZ3"/>
     <waypoint lat="51.9906653" lon="4.3768090" name="_FZ4"/>
     <waypoint lat="51.9906268" lon="4.3768475" name="_FZ1"/>
     <waypoint lat="51.9906035" lon="4.3767821" name="_FZ2"/>
-    <!--waypoint lat="51.9906370" lon="4.3768241" name="p1"/>
-    <waypoint lat="51.9906120" lon="4.3767618" name="p2"/>
-    <waypoint lat="51.9906120" lon="4.3767618" name="p3"/>
-    <waypoint lat="51.9906748" lon="4.3767886" name="p4"/>
-    <waypoint lat="51.9906748" lon="4.3767886" name="p5"/>
-    <waypoint lat="51.9906502" lon="4.3767212" name="p6"/>
-    <waypoint lat="51.9906502" lon="4.3767212" name="p7"/>
-    <waypoint lat="51.9906370" lon="4.3768241" name="p8"/-->
-    <!--waypoint lat="51.990635" lon="4.376836" name="FA3"/>
-    <waypoint lat="51.990606" lon="4.376760" name="FA4"/>
-    <waypoint lat="51.990652" lon="4.376712" name="FA1"/>
-    <waypoint lat="51.990681" lon="4.376791" name="FA2"/-->
-    <!--waypoint lat="51.990635" lon="4.376836" name="FA1"/>
-    <waypoint lat="51.990606" lon="4.376760" name="FA2"/>
-    <waypoint lat="51.990607" lon="4.376712" name="FA3"/>
-    <waypoint lat="51.990681" lon="4.376791" name="FA4"/-->
   </waypoints>
   <sectors>
-    <sector color="red" name="Flight_Area">
-      <corner name="FA1"/>
-      <corner name="FA2"/>
-      <corner name="FA3"/>
-      <corner name="FA4"/>
+    <sector color="red" name="Flight_Area"> //visible area of cyberzoo
+      <corner name="_FA1"/>
+      <corner name="_FA2"/>
+      <corner name="_FA3"/>
+      <corner name="_FA4"/>
     </sector>
-    <sector color="blue" name="Flight_Zone">
+    <sector color="blue" name="Flight_Zone"> //competition area
       <corner name="_FZ1"/>
       <corner name="_FZ2"/>
       <corner name="_FZ3"/>
       <corner name="_FZ4"/>
     </sector>
-    <sector color="green" name="Flight_Region">
+    <sector color="green" name="Flight_Region"> // area set for flight considering overshoot happens
       <corner name="_FR2"/>
       <corner name="_FR3"/>
       <corner name="_FR4"/>
       <corner name="_FR1"/>
     </sector>
   </sectors>
-  <exceptions>
-    <!--exception cond="electrical.bat_low" deroute="land here"/-->
-    <!--exception cond="10>PowerVoltage()" deroute="land here"/-->
-    <!--exception cond="InsideFlight_Area(coordinateX(WP_next),coordinateY(WP_next))" deroute="move_global_wp"/-->
-    <!--exception cond="! InsideFlight_Area(GetPosX(),GetPosY())"    deroute="move_global_wp"/-->
-    <!--exception cond="!InsideFlight_Area(GetPosX(), GetPosY()) && !(nav_block == IndexOfBlock('Wait GPS')) && !(nav_block == IndexOfBlock('Geo init') && !(nav_block == IndexOfBlock('Holding point')))" deroute="Standby"/-->
-  </exceptions>
   <blocks>
     <block name="Wait GPS">
       <call fun="NavKillThrottle()"/>

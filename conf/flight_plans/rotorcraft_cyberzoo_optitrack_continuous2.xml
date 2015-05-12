@@ -43,19 +43,22 @@
     <waypoint lat="51.9906035" lon="4.3767821" name="_FZ2"/>
   </waypoints>
   <sectors>
-    <sector color="red" name="Flight_Area"> //visible area of cyberzoo
+<!--visible area of cyberzoo-->
+    <sector color="red" name="Flight_Area"> 
       <corner name="_FA1"/>
       <corner name="_FA2"/>
       <corner name="_FA3"/>
       <corner name="_FA4"/>
-    </sector>
-    <sector color="blue" name="Flight_Zone"> //competition area
+    </sector> 
+<!--competition area-->
+    <sector color="blue" name="Flight_Zone"> 
       <corner name="_FZ1"/>
       <corner name="_FZ2"/>
       <corner name="_FZ3"/>
       <corner name="_FZ4"/>
     </sector>
-    <sector color="green" name="Flight_Region"> // area set for flight considering overshoot happens
+<!-- area set for flight considering overshoot happens-->
+    <sector color="green" name="Flight_Region"> 
       <corner name="_FR2"/>
       <corner name="_FR3"/>
       <corner name="_FR4"/>

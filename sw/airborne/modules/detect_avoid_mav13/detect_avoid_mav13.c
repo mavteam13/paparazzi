@@ -41,7 +41,7 @@ int obs_2sect_front = 0;
 
 
 // vision algorithm switch:
-int vision_switch = 2; // 1 - color detection
+int vision_switch = 1; // 1 - color detection
                        // 2 - stereo vision
                        // Should we define this as "extern" to be able to switch from the GUI?
 int video_on = 1; // Video transmission switch
@@ -209,10 +209,10 @@ void *computervision_thread_main(void* data)
                                              color_cr_min,color_cr_max,
                                              &result, 5);
 
-            // printf("Color Detected L --> R = %d %d %d %d %d \n", result[0], result[1], result[2], result[3], result[4]);
+             printf("Color Detected L --> R = %d %d %d %d %d \n", result[0], result[1], result[2], result[3], result[4]);
 
             // compute safe heading based on above data
-            // safe_heading=detectobst(color_count, &result, &obstac, color_tresh, 5);
+            safe_heading=detectobst(color_count, &result, &obstac, color_tresh, 5);
 
             break;
 
@@ -321,7 +321,7 @@ void *computervision_thread_main(void* data)
         //////////////////////////////////////////////////////////////////////
         // Common code independent on vision algorithm
 
-        // printf("Obstacles Detected L --> R = %d %d %d %d %d \n", obstac[0], obstac[1], obstac[2], obstac[3], obstac[4]);
+         printf("Obstacles Detected L --> R = %d %d %d %d %d \n", obstac[0], obstac[1], obstac[2], obstac[3], obstac[4]);
         // printf("Safe heading = %d \n", safe_heading);
 
         //compute if obstacle occupies 2 sections including forward section
@@ -331,7 +331,7 @@ void *computervision_thread_main(void* data)
         else if (obstac[2]==1 && obstac[1]==1){obs_2sect_front = 1;}
         else {obs_2sect_front = 0;}
 
-        //  printf("2 obstacles in front = %d \n", obs_2sect_front);
+          printf("2 obstacles in front = %d \n", obs_2sect_front);
 
 
         /////////////////////////////////////////////////////////////////////

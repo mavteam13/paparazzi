@@ -319,10 +319,10 @@ void *computervision_thread_main(void* data)
         }
 
         //////////////////////////////////////////////////////////////////////
-        // Common code independent on vision algorithm
+        // Common code independent of vision algorithm
 
-         printf("Obstacles Detected L --> R = %d %d %d %d %d \n", obstac[0], obstac[1], obstac[2], obstac[3], obstac[4]);
-        // printf("Safe heading = %d \n", safe_heading);
+        printf("Obstacles Detected L --> R = %d %d %d %d %d \n", obstac[0], obstac[1], obstac[2], obstac[3], obstac[4]);
+        printf("Safe heading = %d \n", safe_heading);
 
         //compute if obstacle occupies 2 sections including forward section
         // we are approximately within 1 meter of a pole if this is true. - Jaime

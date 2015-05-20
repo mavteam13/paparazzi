@@ -297,15 +297,27 @@ bool_t NavSetWaypointAvoidInBounds(uint8_t curr, uint8_t dist, uint8_t next)
   int32_t s_heading, c_heading;
   int8_t InBoundAndSafe = 0;   // flag to determine if next heading is inbounds and safe
   int8_t offsetsign;
-  int16_t turncount = 0;
+  int16_t turncount = 1;
   // safe_heading = 45;  //hack for sim testing
 
-  offset_heading = INT32_RAD_OF_DEG(safe_heading << (INT32_ANGLE_FRAC));
-  if (offset_heading==0){offsetsign=0;} else if (offset_heading>0){offsetsign=1;} else {offsetsign=-1;}  //determine sign of offset
+//determine sign of safe_heading,
+  if (safe_heading==90){offsetsign=1;} //no safe heading - arbitrarily turn cw
+  else if (safe_heading>0){offsetsign=1;} 
+  else {offsetsign=-1;}  
   
   while (InBoundAndSafe == 0)
   {
+
+    // If there is no safe heading turn cw 37 deg and set offsetsign=1 so that it will turn the other way it goes out of bounds
+    // vehicle will continue turning cw in 37 deg increments until there is a safe_heading
+    if (safe_heading == 90){      
+    offset_heading = INT32_RAD_OF_DEG(37 << (INT32_ANGLE_FRAC));
+    nav_heading = nav_heading + offset_heading;
+     offsetsign = 1;
     turncount++;
+     continue;
+    }
+
     // calculate location for next waypoint
     offset_heading = INT32_RAD_OF_DEG(safe_heading << (INT32_ANGLE_FRAC));
 
@@ -315,8 +327,12 @@ bool_t NavSetWaypointAvoidInBounds(uint8_t curr, uint8_t dist, uint8_t next)
     waypoints[next].y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
     
     if (!InsideFlight_Region((float)INT_MULT_RSHIFT(1,waypoints[next].x,INT32_POS_FRAC),(float)INT_MULT_RSHIFT(1,waypoints[next].y,INT32_POS_FRAC)))
-      {  // if the new wp is not within the boundary of Flight_area, turn the opposite direction to find a new safe heading.
-        nav_heading = nav_heading- offsetsign * 45;
+      {  
+        // if the new wp is not within the boundary of Flight_area, turn the opposite direction to find a new safe heading.
+	offset_heading = INT32_RAD_OF_DEG((-offsetsign * 42 * turncount) << (INT32_ANGLE_FRAC));
+        nav_heading = nav_heading + offset_heading;
+        // will safe_heading be updating???  I think so.
+	continue;
       }
     else { InBoundAndSafe=1;}
   }
@@ -411,7 +427,10 @@ bool_t obstacle_in_path(void)
 bool_t obstacle_nearby(void)
 {
   if (safe_heading==0){return FALSE;}
-  else if (obs_2sect_front){return TRUE;}
+  else if (obs_2sect_front){
+  return TRUE; 
+  printf("obstacle nearby\n");
+  }
   else {return FALSE;}
 }
 
@@ -433,15 +452,5 @@ diff = yawpsi-ANGLE_FLOAT_OF_BFP(nav_heading);  //diff in radians
   //if (yawr<(1) && yawr>(-1)){return TRUE;}
   else {return FALSE;}
 }
-/*
-// Is the vehicle still enough in translational rates?
-bool_t fotoStill(void)
-{
-float xr, yr, zr;
-xr = stateGetAccelNed_f() -> x;
-yr = stateGetAccelNed_f() -> y;
-zr = stateGetAccelNed_f() -> z;
 
-if (xr>){return TRUE;}
-  else {return FALSE;}
-}*/
+

@@ -420,16 +420,17 @@ bool_t obstacle_in_path(void)
   //return TRUE;}
   
   if (safe_heading==0) { return FALSE; }
-  return TRUE;
+  else {
+  //printf("approaching obstacle\n");
+  return TRUE;}
 }
 
 // Is the obstacle in front of me and nearby?
 bool_t obstacle_nearby(void)
 {
-  if (safe_heading==0){return FALSE;}
-  else if (obs_2sect_front){
+  if (obs_2sect_front==1){
+  //printf("obstacle nearby\n");
   return TRUE; 
-  printf("obstacle nearby\n");
   }
   else {return FALSE;}
 }

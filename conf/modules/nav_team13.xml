@@ -11,7 +11,7 @@
   </header>
   <init fun="nav_team13_init()"/>
   <periodic fun="obstacle_in_path()" freq="10" autorun="LOCK"/>
-  <periodic fun="obstacle_nearby()" freq="10" autorun="TRUE"/>
+  <periodic fun="obstacle_nearby()" freq="10" autorun="LOCK"/>
   <!--periodic fun="detect_avoid_run()" freq="10" start="detect_avoid_start()" stop="detect_avoid_stop()" autorun="TRUE"/-->
   <makefile>
     <file name="nav_team13.c" dir="modules/mavteam13"/>

@@ -13,8 +13,8 @@
     <waypoint name="STDBY" x="0.0" y="0.0"/>
     <waypoint name="TD" x="0.0" y="0.0"/>
     <waypoint name="curr" x="0.0" y="0.0"/>
-    <waypoint name="obs1" lat="51.9906314" lon="4.3768336"/>
-    <waypoint name="obs2" lat="51.9906549" lon="4.3767985"/>
+    <waypoint name="obs1" lat="51.9906306" lon="4.3768283"/>
+    <waypoint name="obs2" lat="51.9906551" lon="4.3768029"/>
     <waypoint name="obs3" lat="51.9906317" lon="4.3767737"/>
     <waypoint lat="51.9906268" lon="4.3768475" name="p1"/>
     <waypoint lat="51.9906035" lon="4.3767821" name="p2"/>

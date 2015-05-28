@@ -518,7 +518,7 @@ gboolean timeout_transmit_callback(gpointer data) {
 
 
       if(log_exists == 0) {
-        fp = fopen("natnet_log.dat", "w");
+        fp = fopen("natnet_log.dat", "a");
         log_exists = 1;
       }
 

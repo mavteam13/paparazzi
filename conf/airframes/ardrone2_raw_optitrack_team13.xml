@@ -210,7 +210,7 @@
     <define name="REF_OMEGA" value="RadOfDeg(67.)"/>
     <define name="REF_ZETA" value="0.85"/>
     <define name="REF_MAX_ACCEL" value="5.66"/>
-    <define name="REF_MAX_SPEED" value="3"/>
+    <define name="REF_MAX_SPEED" value="1.5"/>
 
     <!-- gains -->
     <define name="PGAIN" value="250"/>

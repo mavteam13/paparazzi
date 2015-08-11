@@ -113,13 +113,19 @@
       <call fun="nav_set_heading_deg(0)"/>
       <stay wp="curr"/>
    </block>
-      <block name="route_loop_p1">
-      <exception cond="ObstacleNearby()" deroute="safemove_wp1_go"/>
-      <call fun="nav_set_heading_towards_waypoint(WP_p1)"/>
+	  <block name="begin_loop_at_p1">
+      <stay wp="p1" until="stage_time>1/>
+      <call fun="nav_set_heading_towards_waypoint(WP_p2)"/>
       <call fun="NavSetWaypointHere(WP_curr)"/>
       <stay wp="curr" until="stage_time>1"/>
+   </block>
+      <block name="route_loop_p1">
+      <exception cond="ObstacleNearby()" deroute="safemove_wp1_go"/>
       <go from="curr" hmode="route" wp="p1" approaching_time="0"/>
       <stay wp="p1" until="stage_time>4"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_p2)"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr" until="stage_time>1"/>
       <deroute block="route_loop_p2"/>
     </block>
     <block name="safemove_wp1_go">
@@ -131,11 +137,11 @@
    </block>
     <block name="route_loop_p2">
       <exception cond="ObstacleNearby()" deroute="safemove_wp2_go"/>
-      <call fun="nav_set_heading_towards_waypoint(WP_p2)"/>
-      <call fun="NavSetWaypointHere(WP_curr)"/>
-      <stay wp="curr" until="stage_time>1"/>
       <go from="curr" hmode="route" wp="p2" approaching_time="0"/>
       <stay wp="p2" until="stage_time>4"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_p3)"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr" until="stage_time>1"/>
       <deroute block="route_loop_p3"/>
     </block>
     <block name="safemove_wp2_go">
@@ -146,12 +152,13 @@
       <deroute block="route_loop_p2"/>
    </block>
     <block name="route_loop_p3">
+
       <exception cond="ObstacleNearby()" deroute="safemove_wp3_go"/>
-      <call fun="nav_set_heading_towards_waypoint(WP_p3)"/>
-      <call fun="NavSetWaypointHere(WP_curr)"/>
-      <stay wp="curr" until="stage_time>1"/>
       <go from="curr" hmode="route" wp="p3" approaching_time="0"/>
       <stay wp="p3" until="stage_time>4"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_p4)"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr" until="stage_time>1"/>
       <deroute block="route_loop_p4"/>
     </block>
     <block name="safemove_wp3_go">
@@ -162,12 +169,13 @@
       <deroute block="route_loop_p3"/>
    </block>
     <block name="route_loop_p4">
+
       <exception cond="ObstacleNearby()" deroute="safemove_wp4_go"/>
-      <call fun="nav_set_heading_towards_waypoint(WP_p4)"/>
-      <call fun="NavSetWaypointHere(WP_curr)"/>
-      <stay wp="curr" until="stage_time>1"/>
       <go from="curr" hmode="route" wp="p4" approaching_time="0"/>
       <stay wp="p4" until="stage_time>4"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_p5)"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr" until="stage_time>1"/>
       <deroute block="route_loop_p5"/>
     </block>
     <block name="safemove_wp4_go">
@@ -179,11 +187,11 @@
    </block>
     <block name="route_loop_p5">
       <exception cond="ObstacleNearby()" deroute="safemove_wp5_go"/>
-      <call fun="nav_set_heading_towards_waypoint(WP_p5)"/>
-      <call fun="NavSetWaypointHere(WP_curr)"/>
-      <stay wp="curr" until="stage_time>1"/>
       <go from="curr" hmode="route" wp="p5" approaching_time="0"/>
       <stay wp="p5" until="stage_time>4"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_p6)"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr" until="stage_time>1"/>
       <deroute block="route_loop_p6"/>
     </block>
     <block name="safemove_wp5_go">
@@ -191,15 +199,16 @@
       <call fun="NavSetWaypointAvoidInBounds(WP_curr,170,WP_p5)"/>
       <call fun="nav_set_heading_towards_waypoint(WP_p5)"/>
       <stay wp="curr" until="stage_time>3"/>
-      <deroute block="route_loop_p6"/>
+      <deroute block="route_loop_p5"/>
    </block>
     <block name="route_loop_p6">
+
       <exception cond="ObstacleNearby()" deroute="safemove_wp6_go"/>
-      <call fun="nav_set_heading_towards_waypoint(WP_p6)"/>
-      <call fun="NavSetWaypointHere(WP_curr)"/>
-      <stay wp="curr" until="stage_time>1"/>
       <go from="curr" hmode="route" wp="p6" approaching_time="0"/>
       <stay wp="p6" until="stage_time>4"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_p7)"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr" until="stage_time>1"/>
       <deroute block="route_loop_p7"/>
     </block>
     <block name="safemove_wp6_go">
@@ -211,11 +220,11 @@
    </block>
     <block name="route_loop_p7">
       <exception cond="ObstacleNearby()" deroute="safemove_wp7_go"/>
-      <call fun="nav_set_heading_towards_waypoint(WP_p7)"/>
-      <call fun="NavSetWaypointHere(WP_curr)"/>
-      <stay wp="curr" until="stage_time>1"/>
       <go from="curr" hmode="route" wp="p7" approaching_time="0"/>
       <stay wp="p7" until="stage_time>4"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_p8)"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr" until="stage_time>1"/>
       <deroute block="route_loop_p8"/>
     </block>
     <block name="safemove_wp7_go">
@@ -227,11 +236,11 @@
    </block>
     <block name="route_loop_p8">
       <exception cond="ObstacleNearby()" deroute="safemove_wp8_go"/>
-      <call fun="nav_set_heading_towards_waypoint(WP_p8)"/>
-      <call fun="NavSetWaypointHere(WP_curr)"/>
-      <stay wp="curr" until="stage_time>1"/>
       <go from="curr" hmode="route" wp="p8" approaching_time="0"/>
       <stay wp="p8" until="stage_time>4"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_p9)"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr" until="stage_time>1"/>
       <deroute block="route_loop_p9"/>
     </block>
     <block name="safemove_wp8_go">
@@ -243,11 +252,11 @@
    </block>
    <block name="route_loop_p9">
       <exception cond="ObstacleNearby()" deroute="safemove_wp9_go"/>
-      <call fun="nav_set_heading_towards_waypoint(WP_p9)"/>
-      <call fun="NavSetWaypointHere(WP_curr)"/>
-      <stay wp="curr" until="stage_time>1"/>
       <go from="curr" hmode="route" wp="p9" approaching_time="0"/>
       <stay wp="p9" until="stage_time>4"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_p10)"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr" until="stage_time>1"/>
       <deroute block="route_loop_p10"/>
     </block>
     <block name="safemove_wp9_go">
@@ -259,11 +268,11 @@
    </block>
       <block name="route_loop_p10">
       <exception cond="ObstacleNearby()" deroute="safemove_wp10_go"/>
-      <call fun="nav_set_heading_towards_waypoint(WP_p10)"/>
-      <call fun="NavSetWaypointHere(WP_curr)"/>
-      <stay wp="curr" until="stage_time>1"/>
       <go from="curr" hmode="route" wp="p10" approaching_time="0"/>
       <stay wp="p10" until="stage_time>4"/>
+      <call fun="nav_set_heading_towards_waypoint(WP_p1)"/>
+      <call fun="NavSetWaypointHere(WP_curr)"/>
+      <stay wp="curr" until="stage_time>1"/>
       <deroute block="route_loop_p1"/>
     </block>
     <block name="safemove_wp10_go">

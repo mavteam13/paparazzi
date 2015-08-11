@@ -30,15 +30,7 @@
 
   <modules main_freq="512">
     <load name="detect_avoid_mav13.xml"/>
-    <!--load name="video_rtp_stream.xml"/-->
-    <!--load name="vision_team13.xml"/-->
     <load name="nav_team13.xml"/>
-    <load name="send_imu_mag_current.xml"/>
-    <load name="follow.xml">
-      <define name="FOLLOW_AC_ID" value="101"/>
-      <define name="FOLLOW_WAYPOINT_ID" value="WP_p1"/>
-      <define name="FOLLOW_OFFSET_Z" value="2.0"/>
-    </load>
   </modules>
 
   <commands>
@@ -96,22 +88,18 @@
     <define name="MAG_Y_CURRENT_COEF" value="0.0"/>
     <define name="MAG_Z_CURRENT_COEF" value="0.0"/>
 
-    <define name="BODY_TO_IMU_PHI" value="0." unit="deg"/>
-    <define name="BODY_TO_IMU_THETA" value="0." unit="deg"/>
+    <define name="BODY_TO_IMU_PHI" value="-1." unit="deg"/>
+    <define name="BODY_TO_IMU_THETA" value="4.4" unit="deg"/>
     <define name="BODY_TO_IMU_PSI" value="0." unit="deg"/>
   </section>
 
   <!-- local magnetic field -->
   <!-- http://wiki.paparazziuav.org/wiki/Subsystem/ahrs#Local_Magnetic_Field -->
   <section name="AHRS" prefix="AHRS_">
-    <!-- Toulouse -->
-    <define name="H_X" value="0.513081"/>
-    <define name="H_Y" value="-0.00242783"/>
-    <define name="H_Z" value="0.858336"/>
     <!-- Delft -->
-    <!--define name="H_X" value="0.3892503"/>
+    <define name="H_X" value="0.3892503"/>
     <define name="H_Y" value="0.0017972"/>
-    <define name="H_Z" value="0.9211303"/ -->
+    <define name="H_Z" value="0.9211303"/>
 
     <!-- Use GPS heading instead of magneto -->
     <define name="USE_GPS_HEADING" value="1"/>
@@ -210,7 +198,7 @@
     <define name="REF_OMEGA" value="RadOfDeg(67.)"/>
     <define name="REF_ZETA" value="0.85"/>
     <define name="REF_MAX_ACCEL" value="5.66"/>
-    <define name="REF_MAX_SPEED" value="1.5"/>
+    <define name="REF_MAX_SPEED" value="0.8"/>
 
     <!-- gains -->
     <define name="PGAIN" value="250"/>

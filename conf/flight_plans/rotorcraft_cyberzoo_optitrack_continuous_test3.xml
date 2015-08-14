@@ -113,8 +113,8 @@
       <call fun="nav_set_heading_deg(0)"/>
       <stay wp="curr"/>
    </block>
-	  <block name="begin_loop_at_p1">
-      <stay wp="p1" until="stage_time>1/>
+      <block name="begin_loop_at_p1">
+      <stay wp="p1" until="stage_time>4"/>
       <call fun="nav_set_heading_towards_waypoint(WP_p2)"/>
       <call fun="NavSetWaypointHere(WP_curr)"/>
       <stay wp="curr" until="stage_time>1"/>

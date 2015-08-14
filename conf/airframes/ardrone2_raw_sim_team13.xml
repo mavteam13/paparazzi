@@ -26,9 +26,6 @@
   </firmware>
 
   <modules main_freq="512">
-    <load name="gps_ubx_ucenter.xml"/>
-    <load name="send_imu_mag_current.xml"/>
-    <load name="file_logger.xml"/>
     <load name="nav_team13.xml"/>
     <!--  load name="../../sw/ext/ardrone2_vision/modules/Mjpeg/ViewVideo.xml"/-->
   </modules>
@@ -96,10 +93,6 @@
   <!-- local magnetic field -->
   <!-- http://wiki.paparazziuav.org/wiki/Subsystem/ahrs#Local_Magnetic_Field -->
   <section name="AHRS" prefix="AHRS_">
-    <!-- Toulouse >
-    <define name="H_X" value="0.513081"/>
-    <define name="H_Y" value="-0.00242783"/>
-    <define name="H_Z" value="0.858336"/-->
     <!-- Delft -->
     <define name="H_X" value="0.3892503"/>
     <define name="H_Y" value="0.0017972"/>

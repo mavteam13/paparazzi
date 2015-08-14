@@ -45,7 +45,7 @@ int wait_time = 2;
 int obs_2sect_front;
 int stereo_nav_status = 0; 
 int stereo_vision_status;
-
+int16_t turncount=1;
 
 //****** Functions ******//
 
@@ -291,54 +291,66 @@ bool_t NavSetNewWayPoint(uint8_t curr, uint8_t dist, uint8_t next, uint8_t headi
 
 bool_t NavSetWaypointAvoidInBounds(uint8_t curr, uint8_t dist, uint8_t next)
 {
-  // distance in cm's
+   NavGotoWaypoint(curr);  //stay at current waypoint until next position decided
 
   // declare variables
   int32_t s_heading, c_heading;
-  int8_t InBoundAndSafe = 0;   // flag to determine if next heading is inbounds and safe
+  int32_t temp_x, temp_y;
   int8_t offsetsign;
-  int16_t turncount = 1;
-  // safe_heading = 45;  //hack for sim testing
+  //int16_t turncount=1;
+  // safe_heading = 90;  //hack for sim testing
 
 //determine sign of safe_heading,
   if (safe_heading==90){offsetsign=1;} //no safe heading - arbitrarily turn cw
   else if (safe_heading>0){offsetsign=1;} 
   else {offsetsign=-1;}  
   
-  while (InBoundAndSafe == 0)
-  {
+ // while (InBoundAndSafe == 0)  //while loop is cause of links lost problem
+ // {
 
     // If there is no safe heading turn cw 37 deg and set offsetsign=1 so that it will turn the other way it goes out of bounds
     // vehicle will continue turning cw in 37 deg increments until there is a safe_heading
     if (safe_heading == 90){      
+   // printf("line 314 - safe heading=90 \n");
     offset_heading = INT32_RAD_OF_DEG(37 << (INT32_ANGLE_FRAC));
+  //  printf("nav heading old = %d \n",INT32_DEG_OF_RAD(nav_heading) >> (INT32_ANGLE_FRAC));
     nav_heading = nav_heading + offset_heading;
-     offsetsign = 1;
-    turncount++;
-     continue;
+  //  printf("nav heading new = %d \n",INT32_DEG_OF_RAD(nav_heading) >> (INT32_ANGLE_FRAC));   
+    offsetsign = 1;
     }
-
+else{
     // calculate location for next waypoint
     offset_heading = INT32_RAD_OF_DEG(safe_heading << (INT32_ANGLE_FRAC));
 
     PPRZ_ITRIG_SIN(s_heading, nav_heading+offset_heading);
     PPRZ_ITRIG_COS(c_heading, nav_heading+offset_heading);
-    waypoints[next].x = waypoints[curr].x + INT_MULT_RSHIFT(dist,s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
-    waypoints[next].y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
-    
-    if (!InsideFlight_Region((float)INT_MULT_RSHIFT(1,waypoints[next].x,INT32_POS_FRAC),(float)INT_MULT_RSHIFT(1,waypoints[next].y,INT32_POS_FRAC)))
-      {  
-        // if the new wp is not within the boundary of Flight_area, turn the opposite direction to find a new safe heading.
-	offset_heading = INT32_RAD_OF_DEG((-offsetsign * 42 * turncount) << (INT32_ANGLE_FRAC));
-        nav_heading = nav_heading + offset_heading;
-        // will safe_heading be updating???  I think so.
-	continue;
+    temp_x = waypoints[curr].x + INT_MULT_RSHIFT(dist,s_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
+    temp_y = waypoints[curr].y + INT_MULT_RSHIFT(dist,c_heading,INT32_TRIG_FRAC-INT32_POS_FRAC) / 100;
+
+    if (InsideFlight_Region((float)INT_MULT_RSHIFT(1,temp_x,INT32_POS_FRAC),(float)INT_MULT_RSHIFT(1,temp_y,INT32_POS_FRAC)))
+      {  // if in bounds
+   // printf("in bounds \n");
+    waypoints[next].x = temp_x;
+    waypoints[next].y = temp_y;
+          return FALSE;  // if safe and in bounds exit
       }
-    else { InBoundAndSafe=1;}
-  }
-  //printf("heading error= %d \n", safe_heading);
-  return FALSE;
-}
+    else { 
+ // if the new wp is not within the boundary of Flight_area, turn the opposite direction to find a new safe heading.
+        printf("line 333 - out of bounds \n");
+   // waypoints[next].x = waypoints[next].x; waypoints[next].y = waypoints[next].y;  //no change in wp_next
+	offset_heading = INT32_RAD_OF_DEG((-offsetsign * 42 * turncount) << (INT32_ANGLE_FRAC));
+      //  printf("nav heading old = %d \n",INT32_DEG_OF_RAD(nav_heading) >> (INT32_ANGLE_FRAC));
+        nav_heading = nav_heading + offset_heading;
+     //   printf("nav heading new = %d \n",INT32_DEG_OF_RAD(nav_heading) >> (INT32_ANGLE_FRAC));
+        turncount++;
+     //   printf("turncount =%d \n", turncount);
+ 
+       } //if-else in bounds
+    } //if-else safe heading exists
+ //} //while
+ return TRUE;
+
+} // NavSetWaypointAvoidInBounds
 
 bool_t offset_wp_cm(uint8_t wp1, uint8_t wp2, uint8_t d)
 {
@@ -429,7 +441,7 @@ bool_t obstacle_in_path(void)
 bool_t obstacle_nearby(void)
 {
   if (obs_2sect_front==1){
-  //printf("obstacle nearby\n");
+  printf("obstacle nearby\n");
   return TRUE; 
   }
   else {return FALSE;}
